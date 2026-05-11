@@ -68,7 +68,10 @@ LABEL org.opencontainers.image.title="new-admin-base-web" \
 EXPOSE 80
 
 # 健康檢查（呼叫 nginx /health endpoint，由 default.conf 提供）
+# 6-I2 fix（feature 6 T014 dynamic acceptance 發現，與 1-I5 同源 IPv6 議題）：
+# alpine /etc/hosts 同時 map localhost → 127.0.0.1 與 ::1，wget 可能先試 ::1，
+# 而 nginx 預設 bind 0.0.0.0（IPv4 only）→ ::1 連線 refused → healthcheck 失敗
 HEALTHCHECK --interval=15s --timeout=5s --retries=3 --start-period=5s \
-  CMD wget --spider --quiet http://localhost/health || exit 1
+  CMD wget --spider --quiet http://127.0.0.1/health || exit 1
 
 # nginx 預設 CMD = ["nginx", "-g", "daemon off;"]，繼承 nginx:alpine
