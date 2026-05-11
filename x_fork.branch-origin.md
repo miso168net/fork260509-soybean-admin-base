@@ -4,7 +4,7 @@
 
 | 項目 | 內容 |
 |---|---|
-| 此 repo | `miso168net/fork260509-soybean-admin` |
+| 此 repo | `miso168net/fork260509-soybean-admin-base` |
 | 原始專案 | `soybeanjs/soybean-admin` |
 | Fork 用途 | 作為傘狀整合 repo `new-admin-root` 的 admin-web submodule 工作分支 |
 | Fork 建立日 | 2026-05-09 |
