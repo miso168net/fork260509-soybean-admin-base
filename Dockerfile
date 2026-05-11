@@ -29,9 +29,12 @@ WORKDIR /app
 # Pin pnpm 版本（reproducibility）
 RUN npm install -g pnpm@${PNPM_VERSION}
 
-# 先 COPY lockfile + package manifest（讓 deps 變動才重 install layer）
+# 先 COPY lockfile + package manifest + .npmrc（讓 deps 變動才重 install layer）
 # build context = outer 倉根（compose.yaml line 108: context: ..）
-COPY admin-web/package.json admin-web/pnpm-lock.yaml ./
+# .npmrc 必須在 install 前就位：含 shamefully-hoist=true；否則 build/plugins/unocss.ts
+# 引用的 @iconify/utils（@iconify/vue 之 transitive dep）不會 hoist 到 top-level
+# node_modules，後續 vite build 會 ERR_MODULE_NOT_FOUND
+COPY admin-web/package.json admin-web/pnpm-lock.yaml admin-web/.npmrc ./
 RUN pnpm install --frozen-lockfile
 
 # COPY 其餘 source（.dockerignore 已排除 node_modules / dist / .git）
