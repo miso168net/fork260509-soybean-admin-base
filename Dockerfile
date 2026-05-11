@@ -26,8 +26,9 @@ ENV VITE_BASE_URL=${VITE_BASE_URL} \
 
 WORKDIR /app
 
-# Pin pnpm 版本（reproducibility）
-RUN npm install -g pnpm@${PNPM_VERSION}
+# Pin pnpm 版本（reproducibility）+ store 設到固定路徑搭配 BuildKit cache mount
+RUN npm install -g pnpm@${PNPM_VERSION} && \
+    pnpm config set store-dir /pnpm/store
 
 # 先 COPY lockfile + package manifest + .npmrc（讓 deps 變動才重 install layer）
 # build context = outer 倉根（compose.yaml line 108: context: ..）
@@ -35,7 +36,11 @@ RUN npm install -g pnpm@${PNPM_VERSION}
 # 引用的 @iconify/utils（@iconify/vue 之 transitive dep）不會 hoist 到 top-level
 # node_modules，後續 vite build 會 ERR_MODULE_NOT_FOUND
 COPY admin-web/package.json admin-web/pnpm-lock.yaml admin-web/.npmrc ./
-RUN pnpm install --frozen-lockfile
+
+# BuildKit cache mount（id=pnpm 跨 build 持久化）— pnpm store 重用，避免每次 install
+# 都要重新從 registry 拉 tarball；只有 lockfile 真實變動才需網路下載新增/異動的套件
+RUN --mount=type=cache,id=pnpm,target=/pnpm/store \
+    pnpm install --frozen-lockfile
 
 # COPY 其餘 source（.dockerignore 已排除 node_modules / dist / .git）
 COPY admin-web/ ./
