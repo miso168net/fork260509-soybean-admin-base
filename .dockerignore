@@ -1,0 +1,21 @@
+# Dependencies & build output（每次 builder 重 install）
+node_modules/
+dist/
+.turbo/
+
+# VCS / IDE
+.git/
+.vscode/
+.idea/
+
+# Logs / coverage
+*.log
+coverage/
+
+# OS metadata
+.DS_Store
+Thumbs.db
+
+# Docker artefacts（self）
+Dockerfile
+.dockerignore
