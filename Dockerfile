@@ -61,8 +61,10 @@ ARG TZ
 
 RUN apk add --no-cache tzdata curl && \
     ln -sf /usr/share/zoneinfo/${TZ} /etc/localtime && \
-    # nginx user(uid 101)需可寫 pid 與 cache:預先 touch + chown
-    # /var/run/nginx.pid(or /run/nginx.pid)為 /etc/nginx/nginx.conf 預設 pid path
+    # nginx user(uid 101)需可寫 pid + 5 個 cache temp subdir(client_temp / proxy_temp /
+    # fastcgi_temp / uwsgi_temp / scgi_temp)— nginx 啟動時 mkdir 這些 dir,若 parent
+    # owned by root 則 nginx user permission denied → emerg + exit
+    mkdir -p /var/cache/nginx/client_temp /var/cache/nginx/proxy_temp /var/cache/nginx/fastcgi_temp /var/cache/nginx/uwsgi_temp /var/cache/nginx/scgi_temp && \
     touch /var/run/nginx.pid && \
     chown -R nginx:nginx /var/run/nginx.pid /var/cache/nginx /var/log/nginx
 
