@@ -1,0 +1,50 @@
+# base-web .dockerignore — rev1 deploy 版本(W-F2)
+#
+# 新建檔 — base-web 源倉無既有 .dockerignore。
+# Per spec FR-020 / FR-021 + contracts/dockerfile-structure.md C-D6。
+
+# Builder install / build artifacts(builder 自己處理)
+node_modules/
+.pnpm-store/
+dist/
+coverage/
+
+# Environment / secrets(Vite 標準:.env / .env.prod 是 base + mode 配置(非 secret、含 VITE_ICON_PREFIX 等 UI base);
+# .env.local / .env.*.local 才是 gitignored secret override;.env.test 只供 --mode test 用、prod build 不需)
+.env.test
+**/.env.local
+**/.env.*.local
+
+# Version control / IDE / OS meta
+.git
+.github
+.gitattributes
+.gitignore
+.vscode
+.idea
+**/.DS_Store
+
+# Documentation(不入 image)
+CHANGELOG.md
+CHANGELOG.zh_CN.md
+README.md
+README.en_US.md
+LICENSE
+
+# Logs / build context noise
+*.log
+npm-debug.log*
+pnpm-debug.log*
+
+# Docker meta(避免 self-recursive)
+**/Dockerfile*
+**/.dockerignore
+
+# 不排除(builder 必需,per FR-021):
+# - package.json / pnpm-lock.yaml / pnpm-workspace.yaml(workspace manifest)
+# - packages/(8 個 sub-package source + package.json)
+# - src/ / public/ / build/ / index.html
+# - vite.config.ts / tsconfig.json / eslint.config.js / .oxfmtrc.json / .oxlintrc.json
+# - .env.prod(builder loadEnv 載入,Q2 拍板由 build-arg ENV override)
+# - .npmrc(pnpm install 行為配置)
+# - deploy/nginx.conf(runtime stage COPY)
