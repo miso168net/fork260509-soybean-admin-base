@@ -60,6 +60,26 @@ export function fetchBatchDeleteUser(data: { ids: string[] }) {
   return request({ url: '/systemManage/batchDeleteUser', method: 'delete', data });
 }
 
+/** add menu */
+export function fetchAddMenu(data: Partial<Api.SystemManage.Menu>) {
+  return request({ url: '/systemManage/addMenu', method: 'post', data });
+}
+
+/** update menu */
+export function fetchUpdateMenu(data: Partial<Api.SystemManage.Menu> & { id: Api.SystemManage.Menu['id'] }) {
+  return request({ url: '/systemManage/updateMenu', method: 'post', data });
+}
+
+/** delete menu */
+export function fetchDeleteMenu(data: { id: number }) {
+  return request({ url: '/systemManage/deleteMenu', method: 'delete', data });
+}
+
+/** batch delete menus */
+export function fetchBatchDeleteMenu(data: { ids: number[] }) {
+  return request({ url: '/systemManage/batchDeleteMenu', method: 'delete', data });
+}
+
 /** get menu list */
 export function fetchGetMenuList() {
   return request<Api.SystemManage.MenuList>({
