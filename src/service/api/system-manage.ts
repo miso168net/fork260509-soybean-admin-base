@@ -30,6 +30,36 @@ export function fetchGetUserList(params?: Api.SystemManage.UserSearchParams) {
   });
 }
 
+/** add user */
+export function fetchAddUser(
+  data: Pick<
+    Api.SystemManage.User,
+    'userName' | 'userGender' | 'nickName' | 'userPhone' | 'userEmail' | 'userRoles' | 'status'
+  >
+) {
+  return request({ url: '/systemManage/addUser', method: 'post', data });
+}
+
+/** update user */
+export function fetchUpdateUser(
+  data: Pick<
+    Api.SystemManage.User,
+    'userName' | 'userGender' | 'nickName' | 'userPhone' | 'userEmail' | 'userRoles' | 'status'
+  > & { id: Api.SystemManage.User['id'] }
+) {
+  return request({ url: '/systemManage/updateUser', method: 'post', data });
+}
+
+/** delete user */
+export function fetchDeleteUser(data: { id: Api.SystemManage.User['id'] }) {
+  return request({ url: '/systemManage/deleteUser', method: 'delete', data });
+}
+
+/** batch delete users */
+export function fetchBatchDeleteUser(data: { ids: string[] }) {
+  return request({ url: '/systemManage/batchDeleteUser', method: 'delete', data });
+}
+
 /** get menu list */
 export function fetchGetMenuList() {
   return request<Api.SystemManage.MenuList>({

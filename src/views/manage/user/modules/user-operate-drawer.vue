@@ -2,7 +2,7 @@
 import { computed, ref, watch } from 'vue';
 import { jsonClone } from '@sa/utils';
 import { enableStatusOptions, userGenderOptions } from '@/constants/business';
-import { fetchGetAllRoles } from '@/service/api';
+import { fetchAddUser, fetchGetAllRoles, fetchUpdateUser } from '@/service/api';
 import { useFormRules, useNaiveForm } from '@/hooks/common/form';
 import { $t } from '@/locales';
 
@@ -104,7 +104,13 @@ function closeDrawer() {
 
 async function handleSubmit() {
   await validate();
-  // request
+  let error: unknown;
+  if (props.operateType === 'add') {
+    ({ error } = await fetchAddUser(model.value));
+  } else {
+    ({ error } = await fetchUpdateUser({ ...model.value, id: props.rowData!.id }));
+  }
+  if (error) return;
   window.$message?.success($t('common.updateSuccess'));
   closeDrawer();
   emit('submitted');
