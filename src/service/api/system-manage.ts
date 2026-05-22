@@ -61,7 +61,7 @@ export function fetchAddUser(
   data: Pick<
     Api.SystemManage.User,
     'userName' | 'userGender' | 'nickName' | 'userPhone' | 'userEmail' | 'userRoles' | 'status'
-  >
+  > & { password?: string }
 ) {
   return request({ url: '/systemManage/addUser', method: 'post', data });
 }
@@ -71,7 +71,7 @@ export function fetchUpdateUser(
   data: Pick<
     Api.SystemManage.User,
     'userName' | 'userGender' | 'nickName' | 'userPhone' | 'userEmail' | 'userRoles' | 'status'
-  > & { id: Api.SystemManage.User['id'] }
+  > & { id: Api.SystemManage.User['id']; password?: string }
 ) {
   return request({ url: '/systemManage/updateUser', method: 'post', data });
 }

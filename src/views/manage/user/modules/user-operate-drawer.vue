@@ -43,7 +43,10 @@ const title = computed(() => {
 type Model = Pick<
   Api.SystemManage.User,
   'userName' | 'userGender' | 'nickName' | 'userPhone' | 'userEmail' | 'userRoles' | 'status'
->;
+> & {
+  /** optional password: add mode sets initial password, edit mode resets when filled, blank = unchanged */
+  password: string;
+};
 
 const model = ref(createDefaultModel());
 
@@ -55,7 +58,8 @@ function createDefaultModel(): Model {
     userPhone: '',
     userEmail: '',
     userRoles: [],
-    status: null
+    status: null,
+    password: ''
   };
 }
 
@@ -131,6 +135,14 @@ watch(visible, () => {
       <NForm ref="formRef" :model="model" :rules="rules">
         <NFormItem :label="$t('page.manage.user.userName')" path="userName">
           <NInput v-model:value="model.userName" :placeholder="$t('page.manage.user.form.userName')" />
+        </NFormItem>
+        <NFormItem label="密码" path="password">
+          <NInput
+            v-model:value="model.password"
+            type="password"
+            show-password-on="click"
+            placeholder="新增时设定初始密码，编辑时留空表示不修改"
+          />
         </NFormItem>
         <NFormItem :label="$t('page.manage.user.userGender')" path="userGender">
           <NRadioGroup v-model:value="model.userGender">
