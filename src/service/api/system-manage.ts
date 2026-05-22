@@ -129,3 +129,16 @@ export function fetchGetMenuTree() {
     method: 'get'
   });
 }
+
+/** get role menu ids */
+export function fetchGetRoleMenuIds(roleId: Api.SystemManage.Role['id']) {
+  return request<number[]>({
+    url: `/systemManage/getRoleMenuIds/${roleId}`,
+    method: 'get'
+  });
+}
+
+/** assign role menus */
+export function fetchAssignRoleMenus(data: { roleId: Api.SystemManage.Role['id']; menuIds: number[] }) {
+  return request({ url: '/systemManage/assignRoleMenus', method: 'post', data });
+}
