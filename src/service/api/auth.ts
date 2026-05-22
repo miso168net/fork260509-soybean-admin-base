@@ -38,6 +38,19 @@ export function fetchRefreshToken(refreshToken: string) {
 }
 
 /**
+ * Change password
+ *
+ * @param data current password and new password
+ */
+export function fetchChangePassword(data: { currentPassword: string; newPassword: string }) {
+  return request<boolean>({
+    url: '/auth/changePassword',
+    method: 'post',
+    data
+  });
+}
+
+/**
  * return custom backend error
  *
  * @param code error code
