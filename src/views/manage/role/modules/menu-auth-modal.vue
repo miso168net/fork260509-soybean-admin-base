@@ -82,7 +82,7 @@ async function handleSubmit() {
 
   if (error) return;
 
-  window.$message?.success?.($t('common.modifySuccess'));
+  window.$message?.success($t('common.modifySuccess'));
 
   closeModal();
 }
