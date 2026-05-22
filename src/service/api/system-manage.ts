@@ -21,6 +21,32 @@ export function fetchGetAllRoles() {
   });
 }
 
+/** add role */
+export function fetchAddRole(
+  data: Pick<Api.SystemManage.Role, 'roleName' | 'roleCode' | 'roleDesc' | 'status'>
+) {
+  return request({ url: '/systemManage/addRole', method: 'post', data });
+}
+
+/** update role */
+export function fetchUpdateRole(
+  data: Pick<Api.SystemManage.Role, 'roleName' | 'roleCode' | 'roleDesc' | 'status'> & {
+    id: Api.SystemManage.Role['id'];
+  }
+) {
+  return request({ url: '/systemManage/updateRole', method: 'post', data });
+}
+
+/** delete role */
+export function fetchDeleteRole(data: { id: Api.SystemManage.Role['id'] }) {
+  return request({ url: '/systemManage/deleteRole', method: 'delete', data });
+}
+
+/** batch delete roles */
+export function fetchBatchDeleteRole(data: { ids: string[] }) {
+  return request({ url: '/systemManage/batchDeleteRole', method: 'delete', data });
+}
+
 /** get user list */
 export function fetchGetUserList(params?: Api.SystemManage.UserSearchParams) {
   return request<Api.SystemManage.UserList>({

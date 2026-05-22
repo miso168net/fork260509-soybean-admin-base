@@ -3,6 +3,7 @@ import { computed, ref, watch } from 'vue';
 import { jsonClone } from '@sa/utils';
 import { useBoolean } from '@sa/hooks';
 import { enableStatusOptions } from '@/constants/business';
+import { fetchAddRole, fetchUpdateRole } from '@/service/api';
 import { useFormRules, useNaiveForm } from '@/hooks/common/form';
 import { $t } from '@/locales';
 import MenuAuthModal from './menu-auth-modal.vue';
@@ -83,7 +84,13 @@ function closeDrawer() {
 
 async function handleSubmit() {
   await validate();
-  // request
+  let error: unknown;
+  if (props.operateType === 'edit') {
+    ({ error } = await fetchUpdateRole({ ...model.value, id: props.rowData!.id }));
+  } else {
+    ({ error } = await fetchAddRole(model.value));
+  }
+  if (error) return;
   window.$message?.success($t('common.updateSuccess'));
   closeDrawer();
   emit('submitted');
