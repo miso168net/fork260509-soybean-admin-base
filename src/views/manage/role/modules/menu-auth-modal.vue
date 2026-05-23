@@ -1,6 +1,13 @@
 <script setup lang="ts">
 import { computed, shallowRef, watch } from 'vue';
-import { fetchAssignRoleMenus, fetchGetAllPages, fetchGetMenuTree, fetchGetRoleMenuIds } from '@/service/api';
+import {
+  fetchAssignRoleMenus,
+  fetchGetAllPages,
+  fetchGetMenuTree,
+  fetchGetRoleHome,
+  fetchGetRoleMenuIds,
+  fetchUpdateRoleHome
+} from '@/service/api';
 import { $t } from '@/locales';
 
 defineOptions({
@@ -27,15 +34,22 @@ const title = computed(() => $t('common.edit') + $t('page.manage.role.menuAuth')
 const home = shallowRef('');
 
 async function getHome() {
-  console.log(props.roleId);
+  const { error, data } = await fetchGetRoleHome(String(props.roleId));
 
-  home.value = 'home';
+  if (!error) {
+    home.value = data ?? 'home';
+  }
 }
 
 async function updateHome(val: string) {
-  // request
+  const { error } = await fetchUpdateRoleHome({
+    roleId: String(props.roleId),
+    home: val === 'home' ? null : val
+  });
 
-  home.value = val;
+  if (!error) {
+    home.value = val;
+  }
 }
 
 const pages = shallowRef<string[]>([]);

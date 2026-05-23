@@ -142,3 +142,16 @@ export function fetchGetRoleMenuIds(roleId: Api.SystemManage.Role['id']) {
 export function fetchAssignRoleMenus(data: { roleId: Api.SystemManage.Role['id']; menuIds: number[] }) {
   return request({ url: '/systemManage/assignRoleMenus', method: 'post', data });
 }
+
+/** get role home route name */
+export function fetchGetRoleHome(roleId: string) {
+  return request<string | null>({
+    url: `/systemManage/getRoleHome/${roleId}`,
+    method: 'get'
+  });
+}
+
+/** update role home route name */
+export function fetchUpdateRoleHome(data: { roleId: string; home: string | null }) {
+  return request<boolean>({ url: '/systemManage/updateRoleHome', method: 'post', data });
+}
