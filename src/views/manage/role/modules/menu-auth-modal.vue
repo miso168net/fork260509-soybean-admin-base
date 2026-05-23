@@ -34,7 +34,7 @@ const title = computed(() => $t('common.edit') + $t('page.manage.role.menuAuth')
 const home = shallowRef('');
 
 async function getHome() {
-  const { error, data } = await fetchGetRoleHome(String(props.roleId));
+  const { error, data } = await fetchGetRoleHome(props.roleId);
 
   if (!error) {
     home.value = data ?? 'home';
@@ -43,7 +43,7 @@ async function getHome() {
 
 async function updateHome(val: string) {
   const { error } = await fetchUpdateRoleHome({
-    roleId: String(props.roleId),
+    roleId: props.roleId,
     home: val === 'home' ? null : val
   });
 

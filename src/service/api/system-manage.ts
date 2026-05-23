@@ -144,7 +144,7 @@ export function fetchAssignRoleMenus(data: { roleId: Api.SystemManage.Role['id']
 }
 
 /** get role home route name */
-export function fetchGetRoleHome(roleId: string) {
+export function fetchGetRoleHome(roleId: Api.SystemManage.Role['id']) {
   return request<string | null>({
     url: `/systemManage/getRoleHome/${roleId}`,
     method: 'get'
@@ -152,7 +152,7 @@ export function fetchGetRoleHome(roleId: string) {
 }
 
 /** update role home route name */
-export function fetchUpdateRoleHome(data: { roleId: string; home: string | null }) {
+export function fetchUpdateRoleHome(data: { roleId: Api.SystemManage.Role['id']; home: string | null }) {
   return request<boolean>({ url: '/systemManage/updateRoleHome', method: 'post', data });
 }
 
@@ -175,14 +175,14 @@ export function fetchGetAllEndpoints() {
 }
 
 /** W-FW8 get role's assigned endpoint ids */
-export function fetchGetRoleEndpointIds(roleId: string) {
-  return request<string[]>({
+export function fetchGetRoleEndpointIds(roleId: Api.SystemManage.Role['id']) {
+  return request<number[]>({
     url: `/systemManage/getRoleEndpointIds/${roleId}`,
     method: 'get'
   });
 }
 
 /** W-FW8 assign endpoint permissions to role (empty array clears all) */
-export function fetchAssignRoleEndpoints(data: { roleId: string; endpointIds: string[] }) {
+export function fetchAssignRoleEndpoints(data: { roleId: Api.SystemManage.Role['id']; endpointIds: number[] }) {
   return request<boolean>({ url: '/systemManage/assignRoleEndpoints', method: 'post', data });
 }

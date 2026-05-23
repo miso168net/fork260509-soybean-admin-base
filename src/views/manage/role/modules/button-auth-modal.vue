@@ -25,12 +25,12 @@ function closeModal() {
 const title = computed(() => $t('common.edit') + $t('page.manage.role.buttonAuth'));
 
 const tree = shallowRef<unknown[]>([]);
-const checks = shallowRef<string[]>([]);
+const checks = shallowRef<number[]>([]);
 
 async function init() {
   const [allRes, idsRes] = await Promise.all([
     fetchGetAllEndpoints(),
-    fetchGetRoleEndpointIds(String(props.roleId))
+    fetchGetRoleEndpointIds(props.roleId)
   ]);
   if (!allRes.error) {
     tree.value = allRes.data ?? [];
@@ -42,7 +42,7 @@ async function init() {
 
 async function handleSubmit() {
   const { error } = await fetchAssignRoleEndpoints({
-    roleId: String(props.roleId),
+    roleId: props.roleId,
     endpointIds: checks.value
   });
 
