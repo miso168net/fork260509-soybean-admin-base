@@ -155,3 +155,34 @@ export function fetchGetRoleHome(roleId: string) {
 export function fetchUpdateRoleHome(data: { roleId: string; home: string | null }) {
   return request<boolean>({ url: '/systemManage/updateRoleHome', method: 'post', data });
 }
+
+/** W-FW8 endpoint tree node — inline type alias (per spec §4 不准動 src/typings) */
+type EndpointTreeNode = {
+  key: string;
+  label: string;
+  children?: EndpointTreeNode[];
+  method?: string;
+  path?: string;
+  isLeaf?: boolean;
+};
+
+/** W-FW8 get all API endpoints grouped by resource */
+export function fetchGetAllEndpoints() {
+  return request<EndpointTreeNode[]>({
+    url: '/systemManage/getAllEndpoints',
+    method: 'get'
+  });
+}
+
+/** W-FW8 get role's assigned endpoint ids */
+export function fetchGetRoleEndpointIds(roleId: string) {
+  return request<string[]>({
+    url: `/systemManage/getRoleEndpointIds/${roleId}`,
+    method: 'get'
+  });
+}
+
+/** W-FW8 assign endpoint permissions to role (empty array clears all) */
+export function fetchAssignRoleEndpoints(data: { roleId: string; endpointIds: string[] }) {
+  return request<boolean>({ url: '/systemManage/assignRoleEndpoints', method: 'post', data });
+}
