@@ -176,7 +176,9 @@ export function fetchGetAllEndpoints() {
 
 /** W-FW8 get role's assigned endpoint ids */
 export function fetchGetRoleEndpointIds(roleId: Api.SystemManage.Role['id']) {
-  return request<number[]>({
+  // 040 errata: rust 端回 Vec<String>（numeric string）對齊 EndpointTreeNode.key 形狀（display_id.to_string()、NTree shape 要 string key）；
+  // 本 function 真實 wire 為 string[]、不改 rust alias layer 而是 base-web 提交時 .map(Number) 轉 i64 給 rust DTO。
+  return request<string[]>({
     url: `/systemManage/getRoleEndpointIds/${roleId}`,
     method: 'get'
   });

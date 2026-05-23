@@ -25,7 +25,9 @@ function closeModal() {
 const title = computed(() => $t('common.edit') + $t('page.manage.role.buttonAuth'));
 
 const tree = shallowRef<unknown[]>([]);
-const checks = shallowRef<number[]>([]);
+// checks 為 NTree 勾選的 leaf key 集合；leaf key 是 numeric string（display_id.to_string()、NTree shape 要 string）。
+// submit 時 .map(Number) 轉 i64 給 rust DTO（rust 端 Vec<i64>、見 fetchAssignRoleEndpoints）。
+const checks = shallowRef<string[]>([]);
 
 async function init() {
   const [allRes, idsRes] = await Promise.all([
@@ -43,7 +45,7 @@ async function init() {
 async function handleSubmit() {
   const { error } = await fetchAssignRoleEndpoints({
     roleId: props.roleId,
-    endpointIds: checks.value
+    endpointIds: checks.value.map(Number)
   });
 
   if (error) {
