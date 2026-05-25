@@ -103,7 +103,14 @@ declare namespace Api {
     >;
 
     type Menu = Common.CommonRecord<{
-      /** parent menu id */
+      /**
+       * parent menu id (rust-api input DTO `parent_id: i32`).
+       *
+       * `0` = root menu sentinel — `menu-operate-modal.vue:137`
+       * `model.value.parentId === 0` computes `showLayout` (root menu
+       * picks layout, child menu picks page). DO NOT change sentinel
+       * comparison logic without coordinated rust input DTO change.
+       */
       parentId: number;
       /** menu type */
       menuType: MenuType;
@@ -130,9 +137,18 @@ declare namespace Api {
     type MenuList = Common.PaginatingQueryRecord<Menu>;
 
     type MenuTree = {
+      /**
+       * menu node id (rust-api `MenuTree.id`, i32 from `sys_menu.id`).
+       * Serialized as JSON number.
+       */
       id: number;
       label: string;
-      pId: number;
+      /**
+       * parent menu id (rust-api `MenuTree.pid`, String column).
+       * Serialized as JSON string under camelCase rule (`pid` stays lowercase).
+       * Mismatch in pre-048: TS field was declared as `pId` of type `number` (name + type wrong).
+       */
+      pid: string;
       children?: MenuTree[];
     };
   }

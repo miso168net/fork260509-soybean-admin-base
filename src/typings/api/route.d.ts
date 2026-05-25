@@ -8,7 +8,17 @@ declare namespace Api {
     type ElegantConstRoute = import('@elegant-router/types').ElegantConstRoute;
 
     interface MenuRoute extends ElegantConstRoute {
-      id: string;
+      /**
+       * menu id (rust-api `sys_menu.id`, i32).
+       * Serialized as JSON number; mismatch in pre-048 was `id: string`.
+       */
+      id: number;
+      /**
+       * parent menu id (rust-api `sys_menu.pid`, String column).
+       * Serialized as JSON string under camelCase rule (`pid` stays lowercase).
+       * Mismatch in pre-048: field was not declared on TS side at all.
+       */
+      pid: string;
     }
 
     interface UserRoute {

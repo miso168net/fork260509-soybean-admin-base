@@ -33,7 +33,18 @@ declare namespace Api {
 
     /** common record */
     type CommonRecord<T = any> = {
-      /** record id */
+      /**
+       * record id.
+       *
+       * Post-039 (rust-entity-id-numeric-migration): rust-api wire 序列化為
+       * i64 from `display_id` (Snowflake 41/5/7=53bit, by-design fills
+       * `Number.MAX_SAFE_INTEGER` = 2^53-1). No precision loss in JS Number
+       * representation. Applies to sys_user / sys_role / sys_endpoint /
+       * sys_organization / sys_access_key 5 entities.
+       *
+       * Note: this is the wire-friendly numeric id, NOT the rust internal
+       * ULID identity (see `Auth.UserInfo.userId` for the ULID variant).
+       */
       id: number;
       /** record creator */
       createBy: string;
