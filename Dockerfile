@@ -15,7 +15,6 @@
 
 ARG NODE_VERSION=22
 ARG NGINX_VERSION=1.27
-ARG PNPM_VERSION=11.0.8
 ARG APP_PORT=8080
 ARG TZ=Asia/Shanghai
 ARG VITE_SERVICE_BASE_URL=/api
@@ -25,10 +24,10 @@ ARG VITE_SERVICE_SUCCESS_CODE=0
 # Stage 1: builder
 # -----------------------------------------------------------------------------
 FROM node:${NODE_VERSION}-slim AS builder
-ARG PNPM_VERSION
 WORKDIR /app
 
-RUN corepack enable && corepack prepare pnpm@${PNPM_VERSION} --activate
+# corepack 自動讀 base-web/package.json packageManager field、pnpm 版本由此提供
+RUN corepack enable
 
 # Deps-first COPY layer — per FR-004 / R-005:先 COPY package manifests + workspace
 # sub-packages + .npmrc + pnpm-workspace.yaml 觸發 BuildKit layer cache;source
