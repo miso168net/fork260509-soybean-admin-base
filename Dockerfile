@@ -32,14 +32,12 @@ RUN corepack enable
 # Deps-first COPY layer — per FR-004 / R-005:先 COPY package manifests + workspace
 # sub-packages + .npmrc + pnpm-workspace.yaml 觸發 BuildKit layer cache;source
 # 變動但 dep 未變時可命中 cache。
-# 注意:pnpm 11 改 hoist 行為,從 .npmrc shamefully-hoist=true (pnpm 10 慣例)
-# 改為 pnpm-workspace.yaml nodeLinker: hoisted (per 048-N1 follow-up、commit
-# d521c819)。container 與 host (pnpm 11.0.8) 一致依賴 workspace.yaml 設定;
-# .npmrc shamefully-hoist=true 仍保留 (pnpm 10 fallback、無 harm),但 pnpm 11
-# 不讀。--ignore-scripts 必要:pnpm 11 strict mode 對 transitive dep 的 build
-# script (esbuild / simple-git-hooks / unrs-resolver / 等) 預設拒絕、無
-# pnpm approve-builds 互動 → exit 1。container 內無 .git/、無互動 shell、
-# build script 對 prod runtime 無 functional 影響、--ignore-scripts 為合適選擇。
+# pnpm 11+ 預設 strict isolation 紀律 (per 049 FR-004/005):
+# - package.json packageManager field 是唯一 pnpm 版本 source of truth
+#   (host + container 共享、取代 047.5 retro 期間的 Dockerfile ARG)
+# - 4 phantom transitive 已提為 explicit devDeps、無需 hoist
+# - --ignore-scripts 保留: pnpm 11 strict mode 拒絕 transitive build script
+#   (esbuild / simple-git-hooks / unrs-resolver / etc.)、container 無互動 shell
 COPY package.json pnpm-lock.yaml pnpm-workspace.yaml .npmrc ./
 COPY packages/ packages/
 
