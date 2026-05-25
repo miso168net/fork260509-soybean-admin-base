@@ -6,7 +6,7 @@
 # 設計要點:
 # - builder node:22-slim(>=20.19 滿足、22 LTS、per spec FR-002)
 # - runtime nginx:1.27-alpine(image ~30MB,per spec FR-008 + Q1 brainstorm)
-# - corepack prepare pnpm@10.18.0 顯式 pin(per R-003 / FR-003 修補)
+# - corepack 從 package.json packageManager field 自動讀 pnpm 版本(per 049 FR-005)
 # - deps-first COPY + BuildKit cache mount /root/.local/share/pnpm/store(per FR-004/005)
 # - VITE_* ARG/ENV 在 build time override .env.prod(per Q2 / FR-006)
 # - nginx alpine 內建 nginx user(uid=101)、直接 USER 切換、無需 useradd(per FR-013)
