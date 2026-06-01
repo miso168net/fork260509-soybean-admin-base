@@ -5,7 +5,7 @@ import { useBoolean } from '@sa/hooks';
 import { enableStatusOptions } from '@/constants/business';
 import { useFormRules, useNaiveForm } from '@/hooks/common/form';
 import { $t } from '@/locales';
-import { fetchAddRole } from '@/service/api';
+import { fetchAddRole, fetchUpdateRole } from '@/service/api';
 import MenuAuthModal from './menu-auth-modal.vue';
 import ButtonAuthModal from './button-auth-modal.vue';
 
@@ -84,14 +84,15 @@ function closeDrawer() {
 
 async function handleSubmit() {
   await validate();
-  // add 分支接 fetchAddRole(T014);edit 分支留 U9(T019)接 fetchUpdateRole
-  if (props.operateType === 'add') {
-    const { error } = await fetchAddRole(model.value);
-    if (error) return;
+  const { error } =
+    props.operateType === 'add'
+      ? await fetchAddRole(model.value)
+      : await fetchUpdateRole({ ...model.value, id: props.rowData!.id });
+  if (!error) {
+    window.$message?.success($t('common.updateSuccess'));
+    closeDrawer();
+    emit('submitted');
   }
-  window.$message?.success($t('common.updateSuccess'));
-  closeDrawer();
-  emit('submitted');
 }
 
 watch(visible, () => {

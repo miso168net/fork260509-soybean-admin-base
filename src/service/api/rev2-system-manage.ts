@@ -33,3 +33,8 @@ type RoleWriteModel = Pick<Api.SystemManage.Role, 'roleName' | 'roleCode' | 'rol
 export function fetchAddRole(data: RoleWriteModel) {
   return request<null>({ url: '/systemManage/addRole', method: 'post', data });
 }
+
+/** update role (018 US2, Super-only). `id` locates the row; roleCode is immutable (ignored server-side). */
+export function fetchUpdateRole(data: RoleWriteModel & { id: Api.SystemManage.Role['id'] }) {
+  return request<null>({ url: '/systemManage/updateRole', method: 'post', data });
+}
