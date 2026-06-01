@@ -25,3 +25,11 @@ export function fetchDeleteUser(id: Api.SystemManage.User['id']) {
 export function fetchBatchDeleteUser(ids: string[]) {
   return request<null>({ url: '/systemManage/batchDeleteUser', method: 'delete', data: { ids } });
 }
+
+/** the role write model (mirrors the role-operate-drawer Model: business fields, no id) */
+type RoleWriteModel = Pick<Api.SystemManage.Role, 'roleName' | 'roleCode' | 'roleDesc' | 'status'>;
+
+/** add role (018 US1, Super-only). */
+export function fetchAddRole(data: RoleWriteModel) {
+  return request<null>({ url: '/systemManage/addRole', method: 'post', data });
+}
