@@ -1,6 +1,13 @@
 <script setup lang="ts">
 import { computed, shallowRef, watch } from 'vue';
-import { fetchGetAllPages, fetchGetMenuTree } from '@/service/api';
+import {
+  fetchGetAllPages,
+  fetchGetMenuTree,
+  fetchGetRoleHome,
+  fetchGetRoleMenu,
+  fetchUpdateRoleHome,
+  fetchUpdateRoleMenu
+} from '@/service/api';
 import { $t } from '@/locales';
 
 defineOptions({
@@ -27,15 +34,19 @@ const title = computed(() => $t('common.edit') + $t('page.manage.role.menuAuth')
 const home = shallowRef('');
 
 async function getHome() {
-  console.log(props.roleId);
+  const { error, data } = await fetchGetRoleHome(props.roleId);
 
-  home.value = 'home';
+  if (!error) {
+    home.value = data;
+  }
 }
 
 async function updateHome(val: string) {
-  // request
+  const { error } = await fetchUpdateRoleHome(props.roleId, val);
 
-  home.value = val;
+  if (!error) {
+    home.value = val;
+  }
 }
 
 const pages = shallowRef<string[]>([]);
@@ -70,18 +81,21 @@ async function getTree() {
 const checks = shallowRef<number[]>([]);
 
 async function getChecks() {
-  console.log(props.roleId);
-  // request
-  checks.value = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21];
+  const { error, data } = await fetchGetRoleMenu(props.roleId);
+
+  if (!error) {
+    checks.value = data;
+  }
 }
 
-function handleSubmit() {
-  console.log(checks.value, props.roleId);
-  // request
+async function handleSubmit() {
+  const { error } = await fetchUpdateRoleMenu(props.roleId, checks.value);
 
-  window.$message?.success?.($t('common.modifySuccess'));
+  if (!error) {
+    window.$message?.success?.($t('common.modifySuccess'));
 
-  closeModal();
+    closeModal();
+  }
 }
 
 function init() {
