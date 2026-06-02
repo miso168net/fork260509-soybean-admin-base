@@ -48,3 +48,49 @@ export function fetchDeleteRole(id: Api.SystemManage.Role['id']) {
 export function fetchBatchDeleteRole(ids: string[]) {
   return request<null>({ url: '/systemManage/batchDeleteRole', method: 'delete', data: { ids } });
 }
+
+/** the menu write model (mirrors the menu-operate-modal Model business fields, minus layout/page/pathParam, no id) */
+type MenuWriteModel = Pick<
+  Api.SystemManage.Menu,
+  | 'menuType'
+  | 'menuName'
+  | 'routeName'
+  | 'routePath'
+  | 'component'
+  | 'order'
+  | 'i18nKey'
+  | 'icon'
+  | 'iconType'
+  | 'status'
+  | 'parentId'
+  | 'keepAlive'
+  | 'constant'
+  | 'href'
+  | 'hideInMenu'
+  | 'activeMenu'
+  | 'multiTab'
+  | 'fixedIndexInTab'
+> & {
+  query: NonNullable<Api.SystemManage.Menu['query']>;
+  buttons: NonNullable<Api.SystemManage.Menu['buttons']>;
+};
+
+/** add menu (020 US1, Super-only). routeName/menuType immutable-on-edit handled server-side. */
+export function fetchAddMenu(data: MenuWriteModel) {
+  return request<null>({ url: '/systemManage/addMenu', method: 'post', data });
+}
+
+/** update menu (020 US2, Super-only). `id` locates the row; routeName/menuType/parentId ignored server-side. */
+export function fetchUpdateMenu(data: MenuWriteModel & { id: Api.SystemManage.Menu['id'] }) {
+  return request<null>({ url: '/systemManage/updateMenu', method: 'post', data });
+}
+
+/** delete one menu (020 US3, Super-only, soft-delete + seed/parent guards). */
+export function fetchDeleteMenu(id: Api.SystemManage.Menu['id']) {
+  return request<null>({ url: '/systemManage/deleteMenu', method: 'delete', data: { id } });
+}
+
+/** batch delete menus (020 US3, Super-only, soft-delete + atomic seed/parent reject). */
+export function fetchBatchDeleteMenu(ids: string[]) {
+  return request<null>({ url: '/systemManage/batchDeleteMenu', method: 'delete', data: { ids } });
+}
