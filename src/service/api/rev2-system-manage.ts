@@ -38,3 +38,13 @@ export function fetchAddRole(data: RoleWriteModel) {
 export function fetchUpdateRole(data: RoleWriteModel & { id: Api.SystemManage.Role['id'] }) {
   return request<null>({ url: '/systemManage/updateRole', method: 'post', data });
 }
+
+/** delete one role (018 US3, Super-only, soft-delete). */
+export function fetchDeleteRole(id: Api.SystemManage.Role['id']) {
+  return request<null>({ url: '/systemManage/deleteRole', method: 'delete', data: { id } });
+}
+
+/** batch delete roles (018 US3, Super-only, soft-delete). ids come from checkedRowKeys (string[] at runtime). */
+export function fetchBatchDeleteRole(ids: string[]) {
+  return request<null>({ url: '/systemManage/batchDeleteRole', method: 'delete', data: { ids } });
+}

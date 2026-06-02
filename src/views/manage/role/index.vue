@@ -2,7 +2,7 @@
 import { ref } from 'vue';
 import { NButton, NPopconfirm, NTag } from 'naive-ui';
 import { enableStatusRecord } from '@/constants/business';
-import { fetchGetRoleList } from '@/service/api';
+import { fetchBatchDeleteRole, fetchDeleteRole, fetchGetRoleList } from '@/service/api';
 import { useAppStore } from '@/store/modules/app';
 import { defaultTransform, useNaivePaginatedTable, useTableOperate } from '@/hooks/common/table';
 import { $t } from '@/locales';
@@ -115,17 +115,17 @@ const {
 } = useTableOperate(data, 'id', getData);
 
 async function handleBatchDelete() {
-  // request
-  console.log(checkedRowKeys.value);
-
-  onBatchDeleted();
+  const { error } = await fetchBatchDeleteRole(checkedRowKeys.value);
+  if (!error) {
+    onBatchDeleted();
+  }
 }
 
-function handleDelete(id: number) {
-  // request
-  console.log(id);
-
-  onDeleted();
+async function handleDelete(id: number) {
+  const { error } = await fetchDeleteRole(id);
+  if (!error) {
+    onDeleted();
+  }
 }
 
 function edit(id: number) {
