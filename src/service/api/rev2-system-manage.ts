@@ -94,3 +94,23 @@ export function fetchDeleteMenu(id: Api.SystemManage.Menu['id']) {
 export function fetchBatchDeleteMenu(ids: string[]) {
   return request<null>({ url: '/systemManage/batchDeleteMenu', method: 'delete', data: { ids } });
 }
+
+/** get a role's visible menu ids for the menu-auth-modal tree preload (021, Super-only). Returns menu id[] (number). */
+export function fetchGetRoleMenu(roleId: number) {
+  return request<number[]>({ url: '/systemManage/getRoleMenu', method: 'get', params: { roleId } });
+}
+
+/** set a role's visible menu set (021, Super-only, hard-replace). menuIds = checked menu ids (number[]). */
+export function fetchUpdateRoleMenu(roleId: number, menuIds: number[]) {
+  return request<null>({ url: '/systemManage/updateRoleMenu', method: 'post', data: { roleId, menuIds } });
+}
+
+/** get a role's landing-page route name (021, Super-only). Defaults to "home" server-side. */
+export function fetchGetRoleHome(roleId: number) {
+  return request<string>({ url: '/systemManage/getRoleHome', method: 'get', params: { roleId } });
+}
+
+/** set a role's landing-page route name (021, Super-only). */
+export function fetchUpdateRoleHome(roleId: number, home: string) {
+  return request<null>({ url: '/systemManage/updateRoleHome', method: 'post', data: { roleId, home } });
+}
