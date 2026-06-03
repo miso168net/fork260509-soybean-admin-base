@@ -115,6 +115,11 @@ export function fetchUpdateRoleButton(roleId: number, codes: string[]) {
   return request<null>({ url: '/systemManage/updateRoleButton', method: 'post', data: { roleId, codes } });
 }
 
+/** get the available-button registry — all active menus' buttons, deduped, 字典序 (022, Super-only). For the button-auth-modal tree. */
+export function fetchGetAllButtons() {
+  return request<Api.SystemManage.MenuButton[]>({ url: '/systemManage/getAllButtons', method: 'get' });
+}
+
 /** get a role's landing-page route name (021, Super-only). Defaults to "home" server-side. */
 export function fetchGetRoleHome(roleId: number) {
   return request<string>({ url: '/systemManage/getRoleHome', method: 'get', params: { roleId } });
