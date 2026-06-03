@@ -105,6 +105,16 @@ export function fetchUpdateRoleMenu(roleId: number, menuIds: number[]) {
   return request<null>({ url: '/systemManage/updateRoleMenu', method: 'post', data: { roleId, menuIds } });
 }
 
+/** get a role's granted button codes for the button-auth-modal preload (022, Super-only). Returns code[] (字典序). */
+export function fetchGetRoleButton(roleId: number) {
+  return request<string[]>({ url: '/systemManage/getRoleButton', method: 'get', params: { roleId } });
+}
+
+/** set a role's granted button set (022, Super-only, hard-replace). codes = checked button codes (string[]). */
+export function fetchUpdateRoleButton(roleId: number, codes: string[]) {
+  return request<null>({ url: '/systemManage/updateRoleButton', method: 'post', data: { roleId, codes } });
+}
+
 /** get a role's landing-page route name (021, Super-only). Defaults to "home" server-side. */
 export function fetchGetRoleHome(roleId: number) {
   return request<string>({ url: '/systemManage/getRoleHome', method: 'get', params: { roleId } });
