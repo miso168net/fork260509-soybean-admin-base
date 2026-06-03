@@ -720,6 +720,7 @@ declare namespace App {
             editRole: string;
             menuAuth: string;
             buttonAuth: string;
+            endpointAuth: string;
           };
           user: {
             title: string;

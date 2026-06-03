@@ -80,6 +80,13 @@ declare namespace Api {
       desc: string;
     };
 
+    type Endpoint = {
+      /** HTTP method (GET / POST / DELETE) */
+      method: string;
+      /** route path literal, e.g. /systemManage/getUserList */
+      path: string;
+    };
+
     /**
      * icon type
      *

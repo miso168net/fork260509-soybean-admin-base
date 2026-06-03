@@ -120,6 +120,21 @@ export function fetchGetAllButtons() {
   return request<Api.SystemManage.MenuButton[]>({ url: '/systemManage/getAllButtons', method: 'get' });
 }
 
+/** get a role's granted endpoints for the endpoint-auth-modal preload (023, Super-only). Returns Endpoint[]. Super → full registry. */
+export function fetchGetRoleEndpoints(roleId: number) {
+  return request<Api.SystemManage.Endpoint[]>({ url: '/systemManage/getRoleEndpoints', method: 'get', params: { roleId } });
+}
+
+/** set a role's granted endpoint set (023, Super-only, hard-replace). endpoints = checked Endpoint[]. */
+export function fetchUpdateRoleEndpoints(roleId: number, endpoints: Api.SystemManage.Endpoint[]) {
+  return request<null>({ url: '/systemManage/updateRoleEndpoints', method: 'post', data: { roleId, endpoints } });
+}
+
+/** get the available-endpoint registry — all enforce_mw-protected endpoints, 字典序 (023, Super-only). For the endpoint-auth-modal tree. */
+export function fetchGetAllEndpoints() {
+  return request<Api.SystemManage.Endpoint[]>({ url: '/systemManage/getAllEndpoints', method: 'get' });
+}
+
 /** get a role's landing-page route name (021, Super-only). Defaults to "home" server-side. */
 export function fetchGetRoleHome(roleId: number) {
   return request<string>({ url: '/systemManage/getRoleHome', method: 'get', params: { roleId } });
