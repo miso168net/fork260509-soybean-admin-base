@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import { computed, shallowRef } from 'vue';
+import { computed, shallowRef, watch } from 'vue';
+import { fetchGetAllButtons, fetchGetRoleButton, fetchUpdateRoleButton } from '@/service/api';
 import { $t } from '@/locales';
 
 defineOptions({
@@ -24,44 +25,38 @@ function closeModal() {
 const title = computed(() => $t('common.edit') + $t('page.manage.role.buttonAuth'));
 
 type ButtonConfig = {
-  id: number;
-  label: string;
   code: string;
+  label: string;
 };
 
 const tree = shallowRef<ButtonConfig[]>([]);
 
 async function getAllButtons() {
-  // request
-  tree.value = [
-    { id: 1, label: 'button1', code: 'code1' },
-    { id: 2, label: 'button2', code: 'code2' },
-    { id: 3, label: 'button3', code: 'code3' },
-    { id: 4, label: 'button4', code: 'code4' },
-    { id: 5, label: 'button5', code: 'code5' },
-    { id: 6, label: 'button6', code: 'code6' },
-    { id: 7, label: 'button7', code: 'code7' },
-    { id: 8, label: 'button8', code: 'code8' },
-    { id: 9, label: 'button9', code: 'code9' },
-    { id: 10, label: 'button10', code: 'code10' }
-  ];
+  const { error, data } = await fetchGetAllButtons();
+
+  if (!error) {
+    tree.value = data.map(b => ({ code: b.code, label: b.desc }));
+  }
 }
 
-const checks = shallowRef<number[]>([]);
+const checks = shallowRef<string[]>([]);
 
 async function getChecks() {
-  console.log(props.roleId);
-  // request
-  checks.value = [1, 2, 3, 4, 5];
+  const { error, data } = await fetchGetRoleButton(props.roleId);
+
+  if (!error) {
+    checks.value = data;
+  }
 }
 
-function handleSubmit() {
-  console.log(checks.value, props.roleId);
-  // request
+async function handleSubmit() {
+  const { error } = await fetchUpdateRoleButton(props.roleId, checks.value);
 
-  window.$message?.success?.($t('common.modifySuccess'));
+  if (!error) {
+    window.$message?.success?.($t('common.modifySuccess'));
 
-  closeModal();
+    closeModal();
+  }
 }
 
 function init() {
@@ -69,8 +64,11 @@ function init() {
   getChecks();
 }
 
-// init
-init();
+watch(visible, val => {
+  if (val) {
+    init();
+  }
+});
 </script>
 
 <template>
@@ -78,7 +76,7 @@ init();
     <NTree
       v-model:checked-keys="checks"
       :data="tree"
-      key-field="id"
+      key-field="code"
       block-line
       checkable
       expand-on-click
