@@ -8,6 +8,7 @@ import { $t } from '@/locales';
 import { fetchAddRole, fetchUpdateRole } from '@/service/api';
 import MenuAuthModal from './menu-auth-modal.vue';
 import ButtonAuthModal from './button-auth-modal.vue';
+import EndpointAuthModal from './endpoint-auth-modal.vue';
 
 defineOptions({
   name: 'RoleOperateDrawer'
@@ -36,6 +37,7 @@ const { formRef, validate, restoreValidation } = useNaiveForm();
 const { defaultRequiredRule } = useFormRules();
 const { bool: menuAuthVisible, setTrue: openMenuAuthModal } = useBoolean();
 const { bool: buttonAuthVisible, setTrue: openButtonAuthModal } = useBoolean();
+const { bool: endpointAuthVisible, setTrue: openEndpointAuthModal } = useBoolean();
 
 const title = computed(() => {
   const titles: Record<NaiveUI.TableOperateType, string> = {
@@ -127,6 +129,8 @@ watch(visible, () => {
         <MenuAuthModal v-model:visible="menuAuthVisible" :role-id="roleId" />
         <NButton @click="openButtonAuthModal">{{ $t('page.manage.role.buttonAuth') }}</NButton>
         <ButtonAuthModal v-model:visible="buttonAuthVisible" :role-id="roleId" />
+        <NButton @click="openEndpointAuthModal">{{ $t('page.manage.role.endpointAuth') }}</NButton>
+        <EndpointAuthModal v-model:visible="endpointAuthVisible" :role-id="roleId" :role-code="model.roleCode" />
       </NSpace>
       <template #footer>
         <NSpace :size="16">
