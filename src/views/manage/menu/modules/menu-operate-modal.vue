@@ -224,6 +224,13 @@ function handleInitModel() {
     Object.assign(model.value, rest, { layout, page, routePath: path, pathParam: param });
   }
 
+  // 025-I1:wire 的 id/parentId 是 string type-lie(§I.3,read DTO 把 parent_id 序列化為字串
+  // "0"/"5"),但本元件後續一律以 number 為準 —— NTreeSelect 選項 key(MenuTree.id:number)、
+  // 預設值(parentId:0)、submit 的 de_parent_id(吸收 number/string/null)。載入後正規化為
+  // number,否則頂層葉選單編輯時 `"0" === 0` 為 false → effectiveLayout='' → 吃掉 component 的
+  // layout 前綴(如種子 home 的 layout.base$view.home),同時 NTreeSelect 預選態(M1)會落空。
+  model.value.parentId = Number(model.value.parentId);
+
   if (!model.value.query) {
     model.value.query = [];
   }
