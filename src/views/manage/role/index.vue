@@ -1,15 +1,21 @@
 <script setup lang="tsx">
-import { ref } from 'vue';
+import { ref, watch } from 'vue';
 import { NButton, NPopconfirm, NTag } from 'naive-ui';
 import { enableStatusRecord } from '@/constants/business';
 import { fetchBatchDeleteRole, fetchDeleteRole, fetchGetRoleList } from '@/service/api';
 import { useAppStore } from '@/store/modules/app';
+import { useAuthStore } from '@/store/modules/auth';
+import { useAuth } from '@/hooks/business/auth';
 import { defaultTransform, useNaivePaginatedTable, useTableOperate } from '@/hooks/common/table';
 import { $t } from '@/locales';
 import RoleOperateDrawer from './modules/role-operate-drawer.vue';
 import RoleSearch from './modules/role-search.vue';
 
 const appStore = useAppStore();
+
+const authStore = useAuthStore();
+
+const { hasAuth } = useAuth();
 
 const searchParams = ref<Api.SystemManage.RoleSearchParams>({
   current: 1,
@@ -19,7 +25,8 @@ const searchParams = ref<Api.SystemManage.RoleSearchParams>({
   status: null
 });
 
-const { columns, columnChecks, data, loading, getData, getDataByPage, mobilePagination } = useNaivePaginatedTable({
+const { columns, columnChecks, data, loading, getData, getDataByPage, mobilePagination, reloadColumns } =
+  useNaivePaginatedTable({
   api: () => fetchGetRoleList(searchParams.value),
   transform: response => defaultTransform(response),
   onPaginationParamsChange: params => {
@@ -83,19 +90,23 @@ const { columns, columnChecks, data, loading, getData, getDataByPage, mobilePagi
       width: 130,
       render: row => (
         <div class="flex-center gap-8px">
-          <NButton type="primary" ghost size="small" onClick={() => edit(row.id)}>
-            {$t('common.edit')}
-          </NButton>
-          <NPopconfirm onPositiveClick={() => handleDelete(row.id)}>
-            {{
-              default: () => $t('common.confirmDelete'),
-              trigger: () => (
-                <NButton type="error" ghost size="small">
-                  {$t('common.delete')}
-                </NButton>
-              )
-            }}
-          </NPopconfirm>
+          {hasAuth('role:edit') && (
+            <NButton type="primary" ghost size="small" onClick={() => edit(row.id)}>
+              {$t('common.edit')}
+            </NButton>
+          )}
+          {hasAuth('role:delete') && (
+            <NPopconfirm onPositiveClick={() => handleDelete(row.id)}>
+              {{
+                default: () => $t('common.confirmDelete'),
+                trigger: () => (
+                  <NButton type="error" ghost size="small">
+                    {$t('common.delete')}
+                  </NButton>
+                )
+              }}
+            </NPopconfirm>
+          )}
         </div>
       )
     }
@@ -113,6 +124,10 @@ const {
   onDeleted
   // closeDrawer
 } = useTableOperate(data, 'id', getData);
+
+// §2.26 / R4：getUserInfo 以 Object.assign 整批替換 userInfo.buttons（新陣列參照），故 shallow watch 即可偵測按鈕授權變動；
+// reloadColumns() 重建 columns → operate 欄 render 重跑 → hasAuth 對最新 buttons 重算（建立可重用 reactive pattern 供 menu/user 頁沿用）。
+watch(() => authStore.userInfo.buttons, () => reloadColumns());
 
 async function handleBatchDelete() {
   const { error } = await fetchBatchDeleteRole(checkedRowKeys.value);
@@ -142,6 +157,7 @@ function edit(id: number) {
           v-model:columns="columnChecks"
           :disabled-delete="checkedRowKeys.length === 0"
           :loading="loading"
+          :show-add="hasAuth('role:add')"
           @add="handleAdd"
           @delete="handleBatchDelete"
           @refresh="getData"
