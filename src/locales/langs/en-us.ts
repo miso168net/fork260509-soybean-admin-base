@@ -631,6 +631,10 @@ const local: App.I18n.Schema = {
         addMenu: 'Add Menu',
         editMenu: 'Edit Menu',
         addChildMenu: 'Add Child Menu',
+        showDeleted: 'Show Deleted',
+        restore: 'Restore',
+        confirmRestore: 'Confirm restore?',
+        restoreSuccess: 'Restored successfully',
         type: {
           directory: 'Directory',
           menu: 'Menu'

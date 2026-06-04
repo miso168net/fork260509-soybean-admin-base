@@ -95,6 +95,16 @@ export function fetchBatchDeleteMenu(ids: string[]) {
   return request<null>({ url: '/systemManage/batchDeleteMenu', method: 'delete', data: { ids } });
 }
 
+/** get soft-deleted menu list (025 US1, 回收桶, Super-only). */
+export function fetchGetDeletedMenus() {
+  return request<Api.SystemManage.MenuList>({ url: '/systemManage/getDeletedMenus', method: 'get' });
+}
+
+/** restore a soft-deleted menu (025 US1, Super-only). */
+export function fetchRestoreMenu(id: Api.SystemManage.Menu['id']) {
+  return request<null>({ url: '/systemManage/restoreMenu', method: 'post', data: { id } });
+}
+
 /** get a role's visible menu ids for the menu-auth-modal tree preload (021, Super-only). Returns menu id[] (number). */
 export function fetchGetRoleMenu(roleId: number) {
   return request<number[]>({ url: '/systemManage/getRoleMenu', method: 'get', params: { roleId } });

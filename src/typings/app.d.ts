@@ -806,6 +806,10 @@ declare namespace App {
             addMenu: string;
             editMenu: string;
             addChildMenu: string;
+            showDeleted: string;
+            restore: string;
+            confirmRestore: string;
+            restoreSuccess: string;
             type: {
               directory: string;
               menu: string;

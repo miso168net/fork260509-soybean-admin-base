@@ -627,6 +627,10 @@ const local: App.I18n.Schema = {
         addMenu: '新增菜单',
         editMenu: '编辑菜单',
         addChildMenu: '新增子菜单',
+        showDeleted: '显示已删除',
+        restore: '恢复',
+        confirmRestore: '确认恢复吗？',
+        restoreSuccess: '恢复成功',
         type: {
           directory: '目录',
           menu: '菜单'

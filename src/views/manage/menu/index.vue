@@ -1,11 +1,18 @@
 <script setup lang="tsx">
 import { ref, watch } from 'vue';
 import type { Ref } from 'vue';
-import { NButton, NPopconfirm, NTag } from 'naive-ui';
+import { NButton, NPopconfirm, NSwitch, NTag } from 'naive-ui';
 import { useBoolean } from '@sa/hooks';
 import { yesOrNoRecord } from '@/constants/common';
 import { enableStatusRecord, menuTypeRecord } from '@/constants/business';
-import { fetchBatchDeleteMenu, fetchDeleteMenu, fetchGetAllPages, fetchGetMenuList } from '@/service/api';
+import {
+  fetchBatchDeleteMenu,
+  fetchDeleteMenu,
+  fetchGetAllPages,
+  fetchGetDeletedMenus,
+  fetchGetMenuList,
+  fetchRestoreMenu
+} from '@/service/api';
 import { useAppStore } from '@/store/modules/app';
 import { useAuthStore } from '@/store/modules/auth';
 import { useAuth } from '@/hooks/business/auth';
@@ -24,9 +31,12 @@ const { bool: visible, setTrue: openModal } = useBoolean();
 
 const wrapperRef = ref<HTMLElement | null>(null);
 
+// 025 US1：回收桶 toggle — true 時資料源切到 getDeletedMenus、operate 欄只給「復原」
+const showDeleted = ref(false);
+
 const { columns, columnChecks, data, loading, pagination, getData, getDataByPage, reloadColumns } =
   useNaivePaginatedTable({
-  api: () => fetchGetMenuList(),
+  api: () => (showDeleted.value ? fetchGetDeletedMenus() : fetchGetMenuList()),
   transform: response => defaultTransform(response),
   columns: () => [
     {
@@ -152,32 +162,52 @@ const { columns, columnChecks, data, loading, pagination, getData, getDataByPage
       title: $t('common.operate'),
       align: 'center',
       width: 230,
-      render: row => (
-        <div class="flex-center justify-end gap-8px">
-          {row.menuType === '1' && hasAuth('menu:add') && (
-            <NButton type="primary" ghost size="small" onClick={() => handleAddChildMenu(row)}>
-              {$t('page.manage.menu.addChildMenu')}
-            </NButton>
-          )}
-          {hasAuth('menu:edit') && (
-            <NButton type="primary" ghost size="small" onClick={() => handleEdit(row)}>
-              {$t('common.edit')}
-            </NButton>
-          )}
-          {hasAuth('menu:delete') && (
-            <NPopconfirm onPositiveClick={() => handleDelete(row.id)}>
-              {{
-                default: () => $t('common.confirmDelete'),
-                trigger: () => (
-                  <NButton type="error" ghost size="small">
-                    {$t('common.delete')}
-                  </NButton>
-                )
-              }}
-            </NPopconfirm>
-          )}
-        </div>
-      )
+      render: row => {
+        if (showDeleted.value) {
+          // 回收桶檢視：每列只給「復原」鈕（restore/getDeletedMenus 為 Super-only，後端強制）
+          return (
+            <div class="flex-center justify-end gap-8px">
+              <NPopconfirm onPositiveClick={() => handleRestore(row.id)}>
+                {{
+                  default: () => $t('page.manage.menu.confirmRestore'),
+                  trigger: () => (
+                    <NButton type="primary" ghost size="small">
+                      {$t('page.manage.menu.restore')}
+                    </NButton>
+                  )
+                }}
+              </NPopconfirm>
+            </div>
+          );
+        }
+
+        return (
+          <div class="flex-center justify-end gap-8px">
+            {row.menuType === '1' && hasAuth('menu:add') && (
+              <NButton type="primary" ghost size="small" onClick={() => handleAddChildMenu(row)}>
+                {$t('page.manage.menu.addChildMenu')}
+              </NButton>
+            )}
+            {hasAuth('menu:edit') && (
+              <NButton type="primary" ghost size="small" onClick={() => handleEdit(row)}>
+                {$t('common.edit')}
+              </NButton>
+            )}
+            {hasAuth('menu:delete') && (
+              <NPopconfirm onPositiveClick={() => handleDelete(row.id)}>
+                {{
+                  default: () => $t('common.confirmDelete'),
+                  trigger: () => (
+                    <NButton type="error" ghost size="small">
+                      {$t('common.delete')}
+                    </NButton>
+                  )
+                }}
+              </NPopconfirm>
+            )}
+          </div>
+        );
+      }
     }
   ]
 });
@@ -207,6 +237,22 @@ async function handleDelete(id: number) {
   if (!error) {
     onDeleted();
   }
+}
+
+async function handleRestore(id: Api.SystemManage.Menu['id']) {
+  const { error } = await fetchRestoreMenu(id);
+  if (!error) {
+    window.$message?.success($t('page.manage.menu.restoreSuccess'));
+    getData();
+  }
+}
+
+// 切換回收桶檢視：清選取 → 重建 columns（operate 欄改 render）→ 換資料源重撈
+function handleToggleDeleted(value: boolean) {
+  showDeleted.value = value;
+  checkedRowKeys.value = [];
+  reloadColumns();
+  getData();
 }
 
 /** the edit menu data or the parent menu data when adding a child menu */
@@ -246,15 +292,21 @@ init();
   <div ref="wrapperRef" class="flex-col-stretch gap-16px overflow-hidden lt-sm:overflow-auto">
     <NCard :title="$t('page.manage.menu.title')" :bordered="false" size="small" class="card-wrapper sm:flex-1-hidden">
       <template #header-extra>
-        <TableHeaderOperation
-          v-model:columns="columnChecks"
-          :disabled-delete="checkedRowKeys.length === 0"
-          :loading="loading"
-          :show-add="hasAuth('menu:add')"
-          @add="handleAdd"
-          @delete="handleBatchDelete"
-          @refresh="getData"
-        />
+        <div class="flex-y-center gap-12px">
+          <div class="flex-y-center gap-8px">
+            <span>{{ $t('page.manage.menu.showDeleted') }}</span>
+            <NSwitch :value="showDeleted" @update:value="handleToggleDeleted" />
+          </div>
+          <TableHeaderOperation
+            v-model:columns="columnChecks"
+            :disabled-delete="showDeleted || checkedRowKeys.length === 0"
+            :loading="loading"
+            :show-add="!showDeleted && hasAuth('menu:add')"
+            @add="handleAdd"
+            @delete="handleBatchDelete"
+            @refresh="getData"
+          />
+        </div>
       </template>
       <NDataTable
         v-model:checked-row-keys="checkedRowKeys"
