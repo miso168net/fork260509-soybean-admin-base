@@ -1,5 +1,5 @@
 <script setup lang="tsx">
-import { ref } from 'vue';
+import { ref, watch } from 'vue';
 import type { Ref } from 'vue';
 import { NButton, NPopconfirm, NTag } from 'naive-ui';
 import { useBoolean } from '@sa/hooks';
@@ -7,6 +7,8 @@ import { yesOrNoRecord } from '@/constants/common';
 import { enableStatusRecord, menuTypeRecord } from '@/constants/business';
 import { fetchBatchDeleteMenu, fetchDeleteMenu, fetchGetAllPages, fetchGetMenuList } from '@/service/api';
 import { useAppStore } from '@/store/modules/app';
+import { useAuthStore } from '@/store/modules/auth';
+import { useAuth } from '@/hooks/business/auth';
 import { defaultTransform, useNaivePaginatedTable, useTableOperate } from '@/hooks/common/table';
 import { $t } from '@/locales';
 import SvgIcon from '@/components/custom/svg-icon.vue';
@@ -14,11 +16,16 @@ import MenuOperateModal, { type OperateType } from './modules/menu-operate-modal
 
 const appStore = useAppStore();
 
+const authStore = useAuthStore();
+
+const { hasAuth } = useAuth();
+
 const { bool: visible, setTrue: openModal } = useBoolean();
 
 const wrapperRef = ref<HTMLElement | null>(null);
 
-const { columns, columnChecks, data, loading, pagination, getData, getDataByPage } = useNaivePaginatedTable({
+const { columns, columnChecks, data, loading, pagination, getData, getDataByPage, reloadColumns } =
+  useNaivePaginatedTable({
   api: () => fetchGetMenuList(),
   transform: response => defaultTransform(response),
   columns: () => [
@@ -147,24 +154,28 @@ const { columns, columnChecks, data, loading, pagination, getData, getDataByPage
       width: 230,
       render: row => (
         <div class="flex-center justify-end gap-8px">
-          {row.menuType === '1' && (
+          {row.menuType === '1' && hasAuth('menu:add') && (
             <NButton type="primary" ghost size="small" onClick={() => handleAddChildMenu(row)}>
               {$t('page.manage.menu.addChildMenu')}
             </NButton>
           )}
-          <NButton type="primary" ghost size="small" onClick={() => handleEdit(row)}>
-            {$t('common.edit')}
-          </NButton>
-          <NPopconfirm onPositiveClick={() => handleDelete(row.id)}>
-            {{
-              default: () => $t('common.confirmDelete'),
-              trigger: () => (
-                <NButton type="error" ghost size="small">
-                  {$t('common.delete')}
-                </NButton>
-              )
-            }}
-          </NPopconfirm>
+          {hasAuth('menu:edit') && (
+            <NButton type="primary" ghost size="small" onClick={() => handleEdit(row)}>
+              {$t('common.edit')}
+            </NButton>
+          )}
+          {hasAuth('menu:delete') && (
+            <NPopconfirm onPositiveClick={() => handleDelete(row.id)}>
+              {{
+                default: () => $t('common.confirmDelete'),
+                trigger: () => (
+                  <NButton type="error" ghost size="small">
+                    {$t('common.delete')}
+                  </NButton>
+                )
+              }}
+            </NPopconfirm>
+          )}
         </div>
       )
     }
@@ -172,6 +183,10 @@ const { columns, columnChecks, data, loading, pagination, getData, getDataByPage
 });
 
 const { checkedRowKeys, onBatchDeleted, onDeleted } = useTableOperate(data, 'id', getData);
+
+// §2.26 / R4：getUserInfo 以 Object.assign 整批替換 userInfo.buttons（新陣列參照），故 shallow watch 即可偵測按鈕授權變動；
+// reloadColumns() 重建 columns → operate 欄 render 重跑 → hasAuth 對最新 buttons 重算（建立可重用 reactive pattern 供 menu/user 頁沿用）。
+watch(() => authStore.userInfo.buttons, () => reloadColumns());
 
 const operateType = ref<OperateType>('add');
 
@@ -235,6 +250,7 @@ init();
           v-model:columns="columnChecks"
           :disabled-delete="checkedRowKeys.length === 0"
           :loading="loading"
+          :show-add="hasAuth('menu:add')"
           @add="handleAdd"
           @delete="handleBatchDelete"
           @refresh="getData"
