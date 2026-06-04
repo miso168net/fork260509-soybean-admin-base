@@ -1,9 +1,10 @@
 <script setup lang="tsx">
-import { ref } from 'vue';
+import { ref, watch } from 'vue';
 import { NButton, NPopconfirm, NTag } from 'naive-ui';
 import { enableStatusRecord, userGenderRecord } from '@/constants/business';
 import { fetchBatchDeleteUser, fetchDeleteUser, fetchGetUserList } from '@/service/api';
 import { useAppStore } from '@/store/modules/app';
+import { useAuthStore } from '@/store/modules/auth';
 import { useAuth } from '@/hooks/business/auth';
 import { defaultTransform, useNaivePaginatedTable, useTableOperate } from '@/hooks/common/table';
 import { $t } from '@/locales';
@@ -11,6 +12,8 @@ import UserOperateDrawer from './modules/user-operate-drawer.vue';
 import UserSearch from './modules/user-search.vue';
 
 const appStore = useAppStore();
+
+const authStore = useAuthStore();
 
 const { hasAuth } = useAuth();
 
@@ -25,7 +28,8 @@ const searchParams = ref<Api.SystemManage.UserSearchParams>({
   userEmail: null
 });
 
-const { columns, columnChecks, data, getData, getDataByPage, loading, mobilePagination } = useNaivePaginatedTable({
+const { columns, columnChecks, data, getData, getDataByPage, loading, mobilePagination, reloadColumns } =
+  useNaivePaginatedTable({
   api: () => fetchGetUserList(searchParams.value),
   transform: response => defaultTransform(response),
   onPaginationParamsChange: params => {
@@ -150,6 +154,10 @@ const {
   onDeleted
   // closeDrawer
 } = useTableOperate(data, 'id', getData);
+
+// §2.26 / R4：getUserInfo 以 Object.assign 整批替換 userInfo.buttons（新陣列參照），故 shallow watch 即可偵測按鈕授權變動；
+// reloadColumns() 重建 columns → operate 欄 render 重跑 → hasAuth 對最新 buttons 重算（建立可重用 reactive pattern 供 menu/user 頁沿用）。
+watch(() => authStore.userInfo.buttons, () => reloadColumns());
 
 async function handleBatchDelete() {
   const { error } = await fetchBatchDeleteUser(checkedRowKeys.value);
