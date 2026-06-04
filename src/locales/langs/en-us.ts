@@ -603,6 +603,7 @@ const local: App.I18n.Schema = {
         menuStatus: 'Menu Status',
         form: {
           home: 'Please select home',
+          parentId: 'Please select the parent menu',
           menuType: 'Please select menu type',
           menuName: 'Please enter menu name',
           routeName: 'Please enter route name',

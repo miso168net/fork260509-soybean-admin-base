@@ -1,8 +1,8 @@
 <script setup lang="tsx">
-import { computed, ref, watch } from 'vue';
+import { computed, ref, shallowRef, watch } from 'vue';
 import type { SelectOption } from 'naive-ui';
 import { enableStatusOptions, menuIconTypeOptions, menuTypeOptions } from '@/constants/business';
-import { fetchAddMenu, fetchGetAllRoles, fetchUpdateMenu } from '@/service/api';
+import { fetchAddMenu, fetchGetAllRoles, fetchGetMenuTree, fetchUpdateMenu } from '@/service/api';
 import { useFormRules, useNaiveForm } from '@/hooks/common/form';
 import { getLocalIcons } from '@/utils/icon';
 import { $t } from '@/locales';
@@ -20,6 +20,10 @@ defineOptions({
 });
 
 export type OperateType = NaiveUI.TableOperateType | 'addChild';
+
+// 鏡像 rust-api `is_seed_menu`(server/src/handler/system_manage.rs):種子選單父固定不可改(R2)。
+// 注意:與後端硬編碼清單,後端新增種子須同步此處(已知 duplication,見 follow-up)。
+const SEED_MENU_ROUTE_NAMES = ['home', 'manage', 'manage_user', 'manage_role', 'manage_menu', 'manage_user-detail'];
 
 interface Props {
   /** the type of operation */
@@ -123,6 +127,15 @@ const rules: Record<RuleKey, App.Global.FormRule> = {
 
 const disabledMenuType = computed(() => props.operateType === 'edit');
 
+// re-parent(R2):種子選單父固定不可改、僅自訂選單可搬。用 props.rowData.routeName(原始載入值)判定,
+// 非 model.value.routeName(使用者可改的編輯欄,會誤判)。
+const disabledParentId = computed(
+  () =>
+    props.operateType === 'edit' &&
+    props.rowData != null &&
+    SEED_MENU_ROUTE_NAMES.includes(props.rowData.routeName)
+);
+
 const localIcons = getLocalIcons();
 const localIconOptions = localIcons.map<SelectOption>(item => ({
   label: () => (
@@ -177,6 +190,17 @@ async function getRoleOptions() {
     }));
 
     roleOptions.value = [...options];
+  }
+}
+
+/** the menu tree options for re-parent select(R2) */
+const menuTreeOptions = shallowRef<Api.SystemManage.MenuTree[]>([]);
+
+async function getMenuTreeOptions() {
+  const { error, data } = await fetchGetMenuTree();
+
+  if (!error) {
+    menuTreeOptions.value = data;
   }
 }
 
@@ -240,7 +264,10 @@ function handleCreateButton() {
 function getSubmitParams() {
   const { layout, page, pathParam, ...params } = model.value;
 
-  const component = transformLayoutAndPageToComponent(layout, page);
+  // 025 re-parent:component 的 layout 前綴僅適用「頂層」或「目錄(menuType=1)」;
+  // 若把葉選單(menuType=2)搬成 nested,須丟棄殘留的 layout 前綴,避免汙染 component(雙層 layout)。
+  const effectiveLayout = model.value.parentId === 0 || model.value.menuType === '1' ? layout : '';
+  const component = transformLayoutAndPageToComponent(effectiveLayout, page);
   const routePath = getRoutePathWithParam(model.value.routePath, pathParam);
 
   params.component = component;
@@ -271,6 +298,7 @@ watch(visible, () => {
     handleInitModel();
     restoreValidation();
     getRoleOptions();
+    getMenuTreeOptions();
   }
 });
 
@@ -292,6 +320,24 @@ watch(
             <NRadioGroup v-model:value="model.menuType" :disabled="disabledMenuType">
               <NRadio v-for="item in menuTypeOptions" :key="item.value" :value="item.value" :label="$t(item.label)" />
             </NRadioGroup>
+          </NFormItemGi>
+          <NFormItemGi
+            v-if="operateType === 'edit'"
+            span="24 m:12"
+            :label="$t('page.manage.menu.parentId')"
+            path="parentId"
+          >
+            <NTreeSelect
+              :value="model.parentId"
+              :options="menuTreeOptions"
+              key-field="id"
+              label-field="label"
+              children-field="children"
+              clearable
+              :disabled="disabledParentId"
+              :placeholder="$t('page.manage.menu.form.parentId')"
+              @update:value="(val) => (model.parentId = val ?? 0)"
+            />
           </NFormItemGi>
           <NFormItemGi span="24 m:12" :label="$t('page.manage.menu.menuName')" path="menuName">
             <NInput v-model:value="model.menuName" :placeholder="$t('page.manage.menu.form.menuName')" />

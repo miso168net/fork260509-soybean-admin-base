@@ -778,6 +778,7 @@ declare namespace App {
             menuStatus: string;
             form: {
               home: string;
+              parentId: string;
               menuType: string;
               menuName: string;
               routeName: string;

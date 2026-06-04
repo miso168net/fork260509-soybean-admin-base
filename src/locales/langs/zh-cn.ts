@@ -599,6 +599,7 @@ const local: App.I18n.Schema = {
         menuStatus: '菜单状态',
         form: {
           home: '请选择首页',
+          parentId: '请选择上级菜单',
           menuType: '请选择菜单类型',
           menuName: '请输入菜单名称',
           routeName: '请输入路由名称',
