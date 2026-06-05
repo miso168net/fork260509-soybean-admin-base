@@ -269,6 +269,7 @@ const local: App.I18n.Schema = {
     'manage_user-detail': 'User Detail',
     manage_role: 'Role Manage',
     manage_menu: 'Menu Manage',
+    'manage_system-settings': 'System Settings',
     'multi-menu': 'Multi Menu',
     'multi-menu_first': 'Menu One',
     'multi-menu_first_child': 'Menu One Child',
@@ -571,6 +572,13 @@ const local: App.I18n.Schema = {
           male: 'Male',
           female: 'Female'
         }
+      },
+      systemSettings: {
+        title: 'System Settings',
+        singleSessionDefault: 'Global single-session default',
+        singleSessionDefaultTip:
+          'When enabled, accounts inheriting the default converge to a single active login (older devices are signed out).',
+        updateSuccess: 'Setting updated'
       },
       menu: {
         home: 'Home',

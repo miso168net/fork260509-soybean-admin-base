@@ -142,5 +142,17 @@ declare namespace Api {
       pId: number;
       children?: MenuTree[];
     };
+
+    /** 029: a system setting KV row (BASE-WEB-ADAPT; rev2 additive, no mock) */
+    type SystemSetting = {
+      /** setting key, e.g. "single_session_default" */
+      settingKey: string;
+      /** setting value as stored string, e.g. "on" / "off" */
+      settingValue: string;
+      /** value type tag, e.g. "bool" */
+      valueType: string;
+      /** human-readable description */
+      description: string | null;
+    };
   }
 }

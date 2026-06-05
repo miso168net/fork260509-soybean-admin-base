@@ -154,3 +154,13 @@ export function fetchGetRoleHome(roleId: number) {
 export function fetchUpdateRoleHome(roleId: number, home: string) {
   return request<null>({ url: '/systemManage/updateRoleHome', method: 'post', data: { roleId, home } });
 }
+
+/** get all system settings KV rows (029 US1, Super-only). */
+export function fetchGetSystemSettings() {
+  return request<Api.SystemManage.SystemSetting[]>({ url: '/systemManage/getSystemSettings', method: 'get' });
+}
+
+/** update one system setting by key (029 US1, Super-only). value is the stored string form. */
+export function fetchUpdateSystemSetting(data: { key: string; value: string }) {
+  return request<null>({ url: '/systemManage/updateSystemSetting', method: 'post', data });
+}

@@ -747,6 +747,12 @@ declare namespace App {
               female: string;
             };
           };
+          systemSettings: {
+            title: string;
+            singleSessionDefault: string;
+            singleSessionDefaultTip: string;
+            updateSuccess: string;
+          };
           menu: {
             home: string;
             title: string;
