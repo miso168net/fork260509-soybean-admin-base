@@ -557,6 +557,14 @@ const local: App.I18n.Schema = {
         userEmail: 'Email',
         userStatus: 'User Status',
         userRole: 'User Role',
+        sessionPolicy: 'Single-session',
+        sessionPolicyMap: {
+          inherit: 'Inherit',
+          on: 'Force on',
+          off: 'Force off'
+        },
+        setSessionPolicy: 'Set single-session',
+        setSessionPolicySuccess: 'Single-session policy updated',
         form: {
           userName: 'Please enter user name',
           userGender: 'Please select gender',

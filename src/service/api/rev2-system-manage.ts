@@ -164,3 +164,8 @@ export function fetchGetSystemSettings() {
 export function fetchUpdateSystemSetting(data: { key: string; value: string }) {
   return request<null>({ url: '/systemManage/updateSystemSetting', method: 'post', data });
 }
+
+/** set a user's per-account single-session policy (029 US2, Super-only). policy ∈ "inherit" | "on" | "off". */
+export function fetchUpdateUserSessionPolicy(data: { userId: string; policy: string }) {
+  return request<null>({ url: '/systemManage/updateUserSessionPolicy', method: 'post', data });
+}

@@ -36,6 +36,15 @@ declare namespace Api {
      */
     type UserGender = '1' | '2';
 
+    /**
+     * 029: per-account single-session policy
+     *
+     * - "inherit": follow the global single-session default
+     * - "on": force single-session for this account
+     * - "off": allow multiple concurrent sessions for this account
+     */
+    type SessionPolicy = 'inherit' | 'on' | 'off';
+
     /** user */
     type User = Common.CommonRecord<{
       /** user name */
@@ -50,6 +59,8 @@ declare namespace Api {
       userEmail: string;
       /** user role code collection */
       userRoles: string[];
+      /** 029: per-account single-session policy: "inherit" | "on" | "off" */
+      sessionPolicy: string;
     }>;
 
     /** user search params */

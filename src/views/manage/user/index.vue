@@ -1,8 +1,13 @@
 <script setup lang="tsx">
-import { ref, watch } from 'vue';
+import { computed, ref, watch } from 'vue';
 import { NButton, NPopconfirm, NTag } from 'naive-ui';
 import { enableStatusRecord, userGenderRecord } from '@/constants/business';
-import { fetchBatchDeleteUser, fetchDeleteUser, fetchGetUserList } from '@/service/api';
+import {
+  fetchBatchDeleteUser,
+  fetchDeleteUser,
+  fetchGetUserList,
+  fetchUpdateUserSessionPolicy
+} from '@/service/api';
 import { useAppStore } from '@/store/modules/app';
 import { useAuthStore } from '@/store/modules/auth';
 import { useAuth } from '@/hooks/business/auth';
@@ -114,15 +119,39 @@ const { columns, columnChecks, data, getData, getDataByPage, loading, mobilePagi
       }
     },
     {
+      key: 'sessionPolicy',
+      title: $t('page.manage.user.sessionPolicy'),
+      align: 'center',
+      width: 110,
+      render: row => {
+        const policy = (row.sessionPolicy as Api.SystemManage.SessionPolicy) ?? 'inherit';
+
+        const tagMap: Record<Api.SystemManage.SessionPolicy, NaiveUI.ThemeColor> = {
+          inherit: 'default',
+          on: 'success',
+          off: 'warning'
+        };
+
+        const label = $t(`page.manage.user.sessionPolicyMap.${policy}`);
+
+        return <NTag type={tagMap[policy]}>{label}</NTag>;
+      }
+    },
+    {
       key: 'operate',
       title: $t('common.operate'),
       align: 'center',
-      width: 130,
+      width: 200,
       render: row => (
         <div class="flex-center gap-8px">
           {hasAuth('user:edit') && (
             <NButton type="primary" ghost size="small" onClick={() => edit(row.id)}>
               {$t('common.edit')}
+            </NButton>
+          )}
+          {hasAuth('user:edit') && (
+            <NButton ghost size="small" onClick={() => openSessionPolicyModal(row)}>
+              {$t('page.manage.user.setSessionPolicy')}
             </NButton>
           )}
           {hasAuth('user:delete') && (
@@ -176,6 +205,46 @@ async function handleDelete(id: number) {
 function edit(id: number) {
   handleEdit(id);
 }
+
+// 029 US2: per-account single-session policy modal (MODAL-WIRING ★ (a)/(b))
+const policyModalVisible = ref(false);
+const policySubmitting = ref(false);
+const policyEditingUserId = ref<string | null>(null);
+const selectedPolicy = ref<Api.SystemManage.SessionPolicy>('inherit');
+
+const policyOptions = computed(() =>
+  (['inherit', 'on', 'off'] as Api.SystemManage.SessionPolicy[]).map(value => ({
+    label: $t(`page.manage.user.sessionPolicyMap.${value}`),
+    value
+  }))
+);
+
+function openSessionPolicyModal(row: Api.SystemManage.User) {
+  policyEditingUserId.value = String(row.id);
+  selectedPolicy.value = (row.sessionPolicy as Api.SystemManage.SessionPolicy) ?? 'inherit';
+  policyModalVisible.value = true;
+}
+
+async function handleSubmitSessionPolicy() {
+  if (policyEditingUserId.value === null) {
+    return;
+  }
+
+  policySubmitting.value = true;
+
+  const { error } = await fetchUpdateUserSessionPolicy({
+    userId: policyEditingUserId.value,
+    policy: selectedPolicy.value
+  });
+
+  policySubmitting.value = false;
+
+  if (!error) {
+    policyModalVisible.value = false;
+    window.$message?.success($t('page.manage.user.setSessionPolicySuccess'));
+    getDataByPage();
+  }
+}
 </script>
 
 <template>
@@ -212,6 +281,22 @@ function edit(id: number) {
         :row-data="editingData"
         @submitted="getDataByPage"
       />
+      <NModal
+        v-model:show="policyModalVisible"
+        preset="card"
+        :title="$t('page.manage.user.setSessionPolicy')"
+        class="w-400px"
+      >
+        <NSelect v-model:value="selectedPolicy" :options="policyOptions" />
+        <template #footer>
+          <NSpace justify="end">
+            <NButton @click="policyModalVisible = false">{{ $t('common.cancel') }}</NButton>
+            <NButton type="primary" :loading="policySubmitting" @click="handleSubmitSessionPolicy">
+              {{ $t('common.confirm') }}
+            </NButton>
+          </NSpace>
+        </template>
+      </NModal>
     </NCard>
   </div>
 </template>

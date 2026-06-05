@@ -553,6 +553,14 @@ const local: App.I18n.Schema = {
         userEmail: '邮箱',
         userStatus: '用户状态',
         userRole: '用户角色',
+        sessionPolicy: '单一会话',
+        sessionPolicyMap: {
+          inherit: '继承',
+          on: '强制开启',
+          off: '强制关闭'
+        },
+        setSessionPolicy: '设定单一会话',
+        setSessionPolicySuccess: '单一会话策略已更新',
         form: {
           userName: '请输入用户名',
           userGender: '请选择性别',

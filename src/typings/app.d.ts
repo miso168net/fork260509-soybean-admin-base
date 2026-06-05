@@ -731,6 +731,14 @@ declare namespace App {
             userEmail: string;
             userStatus: string;
             userRole: string;
+            sessionPolicy: string;
+            sessionPolicyMap: {
+              inherit: string;
+              on: string;
+              off: string;
+            };
+            setSessionPolicy: string;
+            setSessionPolicySuccess: string;
             form: {
               userName: string;
               userGender: string;
