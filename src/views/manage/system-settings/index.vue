@@ -6,7 +6,6 @@ import { $t } from '@/locales';
 const SINGLE_SESSION_KEY = 'single_session_default';
 
 const singleSessionDefault = ref(false);
-const description = ref<string | null>(null);
 const loading = ref(false);
 
 async function loadSettings() {
@@ -17,7 +16,6 @@ async function loadSettings() {
   const row = data.find(item => item.settingKey === SINGLE_SESSION_KEY);
   if (row) {
     singleSessionDefault.value = row.settingValue === 'on';
-    description.value = row.description;
   }
 }
 
@@ -30,8 +28,7 @@ async function handleToggleSingleSession(checked: boolean) {
   loading.value = false;
 
   if (error) {
-    // request layer already surfaced the error toast; revert the optimistic switch
-    singleSessionDefault.value = !checked;
+    // 受控 switch（:value 綁 ref，未用 v-model）→ 開關尚未移動；request 層已 toast 錯誤，原值維持即可。
     return;
   }
 
@@ -49,7 +46,7 @@ onMounted(loadSettings);
         <div class="flex-col gap-4px">
           <span class="text-16px font-medium">{{ $t('page.manage.systemSettings.singleSessionDefault') }}</span>
           <span class="text-13px text-#999">
-            {{ description || $t('page.manage.systemSettings.singleSessionDefaultTip') }}
+            {{ $t('page.manage.systemSettings.singleSessionDefaultTip') }}
           </span>
         </div>
         <NSwitch
