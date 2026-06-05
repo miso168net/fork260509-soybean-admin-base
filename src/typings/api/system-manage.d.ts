@@ -160,7 +160,7 @@ declare namespace Api {
       settingKey: string;
       /** setting value as stored string, e.g. "on" / "off" */
       settingValue: string;
-      /** value type tag, e.g. "bool" */
+      /** value type tag, e.g. "enum:on,off" */
       valueType: string;
       /** human-readable description */
       description: string | null;
