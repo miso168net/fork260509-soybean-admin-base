@@ -1,13 +1,8 @@
 <script setup lang="tsx">
-import { computed, ref, watch } from 'vue';
+import { ref, watch } from 'vue';
 import { NButton, NPopconfirm, NTag } from 'naive-ui';
 import { enableStatusRecord, userGenderRecord } from '@/constants/business';
-import {
-  fetchBatchDeleteUser,
-  fetchDeleteUser,
-  fetchGetUserList,
-  fetchUpdateUserSessionPolicy
-} from '@/service/api';
+import { fetchBatchDeleteUser, fetchDeleteUser, fetchGetUserList } from '@/service/api';
 import { useAppStore } from '@/store/modules/app';
 import { useAuthStore } from '@/store/modules/auth';
 import { useAuth } from '@/hooks/business/auth';
@@ -15,6 +10,7 @@ import { defaultTransform, useNaivePaginatedTable, useTableOperate } from '@/hoo
 import { $t } from '@/locales';
 import UserOperateDrawer from './modules/user-operate-drawer.vue';
 import UserSearch from './modules/user-search.vue';
+import UserSessionPolicyModal from './modules/user-session-policy-modal.vue';
 
 const appStore = useAppStore();
 
@@ -149,6 +145,7 @@ const { columns, columnChecks, data, getData, getDataByPage, loading, mobilePagi
               {$t('common.edit')}
             </NButton>
           )}
+          {/* 029: reuse user:edit — no dedicated session-policy button code seeded; endpoint is authoritatively Super-only */}
           {hasAuth('user:edit') && (
             <NButton ghost size="small" onClick={() => openSessionPolicyModal(row)}>
               {$t('page.manage.user.setSessionPolicy')}
@@ -208,42 +205,13 @@ function edit(id: number) {
 
 // 029 US2: per-account single-session policy modal (MODAL-WIRING ★ (a)/(b))
 const policyModalVisible = ref(false);
-const policySubmitting = ref(false);
-const policyEditingUserId = ref<string | null>(null);
-const selectedPolicy = ref<Api.SystemManage.SessionPolicy>('inherit');
-
-const policyOptions = computed(() =>
-  (['inherit', 'on', 'off'] as Api.SystemManage.SessionPolicy[]).map(value => ({
-    label: $t(`page.manage.user.sessionPolicyMap.${value}`),
-    value
-  }))
-);
+const policyEditingUserId = ref('');
+const policyCurrentPolicy = ref<Api.SystemManage.SessionPolicy>('inherit');
 
 function openSessionPolicyModal(row: Api.SystemManage.User) {
   policyEditingUserId.value = String(row.id);
-  selectedPolicy.value = (row.sessionPolicy as Api.SystemManage.SessionPolicy) ?? 'inherit';
+  policyCurrentPolicy.value = (row.sessionPolicy as Api.SystemManage.SessionPolicy) ?? 'inherit';
   policyModalVisible.value = true;
-}
-
-async function handleSubmitSessionPolicy() {
-  if (policyEditingUserId.value === null) {
-    return;
-  }
-
-  policySubmitting.value = true;
-
-  const { error } = await fetchUpdateUserSessionPolicy({
-    userId: policyEditingUserId.value,
-    policy: selectedPolicy.value
-  });
-
-  policySubmitting.value = false;
-
-  if (!error) {
-    policyModalVisible.value = false;
-    window.$message?.success($t('page.manage.user.setSessionPolicySuccess'));
-    getDataByPage();
-  }
 }
 </script>
 
@@ -268,7 +236,7 @@ async function handleSubmitSessionPolicy() {
         :data="data"
         size="small"
         :flex-height="!appStore.isMobile"
-        :scroll-x="962"
+        :scroll-x="1142"
         :loading="loading"
         remote
         :row-key="row => row.id"
@@ -281,22 +249,12 @@ async function handleSubmitSessionPolicy() {
         :row-data="editingData"
         @submitted="getDataByPage"
       />
-      <NModal
-        v-model:show="policyModalVisible"
-        preset="card"
-        :title="$t('page.manage.user.setSessionPolicy')"
-        class="w-400px"
-      >
-        <NSelect v-model:value="selectedPolicy" :options="policyOptions" />
-        <template #footer>
-          <NSpace justify="end">
-            <NButton @click="policyModalVisible = false">{{ $t('common.cancel') }}</NButton>
-            <NButton type="primary" :loading="policySubmitting" @click="handleSubmitSessionPolicy">
-              {{ $t('common.confirm') }}
-            </NButton>
-          </NSpace>
-        </template>
-      </NModal>
+      <UserSessionPolicyModal
+        v-model:visible="policyModalVisible"
+        :user-id="policyEditingUserId"
+        :current-policy="policyCurrentPolicy"
+        @submitted="getDataByPage"
+      />
     </NCard>
   </div>
 </template>
