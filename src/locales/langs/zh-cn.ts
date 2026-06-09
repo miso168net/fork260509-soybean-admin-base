@@ -592,7 +592,6 @@ const local: App.I18n.Schema = {
         reason: '原因',
         archivedAt: '归档时间',
         archivedBy: '操作者',
-        operate: '操作',
         restore: '恢复',
         confirmRestore: '确认恢复此权限吗？',
         restoreSuccess: '权限恢复成功'

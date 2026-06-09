@@ -597,7 +597,6 @@ const local: App.I18n.Schema = {
         reason: 'Reason',
         archivedAt: 'Archived At',
         archivedBy: 'Archived By',
-        operate: 'Operate',
         restore: 'Restore',
         confirmRestore: 'Confirm restore this policy?',
         restoreSuccess: 'Policy restored successfully'

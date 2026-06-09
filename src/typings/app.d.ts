@@ -769,7 +769,6 @@ declare namespace App {
             reason: string;
             archivedAt: string;
             archivedBy: string;
-            operate: string;
             restore: string;
             confirmRestore: string;
             restoreSuccess: string;
