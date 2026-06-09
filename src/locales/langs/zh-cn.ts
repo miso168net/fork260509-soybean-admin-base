@@ -266,6 +266,7 @@ const local: App.I18n.Schema = {
     manage_role: '角色管理',
     manage_menu: '菜单管理',
     'manage_system-settings': '系统设置',
+    'manage_policy-archive': '权限回收站',
     'multi-menu': '多级菜单',
     'multi-menu_first': '菜单一',
     'multi-menu_first_child': '菜单一子菜单',
@@ -582,6 +583,19 @@ const local: App.I18n.Schema = {
         singleSessionDefault: '全局单一会话预设',
         singleSessionDefaultTip: '启用后，沿用预设的帐号将收敛为单一登入（较旧的装置会被登出）。',
         updateSuccess: '设置已更新'
+      },
+      policyArchive: {
+        title: '权限回收站',
+        dimension: '维度',
+        roleCode: '角色编码',
+        target: '目标',
+        reason: '原因',
+        archivedAt: '归档时间',
+        archivedBy: '操作者',
+        operate: '操作',
+        restore: '恢复',
+        confirmRestore: '确认恢复此权限吗？',
+        restoreSuccess: '权限恢复成功'
       },
       menu: {
         home: '首页',

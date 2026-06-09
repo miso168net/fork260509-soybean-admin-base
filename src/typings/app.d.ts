@@ -761,6 +761,19 @@ declare namespace App {
             singleSessionDefaultTip: string;
             updateSuccess: string;
           };
+          policyArchive: {
+            title: string;
+            dimension: string;
+            roleCode: string;
+            target: string;
+            reason: string;
+            archivedAt: string;
+            archivedBy: string;
+            operate: string;
+            restore: string;
+            confirmRestore: string;
+            restoreSuccess: string;
+          };
           menu: {
             home: string;
             title: string;

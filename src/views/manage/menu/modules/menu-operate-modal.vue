@@ -21,10 +21,6 @@ defineOptions({
 
 export type OperateType = NaiveUI.TableOperateType | 'addChild';
 
-// 鏡像 rust-api `is_seed_menu`(server/src/handler/system_manage.rs):種子選單父固定不可改(R2)。
-// 注意:與後端硬編碼清單,後端新增種子須同步此處(已知 duplication,見 follow-up)。
-const SEED_MENU_ROUTE_NAMES = ['home', 'manage', 'manage_user', 'manage_role', 'manage_menu', 'manage_user-detail'];
-
 interface Props {
   /** the type of operation */
   operateType: OperateType;
@@ -127,13 +123,11 @@ const rules: Record<RuleKey, App.Global.FormRule> = {
 
 const disabledMenuType = computed(() => props.operateType === 'edit');
 
-// re-parent(R2):種子選單父固定不可改、僅自訂選單可搬。用 props.rowData.routeName(原始載入值)判定,
-// 非 model.value.routeName(使用者可改的編輯欄,會誤判)。
+// re-parent(R2):受管選單(protected,後端 data-driven)父固定不可改、僅自訂選單可搬。
+// 034 D10:改吃 wire 回傳的 protected 旗標(後端 casbin_rule + sys_menu data-driven),
+// 取代原硬編碼 SEED_MENU_ROUTE_NAMES 清單,後端新增種子無須同步前端。
 const disabledParentId = computed(
-  () =>
-    props.operateType === 'edit' &&
-    props.rowData != null &&
-    SEED_MENU_ROUTE_NAMES.includes(props.rowData.routeName)
+  () => props.operateType === 'edit' && props.rowData?.protected === true
 );
 
 const localIcons = getLocalIcons();

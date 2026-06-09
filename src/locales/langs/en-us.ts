@@ -270,6 +270,7 @@ const local: App.I18n.Schema = {
     manage_role: 'Role Manage',
     manage_menu: 'Menu Manage',
     'manage_system-settings': 'System Settings',
+    'manage_policy-archive': 'Policy Recycle Bin',
     'multi-menu': 'Multi Menu',
     'multi-menu_first': 'Menu One',
     'multi-menu_first_child': 'Menu One Child',
@@ -587,6 +588,19 @@ const local: App.I18n.Schema = {
         singleSessionDefaultTip:
           'When enabled, accounts inheriting the default converge to a single active login (older devices are signed out).',
         updateSuccess: 'Setting updated'
+      },
+      policyArchive: {
+        title: 'Policy Recycle Bin',
+        dimension: 'Dimension',
+        roleCode: 'Role Code',
+        target: 'Target',
+        reason: 'Reason',
+        archivedAt: 'Archived At',
+        archivedBy: 'Archived By',
+        operate: 'Operate',
+        restore: 'Restore',
+        confirmRestore: 'Confirm restore this policy?',
+        restoreSuccess: 'Policy restored successfully'
       },
       menu: {
         home: 'Home',

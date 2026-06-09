@@ -121,6 +121,8 @@ declare namespace Api {
     >;
 
     type Menu = Common.CommonRecord<{
+      /** 034 D10: data-driven protected flag (seed/governance menus cannot be deleted/disabled/re-parented) */
+      protected: boolean;
       /** parent menu id */
       parentId: number;
       /** menu type */
@@ -164,6 +166,24 @@ declare namespace Api {
       valueType: string;
       /** human-readable description */
       description: string | null;
+    };
+
+    /** 034 US5: a removed-but-restorable policy row for the recycle bin (rev2 additive, no mock; excludes menu-soft-delete archives) */
+    type ArchivedPolicy = {
+      /** archive row id (string at runtime, as with other id wire fields) */
+      id: string;
+      /** policy dimension: "menu" | "button" | "GET" | "POST" | "DELETE" */
+      dimension: string;
+      /** the role code this policy granted to */
+      roleCode: string;
+      /** the granted target (menu route name / button code / endpoint path) */
+      target: string;
+      /** removal reason, e.g. "manual_revoke" / "role_set_replace" */
+      reason: string;
+      /** archive timestamp */
+      archivedAt: string;
+      /** the user id who archived it (null if system-driven) */
+      archivedBy: number | null;
     };
   }
 }

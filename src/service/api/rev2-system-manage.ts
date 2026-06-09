@@ -169,3 +169,13 @@ export function fetchUpdateSystemSetting(data: { key: string; value: string }) {
 export function fetchUpdateUserSessionPolicy(data: { userId: string; policy: string }) {
   return request<null>({ url: '/systemManage/updateUserSessionPolicy', method: 'post', data });
 }
+
+/** get all removed-but-restorable policies for the recycle bin (034 US5, Super-only; excludes menu-soft-delete). */
+export function fetchGetArchivedPolicies() {
+  return request<Api.SystemManage.ArchivedPolicy[]>({ url: '/systemManage/getArchivedPolicies', method: 'get' });
+}
+
+/** restore one archived policy by archive id (034 US5, Super-only; collision = success no-op). */
+export function fetchRestorePolicy(archiveId: number) {
+  return request<null>({ url: '/systemManage/restorePolicy', method: 'post', data: { archiveId } });
+}
