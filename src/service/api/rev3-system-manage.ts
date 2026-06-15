@@ -17,3 +17,13 @@ export function fetchUpdateUser(
 ) {
   return request<null>({ url: '/systemManage/updateUser', method: 'post', data: model });
 }
+
+/** delete one user (rev3 → rust-api DELETE /systemManage/deleteUser?id=) */
+export function fetchDeleteUser(id: number) {
+  return request<null>({ url: '/systemManage/deleteUser', method: 'delete', params: { id } });
+}
+
+/** batch delete users (rev3 → rust-api DELETE /systemManage/batchDeleteUser?ids=1,2,3) */
+export function fetchBatchDeleteUser(ids: number[]) {
+  return request<null>({ url: '/systemManage/batchDeleteUser', method: 'delete', params: { ids: ids.join(',') } });
+}
