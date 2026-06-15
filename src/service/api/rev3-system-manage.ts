@@ -10,3 +10,10 @@ export function fetchAddUser(
 ) {
   return request<null>({ url: '/systemManage/addUser', method: 'post', data: model });
 }
+
+/** update user (rev3 write wrapper → rust-api POST /systemManage/updateUser) */
+export function fetchUpdateUser(
+  model: Pick<Api.SystemManage.User, 'userName' | 'userGender' | 'nickName' | 'userPhone' | 'userEmail' | 'userRoles' | 'status'> & { id: number }
+) {
+  return request<null>({ url: '/systemManage/updateUser', method: 'post', data: model });
+}

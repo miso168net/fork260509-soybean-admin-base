@@ -5,7 +5,7 @@ import { enableStatusOptions, userGenderOptions } from '@/constants/business';
 import { fetchGetAllRoles } from '@/service/api';
 import { useFormRules, useNaiveForm } from '@/hooks/common/form';
 import { $t } from '@/locales';
-import { fetchAddUser } from '@/service/api/rev3-system-manage';
+import { fetchAddUser, fetchUpdateUser } from '@/service/api/rev3-system-manage';
 
 defineOptions({
   name: 'UserOperateDrawer'
@@ -114,11 +114,13 @@ async function handleSubmit() {
       emit('submitted');
     }
   } else {
-    // edit: leave stub (wired in T023/US3)
     // [rev3-inline MW(c)] 原行: window.$message?.success($t('common.updateSuccess')); closeDrawer(); emit('submitted');
-    window.$message?.success($t('common.updateSuccess'));
-    closeDrawer();
-    emit('submitted');
+    const { error } = await fetchUpdateUser({ ...model.value, id: props.rowData!.id });
+    if (!error) {
+      window.$message?.success($t('common.updateSuccess'));
+      closeDrawer();
+      emit('submitted');
+    }
   }
 }
 
