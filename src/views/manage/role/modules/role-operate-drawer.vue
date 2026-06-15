@@ -5,7 +5,7 @@ import { useBoolean } from '@sa/hooks';
 import { enableStatusOptions } from '@/constants/business';
 import { useFormRules, useNaiveForm } from '@/hooks/common/form';
 import { $t } from '@/locales';
-import { fetchAddRole } from '@/service/api/rev3-system-manage';
+import { fetchAddRole, fetchUpdateRole } from '@/service/api/rev3-system-manage';
 import MenuAuthModal from './menu-auth-modal.vue';
 import ButtonAuthModal from './button-auth-modal.vue';
 
@@ -93,11 +93,14 @@ async function handleSubmit() {
       emit('submitted');
     }
   } else {
-    // [rev3-inline MW(a)] edit 分支暫保留原 stub 行為（U5 才接 fetchUpdateRole）。
+    // [rev3-inline MW(a)] edit 分支：接 fetchUpdateRole（roleCode 提交但 server 端不可變、靜默忽略）。
     // 原行: window.$message?.success($t('common.updateSuccess')); closeDrawer(); emit('submitted');
-    window.$message?.success($t('common.updateSuccess'));
-    closeDrawer();
-    emit('submitted');
+    const { error } = await fetchUpdateRole({ ...model.value, id: roleId.value });
+    if (!error) {
+      window.$message?.success($t('common.updateSuccess'));
+      closeDrawer();
+      emit('submitted');
+    }
   }
 }
 

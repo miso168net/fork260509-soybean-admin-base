@@ -37,3 +37,10 @@ export function fetchAddRole(
 ) {
   return request<null>({ url: '/systemManage/addRole', method: 'post', data: model });
 }
+
+/** update role (rev3 write wrapper → rust-api POST /systemManage/updateRole)；roleCode 提交但 server 端不可變、靜默忽略 */
+export function fetchUpdateRole(
+  model: Pick<Api.SystemManage.Role, 'roleName' | 'roleCode' | 'roleDesc' | 'status'> & { id: number }
+) {
+  return request<null>({ url: '/systemManage/updateRole', method: 'post', data: model });
+}
