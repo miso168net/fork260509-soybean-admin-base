@@ -5,6 +5,7 @@ import { enableStatusOptions, userGenderOptions } from '@/constants/business';
 import { fetchGetAllRoles } from '@/service/api';
 import { useFormRules, useNaiveForm } from '@/hooks/common/form';
 import { $t } from '@/locales';
+import { fetchAddUser } from '@/service/api/rev3-system-manage';
 
 defineOptions({
   name: 'UserOperateDrawer'
@@ -104,10 +105,21 @@ function closeDrawer() {
 
 async function handleSubmit() {
   await validate();
-  // request
-  window.$message?.success($t('common.updateSuccess'));
-  closeDrawer();
-  emit('submitted');
+  if (props.operateType === 'add') {
+    // [rev3-inline MW(c)] 原行: // request
+    const { error } = await fetchAddUser(model.value);
+    if (!error) {
+      window.$message?.success($t('common.updateSuccess'));
+      closeDrawer();
+      emit('submitted');
+    }
+  } else {
+    // edit: leave stub (wired in T023/US3)
+    // [rev3-inline MW(c)] 原行: window.$message?.success($t('common.updateSuccess')); closeDrawer(); emit('submitted');
+    window.$message?.success($t('common.updateSuccess'));
+    closeDrawer();
+    emit('submitted');
+  }
 }
 
 watch(visible, () => {
