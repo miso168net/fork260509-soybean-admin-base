@@ -44,3 +44,13 @@ export function fetchUpdateRole(
 ) {
   return request<null>({ url: '/systemManage/updateRole', method: 'post', data: model });
 }
+
+/** delete one role (rev3 → rust-api DELETE /systemManage/deleteRole?id=) */
+export function fetchDeleteRole(id: number) {
+  return request<null>({ url: '/systemManage/deleteRole', method: 'delete', params: { id } });
+}
+
+/** batch delete roles (rev3 → rust-api DELETE /systemManage/batchDeleteRole?ids=1,2,3) */
+export function fetchBatchDeleteRole(ids: number[]) {
+  return request<null>({ url: '/systemManage/batchDeleteRole', method: 'delete', params: { ids: ids.join(',') } });
+}
