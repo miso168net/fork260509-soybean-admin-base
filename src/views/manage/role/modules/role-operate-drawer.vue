@@ -5,6 +5,7 @@ import { useBoolean } from '@sa/hooks';
 import { enableStatusOptions } from '@/constants/business';
 import { useFormRules, useNaiveForm } from '@/hooks/common/form';
 import { $t } from '@/locales';
+import { fetchAddRole } from '@/service/api/rev3-system-manage';
 import MenuAuthModal from './menu-auth-modal.vue';
 import ButtonAuthModal from './button-auth-modal.vue';
 
@@ -83,10 +84,21 @@ function closeDrawer() {
 
 async function handleSubmit() {
   await validate();
-  // request
-  window.$message?.success($t('common.updateSuccess'));
-  closeDrawer();
-  emit('submitted');
+  if (props.operateType === 'add') {
+    // [rev3-inline MW(a)] 原行: // request
+    const { error } = await fetchAddRole(model.value);
+    if (!error) {
+      window.$message?.success($t('common.updateSuccess'));
+      closeDrawer();
+      emit('submitted');
+    }
+  } else {
+    // [rev3-inline MW(a)] edit 分支暫保留原 stub 行為（U5 才接 fetchUpdateRole）。
+    // 原行: window.$message?.success($t('common.updateSuccess')); closeDrawer(); emit('submitted');
+    window.$message?.success($t('common.updateSuccess'));
+    closeDrawer();
+    emit('submitted');
+  }
 }
 
 watch(visible, () => {
@@ -105,7 +117,11 @@ watch(visible, () => {
           <NInput v-model:value="model.roleName" :placeholder="$t('page.manage.role.form.roleName')" />
         </NFormItem>
         <NFormItem :label="$t('page.manage.role.roleCode')" path="roleCode">
-          <NInput v-model:value="model.roleCode" :placeholder="$t('page.manage.role.form.roleCode')" />
+          <NInput
+            v-model:value="model.roleCode"
+            :disabled="isEdit"
+            :placeholder="$t('page.manage.role.form.roleCode')"
+          />
         </NFormItem>
         <NFormItem :label="$t('page.manage.role.roleStatus')" path="status">
           <NRadioGroup v-model:value="model.status">

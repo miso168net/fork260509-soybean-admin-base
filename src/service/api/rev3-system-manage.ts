@@ -27,3 +27,13 @@ export function fetchDeleteUser(id: number) {
 export function fetchBatchDeleteUser(ids: number[]) {
   return request<null>({ url: '/systemManage/batchDeleteUser', method: 'delete', params: { ids: ids.join(',') } });
 }
+
+// [rev3-inline WRAPPER]
+// rev3 role-management WRITE wrappers (009; addRole 此單元 / updateRole / deleteRole / batchDeleteRole 後續單元逐步加入)。
+
+/** add role (rev3 write wrapper → rust-api POST /systemManage/addRole) */
+export function fetchAddRole(
+  model: Pick<Api.SystemManage.Role, 'roleName' | 'roleCode' | 'roleDesc' | 'status'>
+) {
+  return request<null>({ url: '/systemManage/addRole', method: 'post', data: model });
+}
