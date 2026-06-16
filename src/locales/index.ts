@@ -21,6 +21,12 @@ export function setupI18n(app: App) {
 
 export const $t = i18n.global.t as App.I18n.$T;
 
+// [rev3-inline I18N(iii) ⚠️aa BASE-WEB-I18N-WIRING ★ START] 唯一翻譯邊界：前端補 backend. 前綴（前綴歸屬 (c)）；未命中→vue-i18n 原生回原始 key（003 US2、i18n-key-convention §2/§5）
+export function translateBackendMsg(msg: string): string {
+  return $t(('backend.' + msg) as App.I18n.I18nKey);
+}
+// [rev3-inline I18N(iii) ⚠️aa END]
+
 export function setLocale(locale: App.I18n.LangType) {
   i18n.global.locale.value = locale;
 

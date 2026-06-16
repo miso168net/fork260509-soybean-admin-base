@@ -318,6 +318,14 @@ declare namespace App {
         updateConfirm: string;
         updateCancel: string;
       };
+      // [rev3-inline I18N(iii) ⚠️aa BASE-WEB-I18N-WIRING ★ START] backend msg key 型（去前綴 wire key 外包 backend.；003 US2、data-model §3 / i18n-key-convention §4）
+      backend: {
+        common: { success: string };
+        auth: { login: { failed: string }; token: { expired: string }; session: { kicked: string; reLogin: string } };
+        biz: { error: string };
+        system: { notFound: string; forbidden: string; internal: string };
+      };
+      // [rev3-inline I18N(iii) ⚠️aa END]
       common: {
         action: string;
         add: string;

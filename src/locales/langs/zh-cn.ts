@@ -692,7 +692,19 @@ const local: App.I18n.Schema = {
       right: '右固定',
       unFixed: '取消固定'
     }
+  },
+  // [rev3-inline I18N(ii) ⚠️aa BASE-WEB-I18N-WIRING ★ START] backend msg 譯文（13 固定碼 zh-CN；003 US2、i18n-key-convention §3）
+  backend: {
+    common: { success: '请求成功' },
+    auth: {
+      login: { failed: '用户名或密码错误' },
+      token: { expired: '登录已过期' },
+      session: { kicked: '账号在他处登录', reLogin: '请重新登录' }
+    },
+    biz: { error: '业务错误' },
+    system: { notFound: '接口不存在', forbidden: '权限不足', internal: '服务器内部错误' }
   }
+  // [rev3-inline I18N(ii) ⚠️aa END]
 };
 
 export default local;

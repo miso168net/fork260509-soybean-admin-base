@@ -696,7 +696,19 @@ const local: App.I18n.Schema = {
       right: 'Right Fixed',
       unFixed: 'Unfixed'
     }
+  },
+  // [rev3-inline I18N(ii) ⚠️aa BASE-WEB-I18N-WIRING ★ START] backend msg 譯文（13 固定碼 en-US；003 US2、i18n-key-convention §3）
+  backend: {
+    common: { success: 'Success' },
+    auth: {
+      login: { failed: 'Incorrect username or password' },
+      token: { expired: 'Login expired' },
+      session: { kicked: 'Logged in elsewhere', reLogin: 'Please log in again' }
+    },
+    biz: { error: 'Operation failed' },
+    system: { notFound: 'Resource not found', forbidden: 'Permission denied', internal: 'Internal server error' }
   }
+  // [rev3-inline I18N(ii) ⚠️aa END]
 };
 
 export default local;

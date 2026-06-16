@@ -3,7 +3,8 @@ import { BACKEND_ERROR_CODE, createFlatRequest, createRequest } from '@sa/axios'
 import { useAuthStore } from '@/store/modules/auth';
 import { localStg } from '@/utils/storage';
 import { getServiceBaseURL } from '@/utils/service';
-import { $t } from '@/locales';
+// [rev3-inline I18N(i) ⚠️aa BASE-WEB-I18N-WIRING ★] 原行: import { $t } from '@/locales';
+import { $t, translateBackendMsg } from '@/locales';
 import { getAuthorization, handleExpiredRequest, showErrorMsg } from './shared';
 import type { RequestInstanceState } from './type';
 
@@ -40,6 +41,9 @@ export const request = createFlatRequest(
       const authStore = useAuthStore();
       const responseCode = String(response.data.code);
 
+      // [rev3-inline I18N(i) ⚠️aa BASE-WEB-I18N-WIRING ★] 唯一翻譯：dedup filter/守門/push/modal content 四處共用同一翻譯後字串（不變式：四處值必相同、否則 dedup/filter 失效）
+      const translatedMsg = translateBackendMsg(response.data.msg);
+
       function handleLogout() {
         authStore.resetStore();
       }
@@ -48,7 +52,8 @@ export const request = createFlatRequest(
         handleLogout();
         window.removeEventListener('beforeunload', handleLogout);
 
-        request.state.errMsgStack = request.state.errMsgStack.filter(msg => msg !== response.data.msg);
+        // [rev3-inline I18N(i) ⚠️aa BASE-WEB-I18N-WIRING ★] 原行: request.state.errMsgStack = request.state.errMsgStack.filter(msg => msg !== response.data.msg);
+        request.state.errMsgStack = request.state.errMsgStack.filter(msg => msg !== translatedMsg);
       }
 
       // when the backend response code is in `logoutCodes`, it means the user will be logged out and redirected to login page
@@ -60,15 +65,18 @@ export const request = createFlatRequest(
 
       // when the backend response code is in `modalLogoutCodes`, it means the user will be logged out by displaying a modal
       const modalLogoutCodes = import.meta.env.VITE_SERVICE_MODAL_LOGOUT_CODES?.split(',') || [];
-      if (modalLogoutCodes.includes(responseCode) && !request.state.errMsgStack?.includes(response.data.msg)) {
-        request.state.errMsgStack = [...(request.state.errMsgStack || []), response.data.msg];
+      // [rev3-inline I18N(i) ⚠️aa BASE-WEB-I18N-WIRING ★] 原行: if (modalLogoutCodes.includes(responseCode) && !request.state.errMsgStack?.includes(response.data.msg)) {
+      if (modalLogoutCodes.includes(responseCode) && !request.state.errMsgStack?.includes(translatedMsg)) {
+        // [rev3-inline I18N(i) ⚠️aa BASE-WEB-I18N-WIRING ★] 原行: request.state.errMsgStack = [...(request.state.errMsgStack || []), response.data.msg];
+        request.state.errMsgStack = [...(request.state.errMsgStack || []), translatedMsg];
 
         // prevent the user from refreshing the page
         window.addEventListener('beforeunload', handleLogout);
 
         window.$dialog?.error({
           title: $t('common.error'),
-          content: response.data.msg,
+          // [rev3-inline I18N(i) ⚠️aa BASE-WEB-I18N-WIRING ★] 原行: content: response.data.msg,
+          content: translatedMsg,
           positiveText: $t('common.confirm'),
           maskClosable: false,
           closeOnEsc: false,
@@ -106,7 +114,8 @@ export const request = createFlatRequest(
 
       // get backend error message and code
       if (error.code === BACKEND_ERROR_CODE) {
-        message = error.response?.data?.msg || message;
+        // [rev3-inline I18N(i) ⚠️aa BASE-WEB-I18N-WIRING ★] 原行: message = error.response?.data?.msg || message;
+        message = error.response?.data?.msg ? translateBackendMsg(error.response.data.msg) : message;
         backendErrorCode = String(error.response?.data?.code || '');
       }
 
