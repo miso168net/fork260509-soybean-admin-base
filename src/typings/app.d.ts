@@ -826,10 +826,6 @@ declare namespace App {
           // [rev3-inline MODAL-WIRING(e) §III.2 008-system-settings ★] 系統設定頁標籤
           systemSettings: {
             title: string;
-            settingKey: string;
-            settingValue: string;
-            valueType: string;
-            description: string;
           };
         };
       };

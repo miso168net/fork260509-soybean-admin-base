@@ -639,11 +639,7 @@ const local: App.I18n.Schema = {
       },
       // [rev3-inline 008-system-settings ★] 系统设置页标签
       systemSettings: {
-        title: '系统设置',
-        settingKey: '设置项',
-        settingValue: '当前值',
-        valueType: '值类型',
-        description: '说明'
+        title: '系统设置'
       }
     }
   },

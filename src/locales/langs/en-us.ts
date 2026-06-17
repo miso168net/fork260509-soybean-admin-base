@@ -643,11 +643,7 @@ const local: App.I18n.Schema = {
       },
       // [rev3-inline 008-system-settings ★] system settings page labels
       systemSettings: {
-        title: 'System Settings',
-        settingKey: 'Setting',
-        settingValue: 'Current Value',
-        valueType: 'Value Type',
-        description: 'Description'
+        title: 'System Settings'
       }
     }
   },
