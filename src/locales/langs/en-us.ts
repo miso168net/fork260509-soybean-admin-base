@@ -269,6 +269,8 @@ const local: App.I18n.Schema = {
     'manage_user-detail': 'User Detail',
     manage_role: 'Role Manage',
     manage_menu: 'Menu Manage',
+    // [rev3-inline 008-system-settings ★] route menu title (mirrors m002:251 i18n_key route.manage_system-settings)
+    'manage_system-settings': 'System Settings',
     'multi-menu': 'Multi Menu',
     'multi-menu_first': 'Menu One',
     'multi-menu_first_child': 'Menu One Child',
@@ -638,6 +640,14 @@ const local: App.I18n.Schema = {
           iconify: 'Iconify Icon',
           local: 'Local Icon'
         }
+      },
+      // [rev3-inline 008-system-settings ★] system settings page labels
+      systemSettings: {
+        title: 'System Settings',
+        settingKey: 'Setting',
+        settingValue: 'Current Value',
+        valueType: 'Value Type',
+        description: 'Description'
       }
     }
   },
@@ -705,7 +715,11 @@ const local: App.I18n.Schema = {
       token: { expired: 'Login expired' },
       session: { kicked: 'Logged in elsewhere', reLogin: 'Please log in again' }
     },
-    biz: { error: 'Operation failed' },
+    // [rev3-inline 008-system-settings ★] biz.systemSettings error translations (⚠️y canonical)
+    biz: {
+      error: 'Operation failed',
+      systemSettings: { invalidValue: 'Value does not match the expected type', notFound: 'Setting key not found' }
+    },
     system: { notFound: 'Resource not found', forbidden: 'Permission denied', internal: 'Internal server error' }
   }
   // [rev3-inline I18N(ii) ⚠️aa END]

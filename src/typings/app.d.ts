@@ -322,7 +322,8 @@ declare namespace App {
       backend: {
         common: { success: string };
         auth: { login: { failed: string }; token: { expired: string }; session: { kicked: string; reLogin: string } };
-        biz: { error: string };
+        // [rev3-inline 008-system-settings ★] biz.systemSettings 錯誤 key（⚠️y canonical backend.<root>.<entity>.<condition>；保留原 error）
+        biz: { error: string; systemSettings: { invalidValue: string; notFound: string } };
         system: { notFound: string; forbidden: string; internal: string };
       };
       // [rev3-inline I18N(iii) ⚠️aa END]
@@ -821,6 +822,14 @@ declare namespace App {
               iconify: string;
               local: string;
             };
+          };
+          // [rev3-inline MODAL-WIRING(e) §III.2 008-system-settings ★] 系統設定頁標籤
+          systemSettings: {
+            title: string;
+            settingKey: string;
+            settingValue: string;
+            valueType: string;
+            description: string;
           };
         };
       };

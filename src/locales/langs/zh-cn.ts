@@ -265,6 +265,8 @@ const local: App.I18n.Schema = {
     'manage_user-detail': '用户详情',
     manage_role: '角色管理',
     manage_menu: '菜单管理',
+    // [rev3-inline 008-system-settings ★] route 菜单标题（对齐 m002:251 i18n_key route.manage_system-settings）
+    'manage_system-settings': '系统设置',
     'multi-menu': '多级菜单',
     'multi-menu_first': '菜单一',
     'multi-menu_first_child': '菜单一子菜单',
@@ -634,6 +636,14 @@ const local: App.I18n.Schema = {
           iconify: 'iconify图标',
           local: '本地图标'
         }
+      },
+      // [rev3-inline 008-system-settings ★] 系统设置页标签
+      systemSettings: {
+        title: '系统设置',
+        settingKey: '设置项',
+        settingValue: '当前值',
+        valueType: '值类型',
+        description: '说明'
       }
     }
   },
@@ -701,7 +711,11 @@ const local: App.I18n.Schema = {
       token: { expired: '登录已过期' },
       session: { kicked: '账号在他处登录', reLogin: '请重新登录' }
     },
-    biz: { error: '业务错误' },
+    // [rev3-inline 008-system-settings ★] biz.systemSettings 错误译文（⚠️y canonical）
+    biz: {
+      error: '业务错误',
+      systemSettings: { invalidValue: '设定值不符合型别', notFound: '设定键不存在' }
+    },
     system: { notFound: '接口不存在', forbidden: '权限不足', internal: '服务器内部错误' }
   }
   // [rev3-inline I18N(ii) ⚠️aa END]
