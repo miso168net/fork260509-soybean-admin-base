@@ -5,22 +5,44 @@ import { NButton, NPopconfirm, NTag } from 'naive-ui';
 import { useBoolean } from '@sa/hooks';
 import { yesOrNoRecord } from '@/constants/common';
 import { enableStatusRecord, menuTypeRecord } from '@/constants/business';
-import { fetchGetAllPages, fetchGetMenuList } from '@/service/api';
+import { fetchGetAllPages } from '@/service/api';
+// [rev3-inline 010-menu-management MW(a)] 寫端+統一清單 wrapper 直接路徑 import（非 barrel）
+import {
+  fetchBatchDeleteMenu,
+  fetchDeleteMenu,
+  fetchGetMenuListV2,
+  fetchRestoreMenu
+} from '@/service/api/rev3-system-manage';
+// [rev3-inline 010-menu-management MW(b)] hasAuth gating
+import { useAuth } from '@/hooks/business/auth';
 import { useAppStore } from '@/store/modules/app';
-import { defaultTransform, useNaivePaginatedTable, useTableOperate } from '@/hooks/common/table';
+import { useNaivePaginatedTable, useTableOperate } from '@/hooks/common/table';
 import { $t } from '@/locales';
 import SvgIcon from '@/components/custom/svg-icon.vue';
 import MenuOperateModal, { type OperateType } from './modules/menu-operate-modal.vue';
 
 const appStore = useAppStore();
 
+// [rev3-inline 010-menu-management MW(b)] 寫入鈕依按鈕層權限顯隱（前端體驗層、後端 require_policy 仍為安全邊界）
+const { hasAuth } = useAuth();
+
 const { bool: visible, setTrue: openModal } = useBoolean();
 
 const wrapperRef = ref<HTMLElement | null>(null);
 
+// [rev3-inline 010-menu-management MW(a)] 統一清單 read：rust getMenuList/v2 回【裸陣列樹】（非分頁包）；
+//   既有 defaultTransform 解構 {records} 對裸陣列回 undefined → 表空 → 改用 custom transform 包成 PaginationData（含已刪除節點）
 const { columns, columnChecks, data, loading, pagination, getData, getDataByPage } = useNaivePaginatedTable({
-  api: () => fetchGetMenuList(),
-  transform: response => defaultTransform(response),
+  api: () => fetchGetMenuListV2(),
+  transform: response => {
+    const rows = response.error ? [] : response.data || [];
+    return {
+      data: rows,
+      pageNum: 1,
+      pageSize: rows.length || 10,
+      total: rows.length
+    };
+  },
   columns: () => [
     {
       type: 'selection',
@@ -140,33 +162,72 @@ const { columns, columnChecks, data, loading, pagination, getData, getDataByPage
       align: 'center',
       width: 60
     },
+    // [rev3-inline 010-menu-management MW(a)] 已刪除欄（統一清單回收桶；讀 row.deleted）
+    {
+      key: 'deleted',
+      title: $t('page.manage.menu.deleted'),
+      align: 'center',
+      width: 90,
+      render: row => {
+        const type: NaiveUI.ThemeColor = row.deleted ? 'error' : 'success';
+        const label = row.deleted ? $t('page.manage.menu.statusDeleted') : $t('page.manage.menu.statusActive');
+        return <NTag type={type}>{label}</NTag>;
+      }
+    },
     {
       key: 'operate',
       title: $t('common.operate'),
       align: 'center',
       width: 230,
-      render: row => (
-        <div class="flex-center justify-end gap-8px">
-          {row.menuType === '1' && (
-            <NButton type="primary" ghost size="small" onClick={() => handleAddChildMenu(row)}>
-              {$t('page.manage.menu.addChildMenu')}
-            </NButton>
-          )}
-          <NButton type="primary" ghost size="small" onClick={() => handleEdit(row)}>
-            {$t('common.edit')}
-          </NButton>
-          <NPopconfirm onPositiveClick={() => handleDelete(row.id)}>
-            {{
-              default: () => $t('common.confirmDelete'),
-              trigger: () => (
-                <NButton type="error" ghost size="small">
-                  {$t('common.delete')}
-                </NButton>
-              )
-            }}
-          </NPopconfirm>
-        </div>
-      )
+      // [rev3-inline 010-menu-management MW(a)+MW(b)] 已刪除列→復原鈕；現役列→addChild/edit/delete（皆依 hasAuth gating）
+      render: row => {
+        if (row.deleted) {
+          if (!hasAuth('menu:edit')) {
+            return null;
+          }
+          return (
+            <div class="flex-center justify-end gap-8px">
+              <NPopconfirm onPositiveClick={() => handleRestore(row.id)}>
+                {{
+                  default: () => $t('page.manage.menu.confirmRestore'),
+                  trigger: () => (
+                    <NButton type="primary" ghost size="small">
+                      {$t('page.manage.menu.restore')}
+                    </NButton>
+                  )
+                }}
+              </NPopconfirm>
+            </div>
+          );
+        }
+
+        return (
+          <div class="flex-center justify-end gap-8px">
+            {row.menuType === '1' && hasAuth('menu:add') && (
+              <NButton type="primary" ghost size="small" onClick={() => handleAddChildMenu(row)}>
+                {$t('page.manage.menu.addChildMenu')}
+              </NButton>
+            )}
+            {hasAuth('menu:edit') && (
+              <NButton type="primary" ghost size="small" onClick={() => handleEdit(row)}>
+                {$t('common.edit')}
+              </NButton>
+            )}
+            {hasAuth('menu:delete') && (
+              <NPopconfirm onPositiveClick={() => handleDelete(row.id)}>
+                {{
+                  default: () => $t('common.confirmDelete'),
+                  trigger: () => (
+                    <NButton type="error" ghost size="small">
+                      {$t('common.delete')}
+                    </NButton>
+                  )
+                }}
+              </NPopconfirm>
+            )}
+          </div>
+        );
+      }
     }
   ]
 });
@@ -181,30 +242,41 @@ function handleAdd() {
 }
 
 async function handleBatchDelete() {
-  // request
-  console.log(checkedRowKeys.value);
-
-  onBatchDeleted();
+  // [rev3-inline 010-menu-management MW(a)] 原 stub：console.log(checkedRowKeys.value);onBatchDeleted();
+  // 後端逐項獨立驗證、整批拒（父含 active 子→整批拒、無 partial）
+  const { error } = await fetchBatchDeleteMenu(checkedRowKeys.value);
+  if (!error) {
+    onBatchDeleted();
+  }
 }
 
-function handleDelete(id: number) {
-  // request
-  console.log(id);
+async function handleDelete(id: number) {
+  // [rev3-inline 010-menu-management MW(a)] 原 stub：console.log(id);onDeleted();
+  const { error } = await fetchDeleteMenu(id);
+  if (!error) {
+    onDeleted();
+  }
+}
 
-  onDeleted();
+// [rev3-inline 010-menu-management MW(a)] 復原已刪除選單（父已刪→後端置頂層、不產生孤兒）
+async function handleRestore(id: number) {
+  const { error } = await fetchRestoreMenu(id);
+  if (!error) {
+    onDeleted();
+  }
 }
 
 /** the edit menu data or the parent menu data when adding a child menu */
-const editingData: Ref<Api.SystemManage.Menu | null> = ref(null);
+const editingData: Ref<Api.SystemManage.MenuListItem | null> = ref(null);
 
-function handleEdit(item: Api.SystemManage.Menu) {
+function handleEdit(item: Api.SystemManage.MenuListItem) {
   operateType.value = 'edit';
   editingData.value = { ...item };
 
   openModal();
 }
 
-function handleAddChildMenu(item: Api.SystemManage.Menu) {
+function handleAddChildMenu(item: Api.SystemManage.MenuListItem) {
   operateType.value = 'addChild';
 
   editingData.value = { ...item };
@@ -231,6 +303,7 @@ init();
   <div ref="wrapperRef" class="flex-col-stretch gap-16px overflow-hidden lt-sm:overflow-auto">
     <NCard :title="$t('page.manage.menu.title')" :bordered="false" size="small" class="card-wrapper sm:flex-1-hidden">
       <template #header-extra>
+        <!-- [rev3-inline 010-menu-management MW(b)] 寫入鈕 hasAuth gating（override default slot 條件顯隱 add/batchDelete） -->
         <TableHeaderOperation
           v-model:columns="columnChecks"
           :disabled-delete="checkedRowKeys.length === 0"
@@ -238,7 +311,27 @@ init();
           @add="handleAdd"
           @delete="handleBatchDelete"
           @refresh="getData"
-        />
+        >
+          <template #default>
+            <NButton v-if="hasAuth('menu:add')" size="small" ghost type="primary" @click="handleAdd">
+              <template #icon>
+                <icon-ic-round-plus class="text-icon" />
+              </template>
+              {{ $t('common.add') }}
+            </NButton>
+            <NPopconfirm v-if="hasAuth('menu:delete')" @positive-click="handleBatchDelete">
+              <template #trigger>
+                <NButton size="small" ghost type="error" :disabled="checkedRowKeys.length === 0">
+                  <template #icon>
+                    <icon-ic-round-delete class="text-icon" />
+                  </template>
+                  {{ $t('common.batchDelete') }}
+                </NButton>
+              </template>
+              {{ $t('common.confirmDelete') }}
+            </NPopconfirm>
+          </template>
+        </TableHeaderOperation>
       </template>
       <NDataTable
         v-model:checked-row-keys="checkedRowKeys"

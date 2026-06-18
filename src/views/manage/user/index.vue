@@ -5,6 +5,8 @@ import { enableStatusRecord, userGenderRecord } from '@/constants/business';
 import { fetchGetUserList } from '@/service/api';
 // [rev3-inline 009-user-management MW(a)] 寫端 wrapper 直接路徑 import（非 barrel）
 import { fetchBatchDeleteUser, fetchDeleteUser } from '@/service/api/rev3-system-manage';
+// [rev3-inline 010-menu-management MW(b) retroactive] hasAuth gating（user 寫入鈕；R_ADMIN seed 僅 user:edit）
+import { useAuth } from '@/hooks/business/auth';
 import { useAppStore } from '@/store/modules/app';
 import { defaultTransform, useNaivePaginatedTable, useTableOperate } from '@/hooks/common/table';
 import { $t } from '@/locales';
@@ -12,6 +14,9 @@ import UserOperateDrawer from './modules/user-operate-drawer.vue';
 import UserSearch from './modules/user-search.vue';
 
 const appStore = useAppStore();
+
+// [rev3-inline 010-menu-management MW(b) retroactive] 寫入鈕依按鈕層權限顯隱（後端授權仍為安全邊界）
+const { hasAuth } = useAuth();
 
 const searchParams = ref<Api.SystemManage.UserSearchParams>({
   current: 1,
@@ -113,21 +118,26 @@ const { columns, columnChecks, data, getData, getDataByPage, loading, mobilePagi
       title: $t('common.operate'),
       align: 'center',
       width: 130,
+      // [rev3-inline 010-menu-management MW(b) retroactive] edit/delete 鈕依 hasAuth gating（R_ADMIN 僅 user:edit）
       render: row => (
         <div class="flex-center gap-8px">
-          <NButton type="primary" ghost size="small" onClick={() => edit(row.id)}>
-            {$t('common.edit')}
-          </NButton>
-          <NPopconfirm onPositiveClick={() => handleDelete(row.id)}>
-            {{
-              default: () => $t('common.confirmDelete'),
-              trigger: () => (
-                <NButton type="error" ghost size="small">
-                  {$t('common.delete')}
-                </NButton>
-              )
-            }}
-          </NPopconfirm>
+          {hasAuth('user:edit') && (
+            <NButton type="primary" ghost size="small" onClick={() => edit(row.id)}>
+              {$t('common.edit')}
+            </NButton>
+          )}
+          {hasAuth('user:delete') && (
+            <NPopconfirm onPositiveClick={() => handleDelete(row.id)}>
+              {{
+                default: () => $t('common.confirmDelete'),
+                trigger: () => (
+                  <NButton type="error" ghost size="small">
+                    {$t('common.delete')}
+                  </NButton>
+                )
+              }}
+            </NPopconfirm>
+          )}
         </div>
       )
     }
@@ -172,6 +182,7 @@ function edit(id: number) {
     <UserSearch v-model:model="searchParams" @search="getDataByPage" />
     <NCard :title="$t('page.manage.user.title')" :bordered="false" size="small" class="card-wrapper sm:flex-1-hidden">
       <template #header-extra>
+        <!-- [rev3-inline 010-menu-management MW(b) retroactive] add/batchDelete 鈕 hasAuth gating（R_ADMIN seed 僅 user:edit→無 add/delete 鈕） -->
         <TableHeaderOperation
           v-model:columns="columnChecks"
           :disabled-delete="checkedRowKeys.length === 0"
@@ -179,7 +190,27 @@ function edit(id: number) {
           @add="handleAdd"
           @delete="handleBatchDelete"
           @refresh="getData"
-        />
+        >
+          <template #default>
+            <NButton v-if="hasAuth('user:add')" size="small" ghost type="primary" @click="handleAdd">
+              <template #icon>
+                <icon-ic-round-plus class="text-icon" />
+              </template>
+              {{ $t('common.add') }}
+            </NButton>
+            <NPopconfirm v-if="hasAuth('user:delete')" @positive-click="handleBatchDelete">
+              <template #trigger>
+                <NButton size="small" ghost type="error" :disabled="checkedRowKeys.length === 0">
+                  <template #icon>
+                    <icon-ic-round-delete class="text-icon" />
+                  </template>
+                  {{ $t('common.batchDelete') }}
+                </NButton>
+              </template>
+              {{ $t('common.confirmDelete') }}
+            </NPopconfirm>
+          </template>
+        </TableHeaderOperation>
       </template>
       <NDataTable
         v-model:checked-row-keys="checkedRowKeys"

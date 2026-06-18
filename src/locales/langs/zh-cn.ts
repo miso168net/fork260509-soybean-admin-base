@@ -598,6 +598,11 @@ const local: App.I18n.Schema = {
         buttonCode: '按钮编码',
         buttonDesc: '按钮描述',
         menuStatus: '菜单状态',
+        deleted: '是否已删除',
+        statusActive: '现役',
+        statusDeleted: '已删除',
+        restore: '复原',
+        confirmRestore: '确认复原此菜单？',
         form: {
           home: '请选择首页',
           menuType: '请选择菜单类型',
@@ -709,6 +714,7 @@ const local: App.I18n.Schema = {
     },
     // [rev3-inline 008-system-settings ★] biz.systemSettings 错误译文（⚠️y canonical）
     // [rev3-inline 009-user-management ★] biz.user 错误译文（4 键）
+    // [rev3-inline 010-menu-management ★] biz.menu 错误译文（8 键、与后端 biz.menu.<condition> 对齐）
     biz: {
       error: '业务错误',
       systemSettings: { invalidValue: '设定值不符合型别', notFound: '设定键不存在' },
@@ -717,6 +723,16 @@ const local: App.I18n.Schema = {
         notFound: '找不到使用者',
         cannotDeleteSelf: '不可删除自己',
         selfLockForbidden: '不可移除自身的超级管理员角色或停用自己'
+      },
+      menu: {
+        duplicateRouteName: '路由名称已存在',
+        notFound: '找不到选单',
+        reparentTargetMissing: '目标父选单不存在或已停用',
+        notDirectory: '目标父选单必须为目录型',
+        wouldCycle: '不可将选单搬移至自身或其子层（会形成环）',
+        protectedFixed: '受保护的系统选单父层固定、不可搬移',
+        protectedNoDelete: '受保护的系统选单不可删除',
+        hasActiveChildren: '选单仍有启用中的子选单、不可删除'
       }
     },
     system: { notFound: '接口不存在', forbidden: '权限不足', internal: '服务器内部错误' }

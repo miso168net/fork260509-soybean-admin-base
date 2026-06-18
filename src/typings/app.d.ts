@@ -324,10 +324,21 @@ declare namespace App {
         auth: { login: { failed: string }; token: { expired: string }; session: { kicked: string; reLogin: string } };
         // [rev3-inline 008-system-settings ★] biz.systemSettings 錯誤 key（⚠️y canonical backend.<root>.<entity>.<condition>；保留原 error）
         // [rev3-inline 009-user-management I18N(iii) ★] biz.user 4 鍵（duplicateUserName/notFound/cannotDeleteSelf/selfLockForbidden）
+        // [rev3-inline 010-menu-management I18N(iii) ★] biz.menu 8 鍵（與後端 biz.menu.<condition> 對齊；攔截器自動 $t('backend.'+msg)）
         biz: {
           error: string;
           systemSettings: { invalidValue: string; notFound: string };
           user: { duplicateUserName: string; notFound: string; cannotDeleteSelf: string; selfLockForbidden: string };
+          menu: {
+            duplicateRouteName: string;
+            notFound: string;
+            reparentTargetMissing: string;
+            notDirectory: string;
+            wouldCycle: string;
+            protectedFixed: string;
+            protectedNoDelete: string;
+            hasActiveChildren: string;
+          };
         };
         system: { notFound: string; forbidden: string; internal: string };
       };
@@ -789,6 +800,12 @@ declare namespace App {
             buttonCode: string;
             buttonDesc: string;
             menuStatus: string;
+            // [rev3-inline 010-menu-management ★] 統一清單回收桶 UI 標籤（已刪除欄+復原；先 Schema 後 locale）
+            deleted: string;
+            statusActive: string;
+            statusDeleted: string;
+            restore: string;
+            confirmRestore: string;
             form: {
               home: string;
               menuType: string;

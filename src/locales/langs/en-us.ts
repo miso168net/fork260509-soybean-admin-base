@@ -602,6 +602,11 @@ const local: App.I18n.Schema = {
         buttonCode: 'Button Code',
         buttonDesc: 'Button Desc',
         menuStatus: 'Menu Status',
+        deleted: 'Deleted',
+        statusActive: 'Active',
+        statusDeleted: 'Deleted',
+        restore: 'Restore',
+        confirmRestore: 'Confirm restore this menu?',
         form: {
           home: 'Please select home',
           menuType: 'Please select menu type',
@@ -713,6 +718,7 @@ const local: App.I18n.Schema = {
     },
     // [rev3-inline 008-system-settings ★] biz.systemSettings error translations (⚠️y canonical)
     // [rev3-inline 009-user-management ★] biz.user error translations (4 keys)
+    // [rev3-inline 010-menu-management ★] biz.menu error translations (8 keys, aligned with backend biz.menu.<condition>)
     biz: {
       error: 'Operation failed',
       systemSettings: { invalidValue: 'Value does not match the expected type', notFound: 'Setting key not found' },
@@ -721,6 +727,16 @@ const local: App.I18n.Schema = {
         notFound: 'User not found',
         cannotDeleteSelf: 'Cannot delete yourself',
         selfLockForbidden: 'Cannot remove your own super admin role or disable yourself'
+      },
+      menu: {
+        duplicateRouteName: 'Route name already exists',
+        notFound: 'Menu not found',
+        reparentTargetMissing: 'Target parent menu does not exist or is disabled',
+        notDirectory: 'Target parent menu must be a directory',
+        wouldCycle: 'Cannot move a menu under itself or its descendants (would create a cycle)',
+        protectedFixed: 'Protected system menu has a fixed parent and cannot be moved',
+        protectedNoDelete: 'Protected system menu cannot be deleted',
+        hasActiveChildren: 'Menu still has active child menus and cannot be deleted'
       }
     },
     system: { notFound: 'Resource not found', forbidden: 'Permission denied', internal: 'Internal server error' }

@@ -1,8 +1,10 @@
 <script setup lang="tsx">
 import { computed, ref, watch } from 'vue';
-import type { SelectOption } from 'naive-ui';
+import type { SelectOption, TreeSelectOption } from 'naive-ui';
 import { enableStatusOptions, menuIconTypeOptions, menuTypeOptions } from '@/constants/business';
-import { fetchGetAllRoles } from '@/service/api';
+import { fetchGetMenuTree, fetchIsRouteExist } from '@/service/api';
+// [rev3-inline 010-menu-management MW(a)] 選單寫端 wrapper 直接路徑 import（非 barrel）
+import { fetchAddMenu, fetchUpdateMenu } from '@/service/api/rev3-system-manage';
 import { useFormRules, useNaiveForm } from '@/hooks/common/form';
 import { getLocalIcons } from '@/utils/icon';
 import { $t } from '@/locales';
@@ -164,19 +166,23 @@ const layoutOptions: CommonType.Option[] = [
   }
 ];
 
-/** the enabled role options */
-const roleOptions = ref<CommonType.Option<string>[]>([]);
+// [rev3-inline 010-menu-management MW(a)] 父選單樹（getMenuTree、僅 active；NTreeSelect 供 re-parent）
+// 原 stub：getRoleOptions/roleOptions（fetchGetAllRoles）為 soybean 殘留 dead code（無 template 引用）、移除（沿 009 drawer 範式）
+const parentMenuOptions = ref<TreeSelectOption[]>([]);
 
-async function getRoleOptions() {
-  const { error, data } = await fetchGetAllRoles();
+function transformMenuTreeToOptions(tree: Api.SystemManage.MenuTree[]): TreeSelectOption[] {
+  return tree.map(item => ({
+    label: item.label,
+    key: item.id,
+    children: item.children ? transformMenuTreeToOptions(item.children) : undefined
+  }));
+}
+
+async function getParentMenuOptions() {
+  const { error, data } = await fetchGetMenuTree();
 
   if (!error) {
-    const options = data.map(item => ({
-      label: item.roleName,
-      value: item.roleCode
-    }));
-
-    roleOptions.value = [...options];
+    parentMenuOptions.value = transformMenuTreeToOptions(data || []);
   }
 }
 
@@ -254,10 +260,29 @@ async function handleSubmit() {
 
   const params = getSubmitParams();
 
-  console.log('params: ', params);
+  // [rev3-inline 010-menu-management MW(a)] route_name 前驗（isRouteExist＝前端 UX 前驗、非後端唯一性保證；後端 23505→biz.menu.duplicateRouteName 仍為權威）
+  if (props.operateType === 'add' && params.routeName) {
+    const { error: existErr, data: exists } = await fetchIsRouteExist(params.routeName);
+    if (!existErr && exists) {
+      window.$message?.error($t('backend.biz.menu.duplicateRouteName'));
+      return;
+    }
+  }
 
-  // request
-  window.$message?.success($t('common.updateSuccess'));
+  // [rev3-inline 010-menu-management MW(a)] 原 stub：console.log + 假成功 toast → 真發 addMenu/updateMenu
+  const model: Api.SystemManage.MenuUpsertModel = { ...params };
+
+  if (props.operateType === 'add') {
+    const { error } = await fetchAddMenu(model);
+    if (error) return;
+    window.$message?.success($t('common.addSuccess'));
+  } else {
+    // edit / addChild → updateMenu（含搬移父層；getSubmitParams 已含 parentId、id 由 wrapper String(id) 轉字串）
+    const { error } = await fetchUpdateMenu({ ...model, id: props.rowData?.id });
+    if (error) return;
+    window.$message?.success($t('common.updateSuccess'));
+  }
+
   closeDrawer();
   emit('submitted');
 }
@@ -266,7 +291,7 @@ watch(visible, () => {
   if (visible.value) {
     handleInitModel();
     restoreValidation();
-    getRoleOptions();
+    getParentMenuOptions();
   }
 });
 
@@ -300,6 +325,22 @@ watch(
           </NFormItemGi>
           <NFormItemGi span="24 m:12" :label="$t('page.manage.menu.pathParam')" path="pathParam">
             <NInput v-model:value="model.pathParam" :placeholder="$t('page.manage.menu.form.pathParam')" />
+          </NFormItemGi>
+          <!-- [rev3-inline 010-menu-management MW(a)] 父選單選擇器（re-parent；addChild 模式父固定不顯、由父列帶入） -->
+          <NFormItemGi
+            v-if="operateType !== 'addChild'"
+            span="24 m:12"
+            :label="$t('page.manage.menu.parentId')"
+            path="parentId"
+          >
+            <NTreeSelect
+              v-model:value="model.parentId"
+              :options="parentMenuOptions"
+              key-field="key"
+              clearable
+              :placeholder="$t('page.manage.menu.parentId')"
+              :fallback-option="false"
+            />
           </NFormItemGi>
           <NFormItemGi v-if="showLayout" span="24 m:12" :label="$t('page.manage.menu.layout')" path="layout">
             <NSelect
