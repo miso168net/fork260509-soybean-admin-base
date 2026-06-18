@@ -160,7 +160,11 @@ export const useRouteStore = defineStore(SetupStoreId.Route, () => {
       const { data, error } = await fetchGetConstantRoutes();
 
       if (!error) {
-        addConstantRoutes(data);
+        // [rev3-inline 010-menu-management] dynamic 模式仍須保留前端 builtin 常數路由（login/403/404/500）：
+        // getConstantRoutes 僅回 DB-driven 常數（現為 []），不含前端寫死常數頁；直接用 data 會丟棄 login，
+        // 致未認證/getUserRoutes 失敗 fallback 時導向 /login 出「No match for login」（FR-002/SC-011 破口）。
+        // 合併前端 static 常數 + backend 常數（backend 常數現空、未來可附加；§I.2 常數頁前端寫死）。
+        addConstantRoutes([...staticRoute.constantRoutes, ...data]);
       } else {
         // if fetch constant routes failed, use static constant routes
         addConstantRoutes(staticRoute.constantRoutes);
