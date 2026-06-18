@@ -303,35 +303,17 @@ init();
   <div ref="wrapperRef" class="flex-col-stretch gap-16px overflow-hidden lt-sm:overflow-auto">
     <NCard :title="$t('page.manage.menu.title')" :bordered="false" size="small" class="card-wrapper sm:flex-1-hidden">
       <template #header-extra>
-        <!-- [rev3-inline 010-menu-management MW(b)] 寫入鈕 hasAuth gating（override default slot 條件顯隱 add/batchDelete） -->
+        <!-- [rev3-inline 010-menu-management MW(b)] 寫入鈕 hasAuth gating（用 showAdd/showDelete props 守恆 slot fallback） -->
         <TableHeaderOperation
           v-model:columns="columnChecks"
           :disabled-delete="checkedRowKeys.length === 0"
           :loading="loading"
+          :show-add="hasAuth('menu:add')"
+          :show-delete="hasAuth('menu:delete')"
           @add="handleAdd"
           @delete="handleBatchDelete"
           @refresh="getData"
-        >
-          <template #default>
-            <NButton v-if="hasAuth('menu:add')" size="small" ghost type="primary" @click="handleAdd">
-              <template #icon>
-                <icon-ic-round-plus class="text-icon" />
-              </template>
-              {{ $t('common.add') }}
-            </NButton>
-            <NPopconfirm v-if="hasAuth('menu:delete')" @positive-click="handleBatchDelete">
-              <template #trigger>
-                <NButton size="small" ghost type="error" :disabled="checkedRowKeys.length === 0">
-                  <template #icon>
-                    <icon-ic-round-delete class="text-icon" />
-                  </template>
-                  {{ $t('common.batchDelete') }}
-                </NButton>
-              </template>
-              {{ $t('common.confirmDelete') }}
-            </NPopconfirm>
-          </template>
-        </TableHeaderOperation>
+        />
       </template>
       <NDataTable
         v-model:checked-row-keys="checkedRowKeys"

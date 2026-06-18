@@ -182,35 +182,17 @@ function edit(id: number) {
     <UserSearch v-model:model="searchParams" @search="getDataByPage" />
     <NCard :title="$t('page.manage.user.title')" :bordered="false" size="small" class="card-wrapper sm:flex-1-hidden">
       <template #header-extra>
-        <!-- [rev3-inline 010-menu-management MW(b) retroactive] add/batchDelete 鈕 hasAuth gating（R_ADMIN seed 僅 user:edit→無 add/delete 鈕） -->
+        <!-- [rev3-inline 010-menu-management MW(b) retroactive] add/batchDelete 鈕 hasAuth gating（R_ADMIN seed 僅 user:edit→無 add/delete 鈕；用 showAdd/showDelete props 守恆 slot fallback） -->
         <TableHeaderOperation
           v-model:columns="columnChecks"
           :disabled-delete="checkedRowKeys.length === 0"
           :loading="loading"
+          :show-add="hasAuth('user:add')"
+          :show-delete="hasAuth('user:delete')"
           @add="handleAdd"
           @delete="handleBatchDelete"
           @refresh="getData"
-        >
-          <template #default>
-            <NButton v-if="hasAuth('user:add')" size="small" ghost type="primary" @click="handleAdd">
-              <template #icon>
-                <icon-ic-round-plus class="text-icon" />
-              </template>
-              {{ $t('common.add') }}
-            </NButton>
-            <NPopconfirm v-if="hasAuth('user:delete')" @positive-click="handleBatchDelete">
-              <template #trigger>
-                <NButton size="small" ghost type="error" :disabled="checkedRowKeys.length === 0">
-                  <template #icon>
-                    <icon-ic-round-delete class="text-icon" />
-                  </template>
-                  {{ $t('common.batchDelete') }}
-                </NButton>
-              </template>
-              {{ $t('common.confirmDelete') }}
-            </NPopconfirm>
-          </template>
-        </TableHeaderOperation>
+        />
       </template>
       <NDataTable
         v-model:checked-row-keys="checkedRowKeys"
