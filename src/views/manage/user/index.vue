@@ -3,6 +3,8 @@ import { ref } from 'vue';
 import { NButton, NPopconfirm, NTag } from 'naive-ui';
 import { enableStatusRecord, userGenderRecord } from '@/constants/business';
 import { fetchGetUserList } from '@/service/api';
+// [rev3-inline 009-user-management MW(a)] 寫端 wrapper 直接路徑 import（非 barrel）
+import { fetchBatchDeleteUser, fetchDeleteUser } from '@/service/api/rev3-system-manage';
 import { useAppStore } from '@/store/modules/app';
 import { defaultTransform, useNaivePaginatedTable, useTableOperate } from '@/hooks/common/table';
 import { $t } from '@/locales';
@@ -145,17 +147,19 @@ const {
 } = useTableOperate(data, 'id', getData);
 
 async function handleBatchDelete() {
-  // request
-  console.log(checkedRowKeys.value);
-
-  onBatchDeleted();
+  // [rev3-inline 009-user-management MW(a)] 原 stub：console.log(checkedRowKeys.value);onBatchDeleted();
+  const { error } = await fetchBatchDeleteUser(checkedRowKeys.value);
+  if (!error) {
+    onBatchDeleted();
+  }
 }
 
-function handleDelete(id: number) {
-  // request
-  console.log(id);
-
-  onDeleted();
+async function handleDelete(id: number) {
+  // [rev3-inline 009-user-management MW(a)] 原 stub：console.log(id);onDeleted();
+  const { error } = await fetchDeleteUser(id);
+  if (!error) {
+    onDeleted();
+  }
 }
 
 function edit(id: number) {

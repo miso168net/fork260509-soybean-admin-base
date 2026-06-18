@@ -712,9 +712,16 @@ const local: App.I18n.Schema = {
       session: { kicked: 'Logged in elsewhere', reLogin: 'Please log in again' }
     },
     // [rev3-inline 008-system-settings ★] biz.systemSettings error translations (⚠️y canonical)
+    // [rev3-inline 009-user-management ★] biz.user error translations (4 keys)
     biz: {
       error: 'Operation failed',
-      systemSettings: { invalidValue: 'Value does not match the expected type', notFound: 'Setting key not found' }
+      systemSettings: { invalidValue: 'Value does not match the expected type', notFound: 'Setting key not found' },
+      user: {
+        duplicateUserName: 'User name already exists',
+        notFound: 'User not found',
+        cannotDeleteSelf: 'Cannot delete yourself',
+        selfLockForbidden: 'Cannot remove your own super admin role or disable yourself'
+      }
     },
     system: { notFound: 'Resource not found', forbidden: 'Permission denied', internal: 'Internal server error' }
   }

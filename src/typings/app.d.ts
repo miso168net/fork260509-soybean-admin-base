@@ -323,7 +323,12 @@ declare namespace App {
         common: { success: string };
         auth: { login: { failed: string }; token: { expired: string }; session: { kicked: string; reLogin: string } };
         // [rev3-inline 008-system-settings ★] biz.systemSettings 錯誤 key（⚠️y canonical backend.<root>.<entity>.<condition>；保留原 error）
-        biz: { error: string; systemSettings: { invalidValue: string; notFound: string } };
+        // [rev3-inline 009-user-management I18N(iii) ★] biz.user 4 鍵（duplicateUserName/notFound/cannotDeleteSelf/selfLockForbidden）
+        biz: {
+          error: string;
+          systemSettings: { invalidValue: string; notFound: string };
+          user: { duplicateUserName: string; notFound: string; cannotDeleteSelf: string; selfLockForbidden: string };
+        };
         system: { notFound: string; forbidden: string; internal: string };
       };
       // [rev3-inline I18N(iii) ⚠️aa END]

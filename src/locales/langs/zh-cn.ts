@@ -708,9 +708,16 @@ const local: App.I18n.Schema = {
       session: { kicked: '账号在他处登录', reLogin: '请重新登录' }
     },
     // [rev3-inline 008-system-settings ★] biz.systemSettings 错误译文（⚠️y canonical）
+    // [rev3-inline 009-user-management ★] biz.user 错误译文（4 键）
     biz: {
       error: '业务错误',
-      systemSettings: { invalidValue: '设定值不符合型别', notFound: '设定键不存在' }
+      systemSettings: { invalidValue: '设定值不符合型别', notFound: '设定键不存在' },
+      user: {
+        duplicateUserName: '使用者帐号已存在',
+        notFound: '找不到使用者',
+        cannotDeleteSelf: '不可删除自己',
+        selfLockForbidden: '不可移除自身的超级管理员角色或停用自己'
+      }
     },
     system: { notFound: '接口不存在', forbidden: '权限不足', internal: '服务器内部错误' }
   }

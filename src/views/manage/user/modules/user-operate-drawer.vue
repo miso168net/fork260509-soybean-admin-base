@@ -3,6 +3,8 @@ import { computed, ref, watch } from 'vue';
 import { jsonClone } from '@sa/utils';
 import { enableStatusOptions, userGenderOptions } from '@/constants/business';
 import { fetchGetAllRoles } from '@/service/api';
+// [rev3-inline 009-user-management MW(a)] 寫端 wrapper 直接路徑 import（非 barrel）
+import { fetchAddUser, fetchUpdateUser } from '@/service/api/rev3-system-manage';
 import { useFormRules, useNaiveForm } from '@/hooks/common/form';
 import { $t } from '@/locales';
 
@@ -78,15 +80,8 @@ async function getRoleOptions() {
       value: item.roleCode
     }));
 
-    // the mock data does not have the roleCode, so fill it
-    // if the real request, remove the following code
-    const userRoleOptions = model.value.userRoles.map(item => ({
-      label: item,
-      value: item
-    }));
-    // end
-
-    roleOptions.value = [...userRoleOptions, ...options];
+    // [rev3-inline 009-user-management MW(a)] 移除原 mock workaround 區塊（真 getAllRoles，chip 顯真 code）
+    roleOptions.value = options;
   }
 }
 
@@ -104,10 +99,18 @@ function closeDrawer() {
 
 async function handleSubmit() {
   await validate();
-  // request
-  window.$message?.success($t('common.updateSuccess'));
-  closeDrawer();
-  emit('submitted');
+  // [rev3-inline 009-user-management MW(a)] 原 stub：window.$message?.success($t('common.updateSuccess'));closeDrawer();emit('submitted');
+  // 分支 add/edit 真發 request；id 轉字串在 wrapper 內處理（updateUser）
+  const { error } =
+    props.operateType === 'add'
+      ? await fetchAddUser(model.value)
+      : await fetchUpdateUser({ ...model.value, id: props.rowData!.id });
+
+  if (!error) {
+    window.$message?.success($t(props.operateType === 'add' ? 'common.addSuccess' : 'common.updateSuccess'));
+    closeDrawer();
+    emit('submitted');
+  }
 }
 
 watch(visible, () => {
