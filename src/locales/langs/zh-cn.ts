@@ -715,6 +715,7 @@ const local: App.I18n.Schema = {
     // [rev3-inline 008-system-settings ★] biz.systemSettings 错误译文（⚠️y canonical）
     // [rev3-inline 009-user-management ★] biz.user 错误译文（4 键）
     // [rev3-inline 010-menu-management ★] biz.menu 错误译文（8 键、与后端 biz.menu.<condition> 对齐）
+    // [rev3-inline 011-role-management ★] biz.role 错误译文（6 键、含 menuProtected＝受保护选单可见性不可移除）
     biz: {
       error: '业务错误',
       systemSettings: { invalidValue: '设定值不符合型别', notFound: '设定键不存在' },
@@ -733,6 +734,14 @@ const local: App.I18n.Schema = {
         protectedFixed: '受保护的系统选单父层固定、不可搬移',
         protectedNoDelete: '受保护的系统选单不可删除',
         hasActiveChildren: '选单仍有启用中的子选单、不可删除'
+      },
+      role: {
+        duplicateRoleCode: '角色代码已存在',
+        notFound: '找不到角色',
+        seededProtected: '受保护的系统角色不可删除',
+        inUse: '角色仍有使用者指派、不可删除',
+        cannotDeleteSelfRole: '不可删除自身的角色',
+        menuProtected: '受保护的系统选单可见性不可移除'
       }
     },
     system: { notFound: '接口不存在', forbidden: '权限不足', internal: '服务器内部错误' }

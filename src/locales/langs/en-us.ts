@@ -719,6 +719,7 @@ const local: App.I18n.Schema = {
     // [rev3-inline 008-system-settings ★] biz.systemSettings error translations (⚠️y canonical)
     // [rev3-inline 009-user-management ★] biz.user error translations (4 keys)
     // [rev3-inline 010-menu-management ★] biz.menu error translations (8 keys, aligned with backend biz.menu.<condition>)
+    // [rev3-inline 011-role-management ★] biz.role error translations (6 keys, incl. menuProtected = protected menu visibility cannot be removed)
     biz: {
       error: 'Operation failed',
       systemSettings: { invalidValue: 'Value does not match the expected type', notFound: 'Setting key not found' },
@@ -737,6 +738,14 @@ const local: App.I18n.Schema = {
         protectedFixed: 'Protected system menu has a fixed parent and cannot be moved',
         protectedNoDelete: 'Protected system menu cannot be deleted',
         hasActiveChildren: 'Menu still has active child menus and cannot be deleted'
+      },
+      role: {
+        duplicateRoleCode: 'Role code already exists',
+        notFound: 'Role not found',
+        seededProtected: 'Protected system role cannot be deleted',
+        inUse: 'Role still has users assigned and cannot be deleted',
+        cannotDeleteSelfRole: 'Cannot delete your own role',
+        menuProtected: 'Protected menu visibility cannot be removed'
       }
     },
     system: { notFound: 'Resource not found', forbidden: 'Permission denied', internal: 'Internal server error' }

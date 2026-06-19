@@ -325,6 +325,7 @@ declare namespace App {
         // [rev3-inline 008-system-settings ★] biz.systemSettings 錯誤 key（⚠️y canonical backend.<root>.<entity>.<condition>；保留原 error）
         // [rev3-inline 009-user-management I18N(iii) ★] biz.user 4 鍵（duplicateUserName/notFound/cannotDeleteSelf/selfLockForbidden）
         // [rev3-inline 010-menu-management I18N(iii) ★] biz.menu 8 鍵（與後端 biz.menu.<condition> 對齊；攔截器自動 $t('backend.'+msg)）
+        // [rev3-inline 011-role-management I18N(iii) ★] biz.role 6 鍵（含 menuProtected＝②protected-reject；與後端 biz.role.<condition> 對齊）
         biz: {
           error: string;
           systemSettings: { invalidValue: string; notFound: string };
@@ -338,6 +339,14 @@ declare namespace App {
             protectedFixed: string;
             protectedNoDelete: string;
             hasActiveChildren: string;
+          };
+          role: {
+            duplicateRoleCode: string;
+            notFound: string;
+            seededProtected: string;
+            inUse: string;
+            cannotDeleteSelfRole: string;
+            menuProtected: string;
           };
         };
         system: { notFound: string; forbidden: string; internal: string };

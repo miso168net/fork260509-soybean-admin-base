@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import { computed, shallowRef, watch } from 'vue';
 import { fetchGetAllPages, fetchGetMenuTree } from '@/service/api';
+// [rev3-inline 011-role-management MW(a)] 角色×選單授權＋角色首頁 wrapper 直接路徑 import（非 barrel）
+import { fetchGetRoleHome, fetchGetRoleMenu, fetchUpdateRoleHome, fetchUpdateRoleMenu } from '@/service/api/rev3-system-manage';
 import { $t } from '@/locales';
 
 defineOptions({
@@ -27,15 +29,21 @@ const title = computed(() => $t('common.edit') + $t('page.manage.role.menuAuth')
 const home = shallowRef('');
 
 async function getHome() {
-  console.log(props.roleId);
+  // [rev3-inline 011-role-management MW(a)] 原 stub：console.log(props.roleId);home.value='home';
+  const { error, data } = await fetchGetRoleHome(props.roleId);
 
-  home.value = 'home';
+  if (!error) {
+    home.value = data;
+  }
 }
 
 async function updateHome(val: string) {
-  // request
+  // [rev3-inline 011-role-management MW(a)] 原 stub：home.value = val;（真發 updateRoleHome、成功才落地新值）
+  const { error } = await fetchUpdateRoleHome(props.roleId, val);
 
-  home.value = val;
+  if (!error) {
+    home.value = val;
+  }
 }
 
 const pages = shallowRef<string[]>([]);
@@ -70,18 +78,23 @@ async function getTree() {
 const checks = shallowRef<number[]>([]);
 
 async function getChecks() {
-  console.log(props.roleId);
-  // request
-  checks.value = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21];
+  // [rev3-inline 011-role-management MW(a)] 原 stub：checks.value=[1..21] hardcode（真發 getRoleMenu，回 number[]＝該角色已授權選單 id）
+  const { error, data } = await fetchGetRoleMenu(props.roleId);
+
+  if (!error) {
+    checks.value = data;
+  }
 }
 
-function handleSubmit() {
-  console.log(checks.value, props.roleId);
-  // request
+async function handleSubmit() {
+  // [rev3-inline 011-role-management MW(a)] 原 stub：window.$message?.success?.($t('common.modifySuccess'));closeModal();
+  // ★ 真發 updateRoleMenu（DB-first casbin WRITE）；移除受保護選單→後端 2222 menuProtected→攔截器自動在地化 toast（非靜默）
+  const { error } = await fetchUpdateRoleMenu(props.roleId, checks.value);
 
-  window.$message?.success?.($t('common.modifySuccess'));
-
-  closeModal();
+  if (!error) {
+    window.$message?.success?.($t('common.modifySuccess'));
+    closeModal();
+  }
 }
 
 function init() {

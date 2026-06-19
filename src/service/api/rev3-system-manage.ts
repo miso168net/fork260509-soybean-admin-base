@@ -143,3 +143,124 @@ export function fetchGetMenuListV2() {
     method: 'get'
   });
 }
+
+// [rev3-inline 011-role-management WRAPPER §10/§7] 角色寫端＋角色×選單授權＋角色首頁 wrapper
+// fork-delta：不改既有 system-manage.ts（讀端 getRoleList/getAllRoles 仍用之）；本檔僅新增寫端
+// wire 事實（contract §5、⚠️r）：管理域 Role.id＝number；單 body id→String(id)（沿 009 ⚠️o，addRole 無 id）；
+//   ★ getRoleMenu/updateRoleMenu 的 roleId/menuIds【維持 number、不轉 String】（獨立參數、與單 body id 非對稱、刻意 ⚠️r）
+
+/**
+ * add role
+ *
+ * @param model role upsert model（無 id）
+ */
+export function fetchAddRole(model: Api.SystemManage.RoleUpsertModel) {
+  return request<null>({
+    url: '/systemManage/addRole',
+    method: 'post',
+    data: model
+  });
+}
+
+/**
+ * update role
+ *
+ * wire 事實（沿 009 ⚠️o）：後端 RoleUpsertReq.id 走【字串】；前端 table id 是 number → 送出時 String(id) 轉字串
+ *
+ * @param model role upsert model（含 id）
+ */
+export function fetchUpdateRole(model: Api.SystemManage.RoleUpsertModel) {
+  return request<null>({
+    url: '/systemManage/updateRole',
+    method: 'post',
+    data: { ...model, id: String(model.id) }
+  });
+}
+
+/**
+ * delete role（soft-delete；delete guards：seeded/in-use/self → 2222）
+ *
+ * @param id role id（number → String 轉字串對齊後端 String 欄）
+ */
+export function fetchDeleteRole(id: number) {
+  return request<null>({
+    url: '/systemManage/deleteRole',
+    method: 'delete',
+    data: { id: String(id) }
+  });
+}
+
+/**
+ * batch delete role（soft-delete；逐項獨立驗證、整批拒）
+ *
+ * @param ids role id 集（number → String 轉字串對齊後端 String 欄）
+ */
+export function fetchBatchDeleteRole(ids: (number | string)[]) {
+  return request<null>({
+    url: '/systemManage/batchDeleteRole',
+    method: 'delete',
+    data: { ids: ids.map(String) }
+  });
+}
+
+/**
+ * get role menu（角色已授權選單 id 集；讀端復用 010 menu_routes_for_roles）
+ *
+ * ★ wire 事實（⚠️r）：roleId【維持 number、不轉 String】（query 獨立參數）；回 number[]（menu id、orphan route_name skip）
+ *
+ * @param roleId role id（number）
+ */
+export function fetchGetRoleMenu(roleId: number) {
+  return request<number[]>({
+    url: '/systemManage/getRoleMenu',
+    method: 'get',
+    params: { roleId }
+  });
+}
+
+/**
+ * update role menu（★ DB-first casbin policy WRITE、constitution §I.7 §4.2）
+ *
+ * ★ wire 事實（⚠️r）：roleId/menuIds【維持 number/number[]、不轉 String】；移除受保護選單→後端 2222 menuProtected
+ *
+ * @param roleId role id（number）
+ * @param menuIds 授權選單 id 集（number[]）
+ */
+export function fetchUpdateRoleMenu(roleId: number, menuIds: number[]) {
+  return request<null>({
+    url: '/systemManage/updateRoleMenu',
+    method: 'post',
+    data: { roleId, menuIds }
+  });
+}
+
+/**
+ * get role home（角色登入導向首頁 route_name；entity 讀、default "home"）
+ *
+ * ★ wire 事實（⚠️r）：roleId【維持 number、不轉 String】（query 獨立參數）；回 string
+ *
+ * @param roleId role id（number）
+ */
+export function fetchGetRoleHome(roleId: number) {
+  return request<string>({
+    url: '/systemManage/getRoleHome',
+    method: 'get',
+    params: { roleId }
+  });
+}
+
+/**
+ * update role home（角色登入導向首頁；entity 寫、原子 op-log）
+ *
+ * ★ wire 事實（⚠️r）：roleId【維持 number、不轉 String】；home 選項來自 010 getAllPages
+ *
+ * @param roleId role id（number）
+ * @param home 首頁 route_name（string）
+ */
+export function fetchUpdateRoleHome(roleId: number, home: string) {
+  return request<null>({
+    url: '/systemManage/updateRoleHome',
+    method: 'post',
+    data: { roleId, home }
+  });
+}

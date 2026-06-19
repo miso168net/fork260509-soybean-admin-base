@@ -62,5 +62,16 @@ declare namespace Api {
       deleted?: boolean;
       children?: MenuListItem[] | null;
     };
+
+    // [rev3-inline 011-role-management ADAPT §10 L1/L2] 角色寫端 DTO 型（declaration-merge、不改既有 Role）
+    /**
+     * role upsert model（addRole/updateRole write DTO）
+     *
+     * - id 可選：add 無 id、update 有 id
+     * - id 型用 number 對齊 component（Role.id:number / table id:number）；
+     *   wrapper 內 String(id) 轉字串對齊後端 String 欄（見 rev3-system-manage.ts）
+     * - Pick 鍵與既有 Role 實際欄一致（role-operate-drawer Model 子集）
+     */
+    type RoleUpsertModel = Pick<Role, 'roleName' | 'roleCode' | 'roleDesc' | 'status'> & { id?: number };
   }
 }
