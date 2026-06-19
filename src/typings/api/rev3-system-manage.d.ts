@@ -73,5 +73,136 @@ declare namespace Api {
      * - Pick 鍵與既有 Role 實際欄一致（role-operate-drawer Model 子集）
      */
     type RoleUpsertModel = Pick<Role, 'roleName' | 'roleCode' | 'roleDesc' | 'status'> & { id?: number };
+
+    // [rev3-inline 012-audit-log-query ADAPT] 審計查詢讀端 3 item／3 SearchParams／3 List（honest 逐欄、不套 Common.CommonRecord）
+    // wire 事實（主線親抓實機 JSON 對齊；端點皆 R_SUPER GET、回 PageRes{current,size,total,records}、code 0000）
+    //   ★ payload 型＝unknown|null（實測 casbin 列＝string[]、role/user 列＝物件、是任意 JSON；用 Record 會型謊）
+    //   ★ nullable 欄逐欄標 |null（operatorName/operatorIp/traceId/xForwardedFor/region/entityId 等）
+
+    /**
+     * operation log item（GET getOperationLog；操作異動稽核列）
+     *
+     * - operation：enum 字串 INSERT|UPDATE|SOFT_DELETE|RESTORE
+     * - operatorIp：host 去 mask 字串、可 null
+     * - payloadBefore/After：任意 JSON（casbin 列=string[]、role/user 列=物件）→ unknown|null、展開列 JSON.stringify 渲染
+     */
+    type OperationLogItem = {
+      id: number;
+      operation: string;
+      entityTable: string;
+      entityId: number | null;
+      operatorId: number | null;
+      operatorName: string | null;
+      operatorIp: string | null;
+      traceId: string | null;
+      createTime: string;
+      payloadBefore: unknown | null;
+      payloadAfter: unknown | null;
+    };
+
+    /**
+     * access log item（GET getAccessLog；API 存取稽核列）
+     *
+     * - operatorId：NOT NULL（已認證請求記錄）
+     * - clientIp：解析後 IP；xForwardedFor：原始 XFF 標頭、可 null
+     * - region：ip2region 字串（如 "0|0|0|内网IP|内网IP"）、可 null
+     */
+    type AccessLogItem = {
+      id: number;
+      operatorId: number;
+      operatorName: string | null;
+      method: string;
+      path: string;
+      httpStatus: number;
+      clientIp: string;
+      xForwardedFor: string | null;
+      region: string | null;
+      traceId: string | null;
+      createTime: string;
+    };
+
+    /**
+     * login attempt item（GET getLoginAttempt；登入嘗試稽核列）
+     *
+     * - attemptedUserName：嘗試帳號（成敗皆記）
+     * - success：成敗 bool；operatorId/operatorName：成功時可解析、失敗時 null
+     */
+    type LoginAttemptItem = {
+      id: number;
+      attemptedUserName: string;
+      success: boolean;
+      operatorId: number | null;
+      operatorName: string | null;
+      clientIp: string;
+      xForwardedFor: string | null;
+      region: string | null;
+      createTime: string;
+    };
+
+    /**
+     * operation log search params（filter 欄 optional + current/size）
+     *
+     * - 文字/IP 模糊：entityTable/operatorName/operatorIp/traceId；下拉精確：operation
+     * - entityId 精確；createdFrom/createdTo＝ISO/RFC3339 字串範圍
+     */
+    type OperationLogSearchParams = CommonType.RecordNullable<
+      {
+        entityTable: string;
+        operation: string;
+        operatorName: string;
+        operatorIp: string;
+        entityId: number;
+        traceId: string;
+        createdFrom: string;
+        createdTo: string;
+      } & CommonSearchParams
+    >;
+
+    /**
+     * access log search params（filter 欄 optional + current/size）
+     *
+     * - 文字模糊：operatorName/path/clientIp/xForwardedFor/region；下拉精確：method；httpStatus 精確
+     * - createdFrom/createdTo＝ISO/RFC3339 字串範圍
+     */
+    type AccessLogSearchParams = CommonType.RecordNullable<
+      {
+        operatorName: string;
+        method: string;
+        path: string;
+        httpStatus: number;
+        clientIp: string;
+        xForwardedFor: string;
+        region: string;
+        createdFrom: string;
+        createdTo: string;
+      } & CommonSearchParams
+    >;
+
+    /**
+     * login attempt search params（filter 欄 optional + current/size）
+     *
+     * - 文字模糊：attemptedUserName/clientIp/xForwardedFor/region；下拉精確：success（bool）
+     * - createdFrom/createdTo＝ISO/RFC3339 字串範圍
+     */
+    type LoginAttemptSearchParams = CommonType.RecordNullable<
+      {
+        attemptedUserName: string;
+        success: boolean;
+        clientIp: string;
+        xForwardedFor: string;
+        region: string;
+        createdFrom: string;
+        createdTo: string;
+      } & CommonSearchParams
+    >;
+
+    /** operation log list（PageRes 分頁包） */
+    type OperationLogList = Common.PaginatingQueryRecord<OperationLogItem>;
+
+    /** access log list（PageRes 分頁包） */
+    type AccessLogList = Common.PaginatingQueryRecord<AccessLogItem>;
+
+    /** login attempt list（PageRes 分頁包） */
+    type LoginAttemptList = Common.PaginatingQueryRecord<LoginAttemptItem>;
   }
 }

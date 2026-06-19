@@ -348,6 +348,10 @@ declare namespace App {
             cannotDeleteSelfRole: string;
             menuProtected: string;
           };
+          // [rev3-inline 012-audit-log-query I18N(iii) ★] biz.audit（畸形日期範圍；對齊後端 biz.audit.invalidDateRange）
+          audit: {
+            invalidDateRange: string;
+          };
         };
         system: { notFound: string; forbidden: string; internal: string };
       };
@@ -857,6 +861,60 @@ declare namespace App {
           // [rev3-inline MODAL-WIRING(e) §III.2 008-system-settings ★] 系統設定頁標籤
           systemSettings: {
             title: string;
+          };
+          // [rev3-inline 012-audit-log-query ★] 審計中心頁（單頁三分頁；先 Schema 後 locale）
+          audit: {
+            title: string;
+            tab: {
+              operation: string;
+              access: string;
+              login: string;
+            };
+            col: {
+              time: string;
+              operator: string;
+              operation: string;
+              entityTable: string;
+              entityId: string;
+              ip: string;
+              traceId: string;
+              method: string;
+              path: string;
+              status: string;
+              region: string;
+              account: string;
+              result: string;
+              payloadBefore: string;
+              payloadAfter: string;
+            };
+            filter: {
+              entityTable: string;
+              operation: string;
+              operatorName: string;
+              operatorIp: string;
+              entityId: string;
+              traceId: string;
+              method: string;
+              path: string;
+              status: string;
+              clientIp: string;
+              xForwardedFor: string;
+              region: string;
+              account: string;
+              result: string;
+              dateRange: string;
+            };
+            operationType: {
+              insert: string;
+              update: string;
+              softDelete: string;
+              restore: string;
+            };
+            resultOption: {
+              success: string;
+              failure: string;
+            };
+            empty: string;
           };
         };
       };

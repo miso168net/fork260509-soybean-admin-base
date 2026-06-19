@@ -271,6 +271,8 @@ const local: App.I18n.Schema = {
     manage_menu: 'Menu Manage',
     // [rev3-inline 008-system-settings ★] route menu title (mirrors m002:251 i18n_key route.manage_system-settings)
     'manage_system-settings': 'System Settings',
+    // [rev3-inline 012-audit-log-query ★] route menu title (mirrors m005 i18n_key route.manage_audit)
+    manage_audit: 'Audit Center',
     'multi-menu': 'Multi Menu',
     'multi-menu_first': 'Menu One',
     'multi-menu_first_child': 'Menu One Child',
@@ -649,6 +651,60 @@ const local: App.I18n.Schema = {
       // [rev3-inline 008-system-settings ★] system settings page labels
       systemSettings: {
         title: 'System Settings'
+      },
+      // [rev3-inline 012-audit-log-query ★] audit center page (single page, three tabs)
+      audit: {
+        title: 'Audit Center',
+        tab: {
+          operation: 'Operation Log',
+          access: 'API Access',
+          login: 'Login Attempt'
+        },
+        col: {
+          time: 'Time',
+          operator: 'Operator',
+          operation: 'Operation',
+          entityTable: 'Table',
+          entityId: 'Entity ID',
+          ip: 'Source IP',
+          traceId: 'Trace ID',
+          method: 'Method',
+          path: 'Path',
+          status: 'Status',
+          region: 'Region',
+          account: 'Account',
+          result: 'Result',
+          payloadBefore: 'Before',
+          payloadAfter: 'After'
+        },
+        filter: {
+          entityTable: 'Please enter table',
+          operation: 'Please select operation',
+          operatorName: 'Please enter operator name',
+          operatorIp: 'Please enter source IP',
+          entityId: 'Please enter entity ID',
+          traceId: 'Please enter trace ID',
+          method: 'Please select method',
+          path: 'Please enter path',
+          status: 'Please enter status code',
+          clientIp: 'Please enter source IP',
+          xForwardedFor: 'Please enter X-Forwarded-For',
+          region: 'Please enter region',
+          account: 'Please enter account',
+          result: 'Please select result',
+          dateRange: 'Please select date range'
+        },
+        operationType: {
+          insert: 'Insert',
+          update: 'Update',
+          softDelete: 'Soft Delete',
+          restore: 'Restore'
+        },
+        resultOption: {
+          success: 'Success',
+          failure: 'Failure'
+        },
+        empty: '—'
       }
     }
   },
@@ -746,6 +802,10 @@ const local: App.I18n.Schema = {
         inUse: 'Role still has users assigned and cannot be deleted',
         cannotDeleteSelfRole: 'Cannot delete your own role',
         menuProtected: 'Protected menu visibility cannot be removed'
+      },
+      // [rev3-inline 012-audit-log-query I18N(iii) ★] biz.audit (invalid date range; interceptor auto $t('backend.'+msg))
+      audit: {
+        invalidDateRange: 'Invalid date range'
       }
     },
     system: { notFound: 'Resource not found', forbidden: 'Permission denied', internal: 'Internal server error' }

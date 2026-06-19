@@ -267,6 +267,8 @@ const local: App.I18n.Schema = {
     manage_menu: '菜单管理',
     // [rev3-inline 008-system-settings ★] route 菜单标题（对齐 m002:251 i18n_key route.manage_system-settings）
     'manage_system-settings': '系统设置',
+    // [rev3-inline 012-audit-log-query ★] route 菜单标题（对齐 m005 i18n_key route.manage_audit）
+    manage_audit: '审计中心',
     'multi-menu': '多级菜单',
     'multi-menu_first': '菜单一',
     'multi-menu_first_child': '菜单一子菜单',
@@ -645,6 +647,60 @@ const local: App.I18n.Schema = {
       // [rev3-inline 008-system-settings ★] 系统设置页标签
       systemSettings: {
         title: '系统设置'
+      },
+      // [rev3-inline 012-audit-log-query ★] 审计中心页（单页三分页）
+      audit: {
+        title: '审计中心',
+        tab: {
+          operation: '操作异动',
+          access: 'API 存取',
+          login: '登录尝试'
+        },
+        col: {
+          time: '时间',
+          operator: '操作者',
+          operation: '操作类型',
+          entityTable: '资料表',
+          entityId: '识别码',
+          ip: '来源IP',
+          traceId: '追踪码',
+          method: '方法',
+          path: '路径',
+          status: '状态码',
+          region: '地区',
+          account: '尝试帐号',
+          result: '结果',
+          payloadBefore: '异动前',
+          payloadAfter: '异动后'
+        },
+        filter: {
+          entityTable: '请输入资料表',
+          operation: '请选择操作类型',
+          operatorName: '请输入操作者名称',
+          operatorIp: '请输入来源IP',
+          entityId: '请输入识别码',
+          traceId: '请输入追踪码',
+          method: '请选择方法',
+          path: '请输入路径',
+          status: '请输入状态码',
+          clientIp: '请输入来源IP',
+          xForwardedFor: '请输入 X-Forwarded-For',
+          region: '请输入地区',
+          account: '请输入尝试帐号',
+          result: '请选择结果',
+          dateRange: '请选择时间范围'
+        },
+        operationType: {
+          insert: '新增',
+          update: '更新',
+          softDelete: '软删除',
+          restore: '复原'
+        },
+        resultOption: {
+          success: '成功',
+          failure: '失败'
+        },
+        empty: '—'
       }
     }
   },
@@ -742,6 +798,10 @@ const local: App.I18n.Schema = {
         inUse: '角色仍有使用者指派、不可删除',
         cannotDeleteSelfRole: '不可删除自身的角色',
         menuProtected: '受保护的系统选单可见性不可移除'
+      },
+      // [rev3-inline 012-audit-log-query I18N(iii) ★] biz.audit（畸形日期范围；攔截器自动 $t('backend.'+msg)）
+      audit: {
+        invalidDateRange: '日期范围格式不正确'
       }
     },
     system: { notFound: '接口不存在', forbidden: '权限不足', internal: '服务器内部错误' }

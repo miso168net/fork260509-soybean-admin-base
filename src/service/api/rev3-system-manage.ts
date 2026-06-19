@@ -264,3 +264,69 @@ export function fetchUpdateRoleHome(roleId: number, home: string) {
     data: { roleId, home }
   });
 }
+
+// [rev3-inline 012-audit-log-query WRAPPER] 審計查詢 3 唯讀讀端 wrapper（鏡像 fetchGetRoleList 形）
+// fork-delta：不改既有 system-manage.ts；本檔僅新增讀端；皆 R_SUPER GET、回 PageRes 分頁包
+// filter query 參數 camelCase、皆 optional；rust handler 空字串守門→當未設、畸形日期→2222（biz.audit.invalidDateRange）
+
+/**
+ * 剔除未設 filter（null/undefined/空字串）後再送出。
+ *
+ * 必要性（CDP smoke 接住、curl≠modal）：axios 用 qs.stringify 序列化、null 值會變成 `key=` 空字串送出。
+ * 多數 string 欄後端有空字串守門（當未設），但 op-log 的【數字欄 entity_id＝Option<i64> 直接 serde】
+ * 對 `entityId=` 空字串會 deserialize 失敗 → HTTP 400（cannot parse integer from empty string、整頁掛掉）。
+ * 在 wrapper 端把未設 filter 剔除（= 乾淨 query、對齊「未設＝參數缺席」語意），3 端點一致處理。
+ */
+function pruneNullParams<T extends Record<string, unknown>>(params?: T): Partial<T> | undefined {
+  if (!params) {
+    return params;
+  }
+
+  const result: Record<string, unknown> = {};
+  Object.entries(params).forEach(([key, value]) => {
+    if (value !== null && value !== undefined && value !== '') {
+      result[key] = value;
+    }
+  });
+
+  return result as Partial<T>;
+}
+
+/**
+ * get operation log（操作異動稽核；GET、R_SUPER）
+ *
+ * @param params operation log search params（filter + 分頁，皆 optional）
+ */
+export function fetchGetOperationLog(params?: Api.SystemManage.OperationLogSearchParams) {
+  return request<Api.SystemManage.OperationLogList>({
+    url: '/systemManage/getOperationLog',
+    method: 'get',
+    params: pruneNullParams(params)
+  });
+}
+
+/**
+ * get access log（API 存取稽核；GET、R_SUPER）
+ *
+ * @param params access log search params（filter + 分頁，皆 optional）
+ */
+export function fetchGetAccessLog(params?: Api.SystemManage.AccessLogSearchParams) {
+  return request<Api.SystemManage.AccessLogList>({
+    url: '/systemManage/getAccessLog',
+    method: 'get',
+    params: pruneNullParams(params)
+  });
+}
+
+/**
+ * get login attempt（登入嘗試稽核；GET、R_SUPER）
+ *
+ * @param params login attempt search params（filter + 分頁，皆 optional）
+ */
+export function fetchGetLoginAttempt(params?: Api.SystemManage.LoginAttemptSearchParams) {
+  return request<Api.SystemManage.LoginAttemptList>({
+    url: '/systemManage/getLoginAttempt',
+    method: 'get',
+    params: pruneNullParams(params)
+  });
+}
