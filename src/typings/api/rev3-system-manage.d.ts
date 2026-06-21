@@ -2,6 +2,10 @@
 // fork-delta：不改既有 system-manage.d.ts；本檔僅【新增】寫端 write DTO
 declare namespace Api {
   namespace SystemManage {
+    // [rev3-inline 014-auth-token-session ADAPT US2] per-user session 策略 wire literal union（對齊 rust honest emit inherit/on/off）
+    //   ★ honest wire：getUserList item runtime JSON 含 sessionPolicy（型未在 frozen User 宣告）；resolve_policy 用之決 7777
+    type SessionPolicy = 'inherit' | 'on' | 'off';
+
     /**
      * user upsert model（addUser/updateUser write DTO）
      *
@@ -10,11 +14,16 @@ declare namespace Api {
      *   wrapper 內 String(id) 轉字串對齊後端 String 欄（見 rev3-system-manage.ts）
      * - 無 password（後端 UserUpsertReq 不含 password）
      * - userRoles wire＝sys_role.code[]（讀寫皆 code）
+     * - [014] sessionPolicy 用【intersection】加（User frozen 無此欄、不可塞 Pick tuple）；optional、create 端可不送（後端 default inherit）
      */
     type UserUpsertModel = Pick<
       User,
       'userName' | 'userGender' | 'nickName' | 'userPhone' | 'userEmail' | 'userRoles' | 'status'
-    > & { id?: number };
+    > & { id?: number; sessionPolicy?: SessionPolicy };
+
+    // [rev3-inline 014-auth-token-session ADAPT US2] getUserList honest list-item 型
+    //   ★ rust wire 確實 emit sessionPolicy（camelCase）；frozen User 未宣告 → 以 intersection 補供 drawer edit 讀 rowData.sessionPolicy
+    type UserListItemRev3 = User & { sessionPolicy: SessionPolicy };
 
     // [rev3-inline 010-menu-management ADAPT §9 L1/L2] 選單寫端 DTO 型＋統一清單 deleted flag（declaration-merge、不改既有 Menu/Api.Route）
     /**

@@ -14,6 +14,15 @@ export const userGenderRecord: Record<Api.SystemManage.UserGender, App.I18n.I18n
 
 export const userGenderOptions = transformRecordToOption(userGenderRecord);
 
+// [rev3-inline 014-auth-token-session MW(a)] per-user session 策略選項（鏡像 userGenderRecord；inherit/on/off honest wire）
+export const sessionPolicyRecord: Record<Api.SystemManage.SessionPolicy, App.I18n.I18nKey> = {
+  inherit: 'page.manage.user.sessionPolicy.inherit',
+  on: 'page.manage.user.sessionPolicy.on',
+  off: 'page.manage.user.sessionPolicy.off'
+};
+
+export const sessionPolicyOptions = transformRecordToOption(sessionPolicyRecord);
+
 export const menuTypeRecord: Record<Api.SystemManage.MenuType, App.I18n.I18nKey> = {
   '1': 'page.manage.menu.type.directory',
   '2': 'page.manage.menu.type.menu'

@@ -559,6 +559,7 @@ const local: App.I18n.Schema = {
         userEmail: 'Email',
         userStatus: 'User Status',
         userRole: 'User Role',
+        sessionPolicyLabel: 'Session Policy',
         form: {
           userName: 'Please enter user name',
           userGender: 'Please select gender',
@@ -566,13 +567,19 @@ const local: App.I18n.Schema = {
           userPhone: 'Please enter phone number',
           userEmail: 'Please enter email',
           userStatus: 'Please select user status',
-          userRole: 'Please select user role'
+          userRole: 'Please select user role',
+          sessionPolicy: 'Please select session policy'
         },
         addUser: 'Add User',
         editUser: 'Edit User',
         gender: {
           male: 'Male',
           female: 'Female'
+        },
+        sessionPolicy: {
+          inherit: 'Inherit',
+          on: 'On',
+          off: 'Off'
         }
       },
       menu: {
@@ -802,7 +809,8 @@ const local: App.I18n.Schema = {
         duplicateUserName: 'User name already exists',
         notFound: 'User not found',
         cannotDeleteSelf: 'Cannot delete yourself',
-        selfLockForbidden: 'Cannot remove your own super admin role or disable yourself'
+        selfLockForbidden: 'Cannot remove your own super admin role or disable yourself',
+        invalidSessionPolicy: 'Invalid session policy'
       },
       menu: {
         duplicateRouteName: 'Route name already exists',

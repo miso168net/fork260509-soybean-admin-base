@@ -555,6 +555,7 @@ const local: App.I18n.Schema = {
         userEmail: '邮箱',
         userStatus: '用户状态',
         userRole: '用户角色',
+        sessionPolicyLabel: '会话策略',
         form: {
           userName: '请输入用户名',
           userGender: '请选择性别',
@@ -562,13 +563,19 @@ const local: App.I18n.Schema = {
           userPhone: '请输入手机号',
           userEmail: '请输入邮箱',
           userStatus: '请选择用户状态',
-          userRole: '请选择用户角色'
+          userRole: '请选择用户角色',
+          sessionPolicy: '请选择会话策略'
         },
         addUser: '新增用户',
         editUser: '编辑用户',
         gender: {
           male: '男',
           female: '女'
+        },
+        sessionPolicy: {
+          inherit: '继承',
+          on: '启用',
+          off: '禁用'
         }
       },
       menu: {
@@ -798,7 +805,8 @@ const local: App.I18n.Schema = {
         duplicateUserName: '使用者帐号已存在',
         notFound: '找不到使用者',
         cannotDeleteSelf: '不可删除自己',
-        selfLockForbidden: '不可移除自身的超级管理员角色或停用自己'
+        selfLockForbidden: '不可移除自身的超级管理员角色或停用自己',
+        invalidSessionPolicy: '无效的会话策略'
       },
       menu: {
         duplicateRouteName: '路由名称已存在',

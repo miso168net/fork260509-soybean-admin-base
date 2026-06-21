@@ -329,7 +329,13 @@ declare namespace App {
         biz: {
           error: string;
           systemSettings: { invalidValue: string; notFound: string };
-          user: { duplicateUserName: string; notFound: string; cannotDeleteSelf: string; selfLockForbidden: string };
+          user: {
+            duplicateUserName: string;
+            notFound: string;
+            cannotDeleteSelf: string;
+            selfLockForbidden: string;
+            invalidSessionPolicy: string;
+          };
           menu: {
             duplicateRouteName: string;
             notFound: string;
@@ -768,6 +774,7 @@ declare namespace App {
             userEmail: string;
             userStatus: string;
             userRole: string;
+            sessionPolicyLabel: string;
             form: {
               userName: string;
               userGender: string;
@@ -776,6 +783,7 @@ declare namespace App {
               userEmail: string;
               userStatus: string;
               userRole: string;
+              sessionPolicy: string;
             };
             addUser: string;
             editUser: string;
@@ -783,6 +791,7 @@ declare namespace App {
               male: string;
               female: string;
             };
+            sessionPolicy: { inherit: string; on: string; off: string };
           };
           menu: {
             home: string;

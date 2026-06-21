@@ -1,11 +1,14 @@
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue';
 import { jsonClone } from '@sa/utils';
-import { enableStatusOptions, userGenderOptions } from '@/constants/business';
+// [rev3-inline 014-auth-token-session MW(a)] sessionPolicyOptions 引入（per-user session 策略下拉）
+import { enableStatusOptions, sessionPolicyOptions, userGenderOptions } from '@/constants/business';
 import { fetchGetAllRoles } from '@/service/api';
 // [rev3-inline 009-user-management MW(a)] 寫端 wrapper 直接路徑 import（非 barrel）
 import { fetchAddUser, fetchUpdateUser } from '@/service/api/rev3-system-manage';
 import { useFormRules, useNaiveForm } from '@/hooks/common/form';
+// [rev3-inline 014-auth-token-session MW(a)] translateOptions（i18n-key → label）供 sessionPolicy NSelect
+import { translateOptions } from '@/utils/common';
 import { $t } from '@/locales';
 
 defineOptions({
@@ -42,10 +45,11 @@ const title = computed(() => {
   return titles[props.operateType];
 });
 
+// [rev3-inline 014-auth-token-session MW(a)] Model 經 intersection 加 sessionPolicy（User frozen 無此欄）
 type Model = Pick<
   Api.SystemManage.User,
   'userName' | 'userGender' | 'nickName' | 'userPhone' | 'userEmail' | 'userRoles' | 'status'
->;
+> & { sessionPolicy: Api.SystemManage.SessionPolicy };
 
 const model = ref(createDefaultModel());
 
@@ -57,7 +61,9 @@ function createDefaultModel(): Model {
     userPhone: '',
     userEmail: '',
     userRoles: [],
-    status: null
+    status: null,
+    // [rev3-inline 014-auth-token-session MW(a)] create 端預設 inherit（C3：override 走編輯；後端 default 亦 inherit）
+    sessionPolicy: 'inherit'
   };
 }
 
@@ -90,6 +96,10 @@ function handleInitModel() {
 
   if (props.operateType === 'edit' && props.rowData) {
     Object.assign(model.value, jsonClone(props.rowData));
+    // [rev3-inline 014-auth-token-session MW(a)] rowData 視為 rev3 honest list-item（rust wire 確 emit sessionPolicy）；
+    //   frozen User 型無此欄 → 顯式讀＋fallback inherit（避免 Object.assign 後型上看不到 sessionPolicy）
+    model.value.sessionPolicy =
+      (props.rowData as Api.SystemManage.UserListItemRev3).sessionPolicy ?? 'inherit';
   }
 }
 
@@ -156,6 +166,15 @@ watch(visible, () => {
             :placeholder="$t('page.manage.user.form.userRole')"
           />
         </NFormItem>
+        <!-- [rev3-inline 014-auth-token-session MW(a)+] per-user session 策略下拉（inherit/on/off；非 required、預設 inherit） -->
+        <NFormItem :label="$t('page.manage.user.sessionPolicyLabel')" path="sessionPolicy">
+          <NSelect
+            v-model:value="model.sessionPolicy"
+            :options="translateOptions(sessionPolicyOptions)"
+            :placeholder="$t('page.manage.user.form.sessionPolicy')"
+          />
+        </NFormItem>
+        <!-- [rev3-inline 014-auth-token-session MW(a)+] END -->
       </NForm>
       <template #footer>
         <NSpace :size="16">
