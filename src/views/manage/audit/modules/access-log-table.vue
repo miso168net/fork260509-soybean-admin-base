@@ -1,6 +1,6 @@
 <script setup lang="tsx">
 import { ref } from 'vue';
-import { NInput, NSelect, NTag } from 'naive-ui';
+import { NInput, NSelect } from 'naive-ui';
 import { fetchGetAccessLog } from '@/service/api/rev3-system-manage';
 import { defaultTransform, useNaivePaginatedTable } from '@/hooks/common/table';
 import { useAppStore } from '@/store/modules/app';
