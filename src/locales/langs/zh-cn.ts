@@ -662,7 +662,11 @@ const local: App.I18n.Schema = {
           operation: '操作类型',
           entityTable: '资料表',
           entityId: '识别码',
-          ip: '来源IP',
+          // [rev3-inline 013-xff-real-ip-forensics ★] 四栏鉴识栏标题（取代原单一 ip 栏）
+          confidence: '可信度',
+          peerIp: '直连 peer',
+          realIp: '真实 IP',
+          xForwardedFor: '转发链',
           traceId: '追踪码',
           method: '方法',
           path: '路径',
@@ -699,6 +703,16 @@ const local: App.I18n.Schema = {
         resultOption: {
           success: '成功',
           failure: '失败'
+        },
+        // [rev3-inline 013-xff-real-ip-forensics ★] ip_confidence 七态 NTag 文字
+        confidenceTag: {
+          cdn_verified: '已验证',
+          cdn_anchored: '位置锚定',
+          proxy_clean: '代理乾净',
+          proxy_soft: '代理软降',
+          direct: '直连',
+          cdn_mismatch: '不符',
+          fallback: '退回'
         },
         empty: '—'
       }

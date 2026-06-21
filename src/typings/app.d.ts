@@ -876,7 +876,11 @@ declare namespace App {
               operation: string;
               entityTable: string;
               entityId: string;
-              ip: string;
+              // [rev3-inline 013-xff-real-ip-forensics ★] 四欄鑑識欄標題（順序 confidence→peerIp→realIp→xForwardedFor；取代原單一 ip 欄）
+              confidence: string;
+              peerIp: string;
+              realIp: string;
+              xForwardedFor: string;
               traceId: string;
               method: string;
               path: string;
@@ -913,6 +917,16 @@ declare namespace App {
             resultOption: {
               success: string;
               failure: string;
+            };
+            // [rev3-inline 013-xff-real-ip-forensics ★] ip_confidence 七態 NTag 文字（對齊 wire literal union）
+            confidenceTag: {
+              cdn_verified: string;
+              cdn_anchored: string;
+              proxy_clean: string;
+              proxy_soft: string;
+              direct: string;
+              cdn_mismatch: string;
+              fallback: string;
             };
             empty: string;
           };

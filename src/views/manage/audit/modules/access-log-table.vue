@@ -1,10 +1,11 @@
 <script setup lang="tsx">
 import { ref } from 'vue';
-import { NInput, NSelect } from 'naive-ui';
+import { NInput, NSelect, NTag } from 'naive-ui';
 import { fetchGetAccessLog } from '@/service/api/rev3-system-manage';
 import { defaultTransform, useNaivePaginatedTable } from '@/hooks/common/table';
 import { useAppStore } from '@/store/modules/app';
 import { $t } from '@/locales';
+import { renderConfidenceTag } from './ip-confidence-tag';
 
 defineOptions({
   name: 'AccessLogTable'
@@ -27,7 +28,7 @@ const searchParams = ref<Api.SystemManage.AccessLogSearchParams>({
   method: null,
   path: null,
   httpStatus: null,
-  clientIp: null,
+  realIp: null,
   xForwardedFor: null,
   region: null,
   createdFrom: null,
@@ -86,10 +87,32 @@ const { columns, data, loading, getDataByPage, mobilePagination } = useNaivePagi
       minWidth: 80
     },
     {
-      key: 'clientIp',
-      title: $t('page.manage.audit.col.ip'),
+      // [rev3-inline 013-xff-real-ip-forensics ★] 四欄鑑識（順序 confidence→peerIp→realIp→xForwardedFor）
+      key: 'ipConfidence',
+      title: $t('page.manage.audit.col.confidence'),
+      align: 'center',
+      minWidth: 110,
+      render: row => renderConfidenceTag(row.ipConfidence)
+    },
+    {
+      key: 'peerIp',
+      title: $t('page.manage.audit.col.peerIp'),
+      align: 'center',
+      minWidth: 130,
+      render: row => row.peerIp ?? $t('page.manage.audit.empty')
+    },
+    {
+      key: 'realIp',
+      title: $t('page.manage.audit.col.realIp'),
       align: 'center',
       minWidth: 130
+    },
+    {
+      key: 'xForwardedFor',
+      title: $t('page.manage.audit.col.xForwardedFor'),
+      align: 'center',
+      minWidth: 180,
+      render: row => row.xForwardedFor ?? $t('page.manage.audit.empty')
     },
     {
       key: 'region',
@@ -106,7 +129,7 @@ function reset() {
   searchParams.value.method = null;
   searchParams.value.path = null;
   searchParams.value.httpStatus = null;
-  searchParams.value.clientIp = null;
+  searchParams.value.realIp = null;
   searchParams.value.xForwardedFor = null;
   searchParams.value.region = null;
   searchParams.value.createdFrom = null;
@@ -149,8 +172,8 @@ function search() {
               class="w-full"
             />
           </NFormItemGi>
-          <NFormItemGi span="24 s:12 m:6" :label="$t('page.manage.audit.col.ip')" class="pr-24px">
-            <NInput v-model:value="searchParams.clientIp" :placeholder="$t('page.manage.audit.filter.clientIp')" />
+          <NFormItemGi span="24 s:12 m:6" :label="$t('page.manage.audit.col.realIp')" class="pr-24px">
+            <NInput v-model:value="searchParams.realIp" :placeholder="$t('page.manage.audit.filter.clientIp')" />
           </NFormItemGi>
           <NFormItemGi span="24 s:12 m:6" :label="$t('page.manage.audit.filter.xForwardedFor')" class="pr-24px">
             <NInput
@@ -195,7 +218,7 @@ function search() {
         :data="data"
         size="small"
         :flex-height="!appStore.isMobile"
-        :scroll-x="900"
+        :scroll-x="1400"
         :loading="loading"
         remote
         :row-key="row => row.id"

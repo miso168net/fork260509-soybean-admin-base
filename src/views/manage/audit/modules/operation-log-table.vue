@@ -5,6 +5,7 @@ import { fetchGetOperationLog } from '@/service/api/rev3-system-manage';
 import { defaultTransform, useNaivePaginatedTable } from '@/hooks/common/table';
 import { useAppStore } from '@/store/modules/app';
 import { $t } from '@/locales';
+import { renderConfidenceTag } from './ip-confidence-tag';
 
 defineOptions({
   name: 'OperationLogTable'
@@ -26,7 +27,7 @@ const searchParams = ref<Api.SystemManage.OperationLogSearchParams>({
   entityTable: null,
   operation: null,
   operatorName: null,
-  operatorIp: null,
+  operatorRealIp: null,
   entityId: null,
   traceId: null,
   createdFrom: null,
@@ -117,11 +118,33 @@ const { columns, data, loading, getDataByPage, mobilePagination } = useNaivePagi
       render: row => row.entityId ?? ''
     },
     {
-      key: 'operatorIp',
-      title: $t('page.manage.audit.col.ip'),
+      // [rev3-inline 013-xff-real-ip-forensics ★] 四欄鑑識（operator_ 前綴；順序 confidence→peerIp→realIp→xForwardedFor）
+      key: 'operatorIpConfidence',
+      title: $t('page.manage.audit.col.confidence'),
+      align: 'center',
+      minWidth: 110,
+      render: row => renderConfidenceTag(row.operatorIpConfidence)
+    },
+    {
+      key: 'operatorPeerIp',
+      title: $t('page.manage.audit.col.peerIp'),
       align: 'center',
       minWidth: 130,
-      render: row => row.operatorIp ?? ''
+      render: row => row.operatorPeerIp ?? $t('page.manage.audit.empty')
+    },
+    {
+      key: 'operatorRealIp',
+      title: $t('page.manage.audit.col.realIp'),
+      align: 'center',
+      minWidth: 130,
+      render: row => row.operatorRealIp ?? $t('page.manage.audit.empty')
+    },
+    {
+      key: 'operatorXForwardedFor',
+      title: $t('page.manage.audit.col.xForwardedFor'),
+      align: 'center',
+      minWidth: 180,
+      render: row => row.operatorXForwardedFor ?? $t('page.manage.audit.empty')
     }
   ]
 });
@@ -130,7 +153,7 @@ function reset() {
   searchParams.value.entityTable = null;
   searchParams.value.operation = null;
   searchParams.value.operatorName = null;
-  searchParams.value.operatorIp = null;
+  searchParams.value.operatorRealIp = null;
   searchParams.value.entityId = null;
   searchParams.value.traceId = null;
   searchParams.value.createdFrom = null;
@@ -166,8 +189,11 @@ function search() {
               :placeholder="$t('page.manage.audit.filter.operatorName')"
             />
           </NFormItemGi>
-          <NFormItemGi span="24 s:12 m:6" :label="$t('page.manage.audit.col.ip')" class="pr-24px">
-            <NInput v-model:value="searchParams.operatorIp" :placeholder="$t('page.manage.audit.filter.operatorIp')" />
+          <NFormItemGi span="24 s:12 m:6" :label="$t('page.manage.audit.col.realIp')" class="pr-24px">
+            <NInput
+              v-model:value="searchParams.operatorRealIp"
+              :placeholder="$t('page.manage.audit.filter.operatorIp')"
+            />
           </NFormItemGi>
           <NFormItemGi span="24 s:12 m:6" :label="$t('page.manage.audit.col.entityId')" class="pr-24px">
             <NInputNumber
@@ -213,7 +239,7 @@ function search() {
         :data="data"
         size="small"
         :flex-height="!appStore.isMobile"
-        :scroll-x="900"
+        :scroll-x="1500"
         :loading="loading"
         remote
         :row-key="row => row.id"

@@ -77,13 +77,25 @@ declare namespace Api {
     // [rev3-inline 012-audit-log-query ADAPT] 審計查詢讀端 3 item／3 SearchParams／3 List（honest 逐欄、不套 Common.CommonRecord）
     // wire 事實（主線親抓實機 JSON 對齊；端點皆 R_SUPER GET、回 PageRes{current,size,total,records}、code 0000）
     //   ★ payload 型＝unknown|null（實測 casbin 列＝string[]、role/user 列＝物件、是任意 JSON；用 Record 會型謊）
-    //   ★ nullable 欄逐欄標 |null（operatorName/operatorIp/traceId/xForwardedFor/region/entityId 等）
+    //   ★ nullable 欄逐欄標 |null（operatorName/traceId/xForwardedFor/region/entityId 等）
+
+    // [rev3-inline 013-xff-real-ip-forensics ADAPT §6/§7] IP 鑑識可信度 wire literal union（對齊 rust serde 7 字串輸出）
+    //   ★ honest wire：歷史列無此值→null（不回填）；NTag 依七態著色（顯示見 audit view）
+    type IpConfidence =
+      | 'cdn_verified'
+      | 'cdn_anchored'
+      | 'proxy_clean'
+      | 'proxy_soft'
+      | 'direct'
+      | 'cdn_mismatch'
+      | 'fallback';
 
     /**
      * operation log item（GET getOperationLog；操作異動稽核列）
      *
      * - operation：enum 字串 INSERT|UPDATE|SOFT_DELETE|RESTORE
-     * - operatorIp：host 去 mask 字串、可 null
+     * - [013] 四欄鑑識（operator_ 前綴）：operatorPeerIp（直連 peer）／operatorRealIp（解析真值，←operatorIp 改名）／
+     *   operatorXForwardedFor（原始鏈）／operatorIpConfidence（七態 literal）；皆 host 去 mask、歷史列 null
      * - payloadBefore/After：任意 JSON（casbin 列=string[]、role/user 列=物件）→ unknown|null、展開列 JSON.stringify 渲染
      */
     type OperationLogItem = {
@@ -93,7 +105,10 @@ declare namespace Api {
       entityId: number | null;
       operatorId: number | null;
       operatorName: string | null;
-      operatorIp: string | null;
+      operatorPeerIp: string | null;
+      operatorRealIp: string | null;
+      operatorXForwardedFor: string | null;
+      operatorIpConfidence: IpConfidence | null;
       traceId: string | null;
       createTime: string;
       payloadBefore: unknown | null;
@@ -104,7 +119,8 @@ declare namespace Api {
      * access log item（GET getAccessLog；API 存取稽核列）
      *
      * - operatorId：NOT NULL（已認證請求記錄）
-     * - clientIp：解析後 IP；xForwardedFor：原始 XFF 標頭、可 null
+     * - [013] 四欄鑑識：peerIp（直連 peer，可 null）／realIp（解析後真值，NN，←clientIp 改名）／
+     *   xForwardedFor（原始 XFF 標頭，可 null）／ipConfidence（七態 literal，可 null）
      * - region：ip2region 字串（如 "0|0|0|内网IP|内网IP"）、可 null
      */
     type AccessLogItem = {
@@ -114,8 +130,10 @@ declare namespace Api {
       method: string;
       path: string;
       httpStatus: number;
-      clientIp: string;
+      peerIp: string | null;
+      realIp: string;
       xForwardedFor: string | null;
+      ipConfidence: IpConfidence | null;
       region: string | null;
       traceId: string | null;
       createTime: string;
@@ -126,6 +144,7 @@ declare namespace Api {
      *
      * - attemptedUserName：嘗試帳號（成敗皆記）
      * - success：成敗 bool；operatorId/operatorName：成功時可解析、失敗時 null
+     * - [013] 四欄鑑識：peerIp／realIp（NN，←clientIp 改名）／xForwardedFor／ipConfidence（同 access）
      */
     type LoginAttemptItem = {
       id: number;
@@ -133,8 +152,10 @@ declare namespace Api {
       success: boolean;
       operatorId: number | null;
       operatorName: string | null;
-      clientIp: string;
+      peerIp: string | null;
+      realIp: string;
       xForwardedFor: string | null;
+      ipConfidence: IpConfidence | null;
       region: string | null;
       createTime: string;
     };
@@ -142,7 +163,8 @@ declare namespace Api {
     /**
      * operation log search params（filter 欄 optional + current/size）
      *
-     * - 文字/IP 模糊：entityTable/operatorName/operatorIp/traceId；下拉精確：operation
+     * - 文字/IP 模糊：entityTable/operatorName/operatorRealIp/traceId；下拉精確：operation
+     * - [013] operatorIp→operatorRealIp 改名（對齊 rust U2 filter 改名、否則篩失效）；新 peerIp/ipConfidence 篩屬 U4
      * - entityId 精確；createdFrom/createdTo＝ISO/RFC3339 字串範圍
      */
     type OperationLogSearchParams = CommonType.RecordNullable<
@@ -150,7 +172,7 @@ declare namespace Api {
         entityTable: string;
         operation: string;
         operatorName: string;
-        operatorIp: string;
+        operatorRealIp: string;
         entityId: number;
         traceId: string;
         createdFrom: string;
@@ -161,7 +183,8 @@ declare namespace Api {
     /**
      * access log search params（filter 欄 optional + current/size）
      *
-     * - 文字模糊：operatorName/path/clientIp/xForwardedFor/region；下拉精確：method；httpStatus 精確
+     * - 文字模糊：operatorName/path/realIp/xForwardedFor/region；下拉精確：method；httpStatus 精確
+     * - [013] clientIp→realIp 改名（對齊 rust U2 filter 改名）；新 peerIp/ipConfidence 篩屬 U4
      * - createdFrom/createdTo＝ISO/RFC3339 字串範圍
      */
     type AccessLogSearchParams = CommonType.RecordNullable<
@@ -170,7 +193,7 @@ declare namespace Api {
         method: string;
         path: string;
         httpStatus: number;
-        clientIp: string;
+        realIp: string;
         xForwardedFor: string;
         region: string;
         createdFrom: string;
@@ -181,14 +204,15 @@ declare namespace Api {
     /**
      * login attempt search params（filter 欄 optional + current/size）
      *
-     * - 文字模糊：attemptedUserName/clientIp/xForwardedFor/region；下拉精確：success（bool）
+     * - 文字模糊：attemptedUserName/realIp/xForwardedFor/region；下拉精確：success（bool）
+     * - [013] clientIp→realIp 改名（對齊 rust U2 filter 改名）；新 peerIp/ipConfidence 篩屬 U4
      * - createdFrom/createdTo＝ISO/RFC3339 字串範圍
      */
     type LoginAttemptSearchParams = CommonType.RecordNullable<
       {
         attemptedUserName: string;
         success: boolean;
-        clientIp: string;
+        realIp: string;
         xForwardedFor: string;
         region: string;
         createdFrom: string;

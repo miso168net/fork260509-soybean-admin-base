@@ -666,7 +666,11 @@ const local: App.I18n.Schema = {
           operation: 'Operation',
           entityTable: 'Table',
           entityId: 'Entity ID',
-          ip: 'Source IP',
+          // [rev3-inline 013-xff-real-ip-forensics ★] four forensic column titles (replaces former single ip col)
+          confidence: 'Confidence',
+          peerIp: 'Peer IP',
+          realIp: 'Real IP',
+          xForwardedFor: 'Forwarded Chain',
           traceId: 'Trace ID',
           method: 'Method',
           path: 'Path',
@@ -703,6 +707,16 @@ const local: App.I18n.Schema = {
         resultOption: {
           success: 'Success',
           failure: 'Failure'
+        },
+        // [rev3-inline 013-xff-real-ip-forensics ★] ip_confidence seven-state NTag text
+        confidenceTag: {
+          cdn_verified: 'Verified',
+          cdn_anchored: 'Anchored',
+          proxy_clean: 'Proxy Clean',
+          proxy_soft: 'Proxy Soft',
+          direct: 'Direct',
+          cdn_mismatch: 'Mismatch',
+          fallback: 'Fallback'
         },
         empty: '—'
       }
