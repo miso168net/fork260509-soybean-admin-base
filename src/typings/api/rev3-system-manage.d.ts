@@ -163,8 +163,9 @@ declare namespace Api {
     /**
      * operation log search params（filter 欄 optional + current/size）
      *
-     * - 文字/IP 模糊：entityTable/operatorName/operatorRealIp/traceId；下拉精確：operation
-     * - [013] operatorIp→operatorRealIp 改名（對齊 rust U2 filter 改名、否則篩失效）；新 peerIp/ipConfidence 篩屬 U4
+     * - 文字/IP 模糊：entityTable/operatorName/operatorRealIp/operatorPeerIp/operatorXForwardedFor/traceId；下拉精確：operation/operatorIpConfidence
+     * - [013] operatorIp→operatorRealIp 改名（對齊 rust U2 filter 改名、否則篩失效）；
+     *   U4 新增 operatorPeerIp（模糊）/operatorXForwardedFor（模糊）/operatorIpConfidence（七態下拉精確）
      * - entityId 精確；createdFrom/createdTo＝ISO/RFC3339 字串範圍
      */
     type OperationLogSearchParams = CommonType.RecordNullable<
@@ -173,6 +174,9 @@ declare namespace Api {
         operation: string;
         operatorName: string;
         operatorRealIp: string;
+        operatorPeerIp: string;
+        operatorIpConfidence: IpConfidence;
+        operatorXForwardedFor: string;
         entityId: number;
         traceId: string;
         createdFrom: string;
@@ -183,8 +187,8 @@ declare namespace Api {
     /**
      * access log search params（filter 欄 optional + current/size）
      *
-     * - 文字模糊：operatorName/path/realIp/xForwardedFor/region；下拉精確：method；httpStatus 精確
-     * - [013] clientIp→realIp 改名（對齊 rust U2 filter 改名）；新 peerIp/ipConfidence 篩屬 U4
+     * - 文字/IP 模糊：operatorName/path/realIp/peerIp/xForwardedFor/region；下拉精確：method/ipConfidence；httpStatus 精確
+     * - [013] clientIp→realIp 改名（對齊 rust U2 filter 改名）；U4 新增 peerIp（模糊）/ipConfidence（七態下拉精確）
      * - createdFrom/createdTo＝ISO/RFC3339 字串範圍
      */
     type AccessLogSearchParams = CommonType.RecordNullable<
@@ -194,6 +198,8 @@ declare namespace Api {
         path: string;
         httpStatus: number;
         realIp: string;
+        peerIp: string;
+        ipConfidence: IpConfidence;
         xForwardedFor: string;
         region: string;
         createdFrom: string;
@@ -204,8 +210,8 @@ declare namespace Api {
     /**
      * login attempt search params（filter 欄 optional + current/size）
      *
-     * - 文字模糊：attemptedUserName/realIp/xForwardedFor/region；下拉精確：success（bool）
-     * - [013] clientIp→realIp 改名（對齊 rust U2 filter 改名）；新 peerIp/ipConfidence 篩屬 U4
+     * - 文字/IP 模糊：attemptedUserName/realIp/peerIp/xForwardedFor/region；下拉精確：success（bool）/ipConfidence
+     * - [013] clientIp→realIp 改名（對齊 rust U2 filter 改名）；U4 新增 peerIp（模糊）/ipConfidence（七態下拉精確）
      * - createdFrom/createdTo＝ISO/RFC3339 字串範圍
      */
     type LoginAttemptSearchParams = CommonType.RecordNullable<
@@ -213,6 +219,8 @@ declare namespace Api {
         attemptedUserName: string;
         success: boolean;
         realIp: string;
+        peerIp: string;
+        ipConfidence: IpConfidence;
         xForwardedFor: string;
         region: string;
         createdFrom: string;

@@ -6,6 +6,7 @@ import { defaultTransform, useNaivePaginatedTable } from '@/hooks/common/table';
 import { useAppStore } from '@/store/modules/app';
 import { $t } from '@/locales';
 import { renderConfidenceTag } from './ip-confidence-tag';
+import { confidenceOptions } from './ip-confidence-options';
 
 defineOptions({
   name: 'OperationLogTable'
@@ -28,6 +29,9 @@ const searchParams = ref<Api.SystemManage.OperationLogSearchParams>({
   operation: null,
   operatorName: null,
   operatorRealIp: null,
+  operatorPeerIp: null,
+  operatorIpConfidence: null,
+  operatorXForwardedFor: null,
   entityId: null,
   traceId: null,
   createdFrom: null,
@@ -154,6 +158,9 @@ function reset() {
   searchParams.value.operation = null;
   searchParams.value.operatorName = null;
   searchParams.value.operatorRealIp = null;
+  searchParams.value.operatorPeerIp = null;
+  searchParams.value.operatorIpConfidence = null;
+  searchParams.value.operatorXForwardedFor = null;
   searchParams.value.entityId = null;
   searchParams.value.traceId = null;
   searchParams.value.createdFrom = null;
@@ -189,10 +196,30 @@ function search() {
               :placeholder="$t('page.manage.audit.filter.operatorName')"
             />
           </NFormItemGi>
+          <NFormItemGi span="24 s:12 m:6" :label="$t('page.manage.audit.col.confidence')" class="pr-24px">
+            <NSelect
+              v-model:value="searchParams.operatorIpConfidence"
+              :placeholder="$t('page.manage.audit.filter.operatorIpConfidence')"
+              :options="confidenceOptions"
+              clearable
+            />
+          </NFormItemGi>
+          <NFormItemGi span="24 s:12 m:6" :label="$t('page.manage.audit.col.peerIp')" class="pr-24px">
+            <NInput
+              v-model:value="searchParams.operatorPeerIp"
+              :placeholder="$t('page.manage.audit.filter.operatorPeerIp')"
+            />
+          </NFormItemGi>
           <NFormItemGi span="24 s:12 m:6" :label="$t('page.manage.audit.col.realIp')" class="pr-24px">
             <NInput
               v-model:value="searchParams.operatorRealIp"
-              :placeholder="$t('page.manage.audit.filter.operatorIp')"
+              :placeholder="$t('page.manage.audit.filter.operatorRealIp')"
+            />
+          </NFormItemGi>
+          <NFormItemGi span="24 s:12 m:6" :label="$t('page.manage.audit.col.xForwardedFor')" class="pr-24px">
+            <NInput
+              v-model:value="searchParams.operatorXForwardedFor"
+              :placeholder="$t('page.manage.audit.filter.operatorXForwardedFor')"
             />
           </NFormItemGi>
           <NFormItemGi span="24 s:12 m:6" :label="$t('page.manage.audit.col.entityId')" class="pr-24px">

@@ -895,13 +895,20 @@ declare namespace App {
               entityTable: string;
               operation: string;
               operatorName: string;
-              operatorIp: string;
+              // [rev3-inline 013-xff-real-ip-forensics ★] IP 鑑識篩選（operatorIp→operatorRealIp 改名 + U4 新增 peer/xff/confidence）
+              operatorRealIp: string;
+              operatorPeerIp: string;
+              operatorXForwardedFor: string;
+              operatorIpConfidence: string;
               entityId: string;
               traceId: string;
               method: string;
               path: string;
               status: string;
-              clientIp: string;
+              // [rev3-inline 013-xff-real-ip-forensics ★] clientIp→realIp 改名 + U4 新增 peerIp/ipConfidence（access/login 共用）
+              realIp: string;
+              peerIp: string;
+              ipConfidence: string;
               xForwardedFor: string;
               region: string;
               account: string;
