@@ -21,9 +21,21 @@ declare namespace Api {
       'userName' | 'userGender' | 'nickName' | 'userPhone' | 'userEmail' | 'userRoles' | 'status'
     > & { id?: number; sessionPolicy?: SessionPolicy };
 
-    // [rev3-inline 014-auth-token-session ADAPT US2] getUserList honest list-item 型
+    // [rev3-inline 014-auth-token-session ADAPT US2 / 016-button-endpoint-policy ADAPT D5] getUserList honest list-item 型
     //   ★ rust wire 確實 emit sessionPolicy（camelCase）；frozen User 未宣告 → 以 intersection 補供 drawer edit 讀 rowData.sessionPolicy
-    type UserListItemRev3 = User & { sessionPolicy: SessionPolicy };
+    //   ★ [016 D5] nickName/userPhone/userEmail 在 frozen User 宣告為 string（non-null），但 rust wire 為 Option<String>（回 null）；
+    //     declaration-merge 不能覆寫既有欄型 → 以 Omit+intersection rev3-owned honest 讀型消型謊
+    type UserListItemRev3 = Omit<User, 'nickName' | 'userPhone' | 'userEmail'> & {
+      nickName: string | null;
+      userPhone: string | null;
+      userEmail: string | null;
+      sessionPolicy: SessionPolicy;
+    };
+
+    // [rev3-inline 016-button-endpoint-policy ADAPT D5] getRoleList honest list-item 型
+    //   ★ frozen Role.roleDesc 宣告為 string（non-null），但 rust RoleListItem.role_desc 為 Option<String>（回 null）；
+    //     declaration-merge 不能覆寫既有欄型 → 以 Omit+intersection rev3-owned honest 讀型消型謊
+    type RoleListItemRev3 = Omit<Role, 'roleDesc'> & { roleDesc: string | null };
 
     // [rev3-inline 010-menu-management ADAPT §9 L1/L2] 選單寫端 DTO 型＋統一清單 deleted flag（declaration-merge、不改既有 Menu/Api.Route）
     /**

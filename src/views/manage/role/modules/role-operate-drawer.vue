@@ -18,8 +18,13 @@ defineOptions({
 interface Props {
   /** the type of operation */
   operateType: NaiveUI.TableOperateType;
-  /** the edit row data */
-  rowData?: Api.SystemManage.Role | null;
+  /**
+   * the edit row data
+   *
+   * [rev3-inline 016-button-endpoint-policy D5] 改用 honest 讀型（roleDesc string|null，對齊 rust Option）；
+   * Object.assign 入非-null model 不受影響、id 兩型皆有
+   */
+  rowData?: Api.SystemManage.RoleListItemRev3 | null;
 }
 
 const props = defineProps<Props>();

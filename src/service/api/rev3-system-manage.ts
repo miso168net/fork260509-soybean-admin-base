@@ -451,3 +451,35 @@ export function fetchUpdateRoleEndpoints(roleId: number, endpoints: Api.SystemMa
     data: { roleId, endpoints }
   });
 }
+
+// [rev3-inline 016-button-endpoint-policy WRAPPER D5] getRoleList/getUserList honest 讀端 wrapper（消 wire↔typing 型謊）
+// fork-delta：不改既有 system-manage.ts（其 fetchGetRoleList/fetchGetUserList 宣告 RoleList/UserList＝frozen non-null Role/User、型謊）；
+//   本檔僅【新增】honest 版 wrapper（鏡像 fetchGetMenuListV2 範式：frozen 服務檔不動、view 改 import 本 wrapper）
+// wire 事實（rust RoleListItem.role_desc / UserListItem.nick_name·user_phone·user_email 皆 Option<String>、回 null）：
+//   回 PageRes 分頁包，records item 為 RoleListItemRev3 / UserListItemRev3（roleDesc / nickName·userPhone·userEmail honest |null）
+
+/**
+ * get role list（honest 讀型；roleDesc 對齊 rust Option→string|null）
+ *
+ * @param params role search params（filter + 分頁，皆 optional）
+ */
+export function fetchGetRoleListRev3(params?: Api.SystemManage.RoleSearchParams) {
+  return request<Api.Common.PaginatingQueryRecord<Api.SystemManage.RoleListItemRev3>>({
+    url: '/systemManage/getRoleList',
+    method: 'get',
+    params
+  });
+}
+
+/**
+ * get user list（honest 讀型；nickName/userPhone/userEmail 對齊 rust Option→string|null）
+ *
+ * @param params user search params（filter + 分頁，皆 optional）
+ */
+export function fetchGetUserListRev3(params?: Api.SystemManage.UserSearchParams) {
+  return request<Api.Common.PaginatingQueryRecord<Api.SystemManage.UserListItemRev3>>({
+    url: '/systemManage/getUserList',
+    method: 'get',
+    params
+  });
+}

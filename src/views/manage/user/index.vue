@@ -2,9 +2,9 @@
 import { ref } from 'vue';
 import { NButton, NPopconfirm, NTag } from 'naive-ui';
 import { enableStatusRecord, userGenderRecord } from '@/constants/business';
-import { fetchGetUserList } from '@/service/api';
+// [rev3-inline 016-button-endpoint-policy D5] getUserList 改用 honest 讀型 wrapper（nickName/userPhone/userEmail string|null、消型謊）；frozen system-manage.ts 不動
 // [rev3-inline 009-user-management MW(a)] 寫端 wrapper 直接路徑 import（非 barrel）
-import { fetchBatchDeleteUser, fetchDeleteUser } from '@/service/api/rev3-system-manage';
+import { fetchBatchDeleteUser, fetchDeleteUser, fetchGetUserListRev3 } from '@/service/api/rev3-system-manage';
 // [rev3-inline 010-menu-management MW(b) retroactive] hasAuth gating（user 寫入鈕；R_ADMIN seed 僅 user:edit）
 import { useAuth } from '@/hooks/business/auth';
 import { useAppStore } from '@/store/modules/app';
@@ -30,7 +30,7 @@ const searchParams = ref<Api.SystemManage.UserSearchParams>({
 });
 
 const { columns, columnChecks, data, getData, getDataByPage, loading, mobilePagination } = useNaivePaginatedTable({
-  api: () => fetchGetUserList(searchParams.value),
+  api: () => fetchGetUserListRev3(searchParams.value),
   transform: response => defaultTransform(response),
   onPaginationParamsChange: params => {
     searchParams.value.current = params.page;
