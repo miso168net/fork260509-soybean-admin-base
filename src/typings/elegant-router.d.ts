@@ -55,6 +55,7 @@ declare module "@elegant-router/types" {
     "manage": "/manage";
     "manage_audit": "/manage/audit";
     "manage_menu": "/manage/menu";
+    "manage_policy-archive": "/manage/policy-archive";
     "manage_role": "/manage/role";
     "manage_system-settings": "/manage/system-settings";
     "manage_user": "/manage/user";
@@ -195,6 +196,7 @@ declare module "@elegant-router/types" {
     | "home"
     | "manage_audit"
     | "manage_menu"
+    | "manage_policy-archive"
     | "manage_role"
     | "manage_system-settings"
     | "manage_user-detail"

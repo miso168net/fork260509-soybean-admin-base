@@ -946,6 +946,26 @@ declare namespace App {
             };
             empty: string;
           };
+          // [rev3-inline 015-policy-governance ★] 授權回收桶頁（list+restore；先 Schema 後 locale）
+          policyArchive: {
+            title: string;
+            col: {
+              roleCode: string;
+              target: string;
+              dimension: string;
+              archivedTime: string;
+              archivedBy: string;
+              archiveReason: string;
+            };
+            filter: {
+              roleCode: string;
+              dimension: string;
+            };
+            restore: string;
+            confirmRestore: string;
+            restoreSuccess: string;
+            empty: string;
+          };
         };
       };
       form: {

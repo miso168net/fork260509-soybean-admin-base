@@ -245,5 +245,43 @@ declare namespace Api {
 
     /** login attempt list（PageRes 分頁包） */
     type LoginAttemptList = Common.PaginatingQueryRecord<LoginAttemptItem>;
+
+    // [rev3-inline 015-policy-governance MODAL-WIRING(e)] 授權回收桶讀端 item／SearchParams／List（honest 逐欄、對齊 rust EU2 wire）
+    // wire 事實（rust getArchivedPolicies handler 親抓欄序；GET、R_SUPER、回 PageRes{current,size,total,records}、code 0000）
+    //   ★ honest 逐欄：roleCode/target/dimension/archiveReason 為 NN 字串；archivedBy（撤銷執行者 id）可 null；
+    //     createdTime（原規則建立時間，archive.created_at 可 NULL）→ string|null
+    /**
+     * archived policy item（GET getArchivedPolicies；已撤銷授權規則封存列）
+     *
+     * - roleCode：原規則所屬角色 code（如 R_USER_COMMON）
+     * - target：原規則目標（如 menu route_name）／dimension：維度（menu/button/endpoint）
+     * - archivedTime：撤銷時間／archivedBy：撤銷執行者 id（可 null）／archiveReason：撤銷原因
+     * - createdTime：原規則建立時間（archive.created_at 可 NULL → string|null）
+     */
+    type ArchivedPolicy = {
+      id: number;
+      roleCode: string;
+      target: string;
+      dimension: string;
+      archivedTime: string;
+      archivedBy: number | null;
+      archiveReason: string;
+      createdTime: string | null;
+    };
+
+    /**
+     * archived policy search params（filter 欄 optional + current/size）
+     *
+     * - roleCode/dimension：模糊/精確檢視（rust handler 空字串守門→當未設）
+     */
+    type ArchivedPolicySearchParams = CommonType.RecordNullable<
+      {
+        roleCode: string;
+        dimension: string;
+      } & CommonSearchParams
+    >;
+
+    /** archived policy list（PageRes 分頁包） */
+    type ArchivedPolicyList = Common.PaginatingQueryRecord<ArchivedPolicy>;
   }
 }

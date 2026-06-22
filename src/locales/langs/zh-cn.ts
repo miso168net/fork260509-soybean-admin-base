@@ -269,6 +269,8 @@ const local: App.I18n.Schema = {
     'manage_system-settings': '系统设置',
     // [rev3-inline 012-audit-log-query ★] route 菜单标题（对齐 m005 i18n_key route.manage_audit）
     manage_audit: '审计中心',
+    // [rev3-inline 015-policy-governance ★] route 菜单标题（对齐 m002:253 i18n_key route.manage_policy-archive）
+    'manage_policy-archive': '授权回收桶',
     'multi-menu': '多级菜单',
     'multi-menu_first': '菜单一',
     'multi-menu_first_child': '菜单一子菜单',
@@ -726,6 +728,26 @@ const local: App.I18n.Schema = {
           cdn_mismatch: '不符',
           fallback: '退回'
         },
+        empty: '—'
+      },
+      // [rev3-inline 015-policy-governance ★] 授权回收桶页（list+restore）
+      policyArchive: {
+        title: '授权回收桶',
+        col: {
+          roleCode: '角色',
+          target: '目标',
+          dimension: '维度',
+          archivedTime: '撤销时间',
+          archivedBy: '撤销执行者',
+          archiveReason: '撤销原因'
+        },
+        filter: {
+          roleCode: '请输入角色',
+          dimension: '请输入维度'
+        },
+        restore: '复原',
+        confirmRestore: '确认复原此授权规则？',
+        restoreSuccess: '复原成功',
         empty: '—'
       }
     }

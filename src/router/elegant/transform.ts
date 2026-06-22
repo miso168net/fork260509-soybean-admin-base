@@ -201,6 +201,7 @@ const routeMap: RouteMap = {
   "manage": "/manage",
   "manage_audit": "/manage/audit",
   "manage_menu": "/manage/menu",
+  "manage_policy-archive": "/manage/policy-archive",
   "manage_role": "/manage/role",
   "manage_system-settings": "/manage/system-settings",
   "manage_user": "/manage/user",

@@ -330,3 +330,35 @@ export function fetchGetLoginAttempt(params?: Api.SystemManage.LoginAttemptSearc
     params: pruneNullParams(params)
   });
 }
+
+// [rev3-inline 015-policy-governance WRAPPER MODAL-WIRING(e)] 授權回收桶讀端+復原 wrapper
+// fork-delta：不改既有 system-manage.ts；本檔僅新增；getArchivedPolicies GET R_SUPER 回 PageRes、restorePolicy POST
+// wire 事實：restorePolicy id 走【字串】（沿 009 ⚠️o）；Applied/NoOp→0000、NotFound→2222（biz.policy.notFound）
+
+/**
+ * get archived policies（授權回收桶；GET、R_SUPER）
+ *
+ * @param params archived policy search params（filter + 分頁，皆 optional）
+ */
+export function fetchGetArchivedPolicies(params?: Api.SystemManage.ArchivedPolicySearchParams) {
+  return request<Api.SystemManage.ArchivedPolicyList>({
+    url: '/systemManage/getArchivedPolicies',
+    method: 'get',
+    params: pruneNullParams(params)
+  });
+}
+
+/**
+ * restore policy（從回收桶復原至現役；POST、R_SUPER）
+ *
+ * wire 事實：後端 id 走【字串】→ String(id) 轉字串；Applied/NoOp→0000（復原成功）、NotFound→2222
+ *
+ * @param id archived policy id（number → String 轉字串對齊後端 String 欄）
+ */
+export function fetchRestorePolicy(id: number) {
+  return request<null>({
+    url: '/systemManage/restorePolicy',
+    method: 'post',
+    data: { id: String(id) }
+  });
+}

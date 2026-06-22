@@ -273,6 +273,8 @@ const local: App.I18n.Schema = {
     'manage_system-settings': 'System Settings',
     // [rev3-inline 012-audit-log-query ★] route menu title (mirrors m005 i18n_key route.manage_audit)
     manage_audit: 'Audit Center',
+    // [rev3-inline 015-policy-governance ★] route menu title (mirrors m002:253 i18n_key route.manage_policy-archive)
+    'manage_policy-archive': 'Policy Archive',
     'multi-menu': 'Multi Menu',
     'multi-menu_first': 'Menu One',
     'multi-menu_first_child': 'Menu One Child',
@@ -730,6 +732,26 @@ const local: App.I18n.Schema = {
           cdn_mismatch: 'Mismatch',
           fallback: 'Fallback'
         },
+        empty: '—'
+      },
+      // [rev3-inline 015-policy-governance ★] policy archive page (list+restore)
+      policyArchive: {
+        title: 'Policy Archive',
+        col: {
+          roleCode: 'Role',
+          target: 'Target',
+          dimension: 'Dimension',
+          archivedTime: 'Archived Time',
+          archivedBy: 'Archived By',
+          archiveReason: 'Reason'
+        },
+        filter: {
+          roleCode: 'Please enter role',
+          dimension: 'Please enter dimension'
+        },
+        restore: 'Restore',
+        confirmRestore: 'Confirm restore this policy?',
+        restoreSuccess: 'Restored successfully',
         empty: '—'
       }
     }
