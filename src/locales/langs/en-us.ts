@@ -543,6 +543,7 @@ const local: App.I18n.Schema = {
         roleDesc: 'Role Description',
         menuAuth: 'Menu Auth',
         buttonAuth: 'Button Auth',
+        endpointAuth: 'Endpoint Auth',
         form: {
           roleName: 'Please enter role name',
           roleCode: 'Please enter role code',
@@ -850,7 +851,8 @@ const local: App.I18n.Schema = {
         seededProtected: 'Protected system role cannot be deleted',
         inUse: 'Role still has users assigned and cannot be deleted',
         cannotDeleteSelfRole: 'Cannot delete your own role',
-        menuProtected: 'Protected menu visibility cannot be removed'
+        menuProtected: 'Protected menu visibility cannot be removed',
+        endpointProtected: 'Protected core endpoint access cannot be removed'
       },
       // [rev3-inline 012-audit-log-query I18N(iii) ★] biz.audit (invalid date range; interceptor auto $t('backend.'+msg))
       audit: {

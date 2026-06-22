@@ -539,6 +539,7 @@ const local: App.I18n.Schema = {
         roleDesc: '角色描述',
         menuAuth: '菜单权限',
         buttonAuth: '按钮权限',
+        endpointAuth: '接口权限',
         form: {
           roleName: '请输入角色名称',
           roleCode: '请输入角色编码',
@@ -846,7 +847,8 @@ const local: App.I18n.Schema = {
         seededProtected: '受保护的系统角色不可删除',
         inUse: '角色仍有使用者指派、不可删除',
         cannotDeleteSelfRole: '不可删除自身的角色',
-        menuProtected: '受保护的系统选单可见性不可移除'
+        menuProtected: '受保护的系统选单可见性不可移除',
+        endpointProtected: '受保护的核心接口存取不可移除'
       },
       // [rev3-inline 012-audit-log-query I18N(iii) ★] biz.audit（畸形日期范围；攔截器自动 $t('backend.'+msg)）
       audit: {

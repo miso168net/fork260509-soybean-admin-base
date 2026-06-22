@@ -353,6 +353,7 @@ declare namespace App {
             inUse: string;
             cannotDeleteSelfRole: string;
             menuProtected: string;
+            endpointProtected: string;
           };
           // [rev3-inline 012-audit-log-query I18N(iii) ★] biz.audit（畸形日期範圍；對齊後端 biz.audit.invalidDateRange）
           audit: {
@@ -764,6 +765,7 @@ declare namespace App {
             editRole: string;
             menuAuth: string;
             buttonAuth: string;
+            endpointAuth: string;
           };
           user: {
             title: string;

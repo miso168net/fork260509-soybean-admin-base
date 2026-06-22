@@ -283,5 +283,44 @@ declare namespace Api {
 
     /** archived policy list（PageRes 分頁包） */
     type ArchivedPolicyList = Common.PaginatingQueryRecord<ArchivedPolicy>;
+
+    // [rev3-inline 016-button-endpoint-policy ADAPT D4] 三維授權編輯讀寫 DTO（button/endpoint；declaration-merge、honest 逐欄）
+    // wire 事實（rust U1/U2 已落地）：getAllButtons→Button[]{code,label}／getRoleButton→string[]（code 集）／
+    //   updateRoleButton {roleId,buttonCodes}→null；getAllEndpoints→Endpoint[]{path,method,label?}／getRoleEndpoints→Endpoint[]／
+    //   updateRoleEndpoints {roleId,endpoints}→null；撤 protected endpoint→2222 biz.role.endpointProtected（攔截器自動在地化）
+    //   ★ roleId 維 number（⚠️r、與單 body-id 非對稱、不 String()）
+
+    /**
+     * operation button（getAllButtons registry item／角色按鈕授權勾選項）
+     *
+     * - code：按鈕代碼（如 user:add）＝授權鍵；label：顯易讀（後端 sys_menu.buttons 的 desc）
+     */
+    type Button = {
+      code: string;
+      label: string;
+    };
+
+    /**
+     * API endpoint（getAllEndpoints registry item／角色端點授權勾選項）
+     *
+     * - path＋method 雙鍵標識一條 (role,path,method) enforce 列；label 顯易讀（可選）
+     */
+    type Endpoint = {
+      path: string;
+      method: string;
+      label?: string;
+    };
+
+    /** role button update body（updateRoleButton；roleId 維 number ⚠️r） */
+    type RoleButtonUpdate = {
+      roleId: number;
+      buttonCodes: string[];
+    };
+
+    /** role endpoints update body（updateRoleEndpoints；roleId 維 number ⚠️r） */
+    type RoleEndpointsUpdate = {
+      roleId: number;
+      endpoints: Endpoint[];
+    };
   }
 }

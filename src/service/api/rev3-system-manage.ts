@@ -362,3 +362,92 @@ export function fetchRestorePolicy(id: number) {
     data: { id: String(id) }
   });
 }
+
+// [rev3-inline 016-button-endpoint-policy WRAPPER D4 MODAL-WIRING(c)] 三維授權編輯讀寫 wrapper（button + endpoint）
+// fork-delta：不改既有 system-manage.ts；本檔僅新增；6 端點 m002 已 seed（R_SUPER、protected）、rust U1/U2 已實作
+// ★ wire 事實（⚠️r）：roleId/buttonCodes/endpoints【維持 number/原型、不轉 String】（獨立參數、非單 body-id；沿 fetchGetRoleMenu/fetchUpdateRoleMenu 範式）
+//   getAllButtons→Button[]／getRoleButton→string[]（code 集）／updateRoleButton {roleId,buttonCodes}→null
+//   getAllEndpoints→Endpoint[]／getRoleEndpoints→Endpoint[]／updateRoleEndpoints {roleId,endpoints}→null（撤 protected→2222 endpointProtected）
+
+/**
+ * get all buttons（可授權操作按鈕全集；GET、R_SUPER、自 sys_menu.buttons 萃取）
+ */
+export function fetchGetAllButtons() {
+  return request<Api.SystemManage.Button[]>({
+    url: '/systemManage/getAllButtons',
+    method: 'get'
+  });
+}
+
+/**
+ * get role button（角色已授權按鈕 code 集；GET、R_SUPER）
+ *
+ * ★ wire 事實（⚠️r）：roleId【維持 number、不轉 String】（query 獨立參數）；回 string[]（button code）
+ *
+ * @param roleId role id（number）
+ */
+export function fetchGetRoleButton(roleId: number) {
+  return request<string[]>({
+    url: '/systemManage/getRoleButton',
+    method: 'get',
+    params: { roleId }
+  });
+}
+
+/**
+ * update role button（★ DB-first casbin policy WRITE；撤的進回收桶可復原）
+ *
+ * ★ wire 事實（⚠️r）：roleId/buttonCodes【維持 number/string[]、不轉 String】；button 維度無受保護項（撤一律可行）
+ *
+ * @param roleId role id（number）
+ * @param buttonCodes 授權按鈕 code 集（string[]）
+ */
+export function fetchUpdateRoleButton(roleId: number, buttonCodes: string[]) {
+  return request<null>({
+    url: '/systemManage/updateRoleButton',
+    method: 'post',
+    data: { roleId, buttonCodes }
+  });
+}
+
+/**
+ * get all endpoints（可授權 API 端點全集；GET、R_SUPER、自 registry const）
+ */
+export function fetchGetAllEndpoints() {
+  return request<Api.SystemManage.Endpoint[]>({
+    url: '/systemManage/getAllEndpoints',
+    method: 'get'
+  });
+}
+
+/**
+ * get role endpoints（角色已授權端點 (path,method) 集；GET、R_SUPER）
+ *
+ * ★ wire 事實（⚠️r）：roleId【維持 number、不轉 String】（query 獨立參數）；回 Endpoint[]（path+method）
+ *
+ * @param roleId role id（number）
+ */
+export function fetchGetRoleEndpoints(roleId: number) {
+  return request<Api.SystemManage.Endpoint[]>({
+    url: '/systemManage/getRoleEndpoints',
+    method: 'get',
+    params: { roleId }
+  });
+}
+
+/**
+ * update role endpoints（★ DB-first casbin policy WRITE；動真實 (role,path,method) enforce 列）
+ *
+ * ★ wire 事實（⚠️r）：roleId/endpoints【維持 number/Endpoint[]、不轉 String】；
+ *   撤含受保護核心端點→後端整批拒 2222 biz.role.endpointProtected（攔截器自動在地化、防誤鎖出）
+ *
+ * @param roleId role id（number）
+ * @param endpoints 授權端點集（Endpoint[]，path+method 雙鍵）
+ */
+export function fetchUpdateRoleEndpoints(roleId: number, endpoints: Api.SystemManage.Endpoint[]) {
+  return request<null>({
+    url: '/systemManage/updateRoleEndpoints',
+    method: 'post',
+    data: { roleId, endpoints }
+  });
+}
