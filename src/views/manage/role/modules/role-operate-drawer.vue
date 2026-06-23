@@ -83,6 +83,8 @@ function handleInitModel() {
 
   if (props.operateType === 'edit' && props.rowData) {
     Object.assign(model.value, jsonClone(props.rowData));
+    // [rev3-inline §3.B drawer null-flow] rowData 為 rev3 honest 讀型（roleDesc nullable）；Object.assign 後顯式 coalesce null→'' 對齊 frozen Model 非-null 欄（消 type-lie、submit 不送 null；同 user drawer sessionPolicy 風格）
+    model.value.roleDesc = (props.rowData as Api.SystemManage.RoleListItemRev3).roleDesc ?? '';
   }
 }
 

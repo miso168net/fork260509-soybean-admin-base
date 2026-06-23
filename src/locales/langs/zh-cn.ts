@@ -739,6 +739,7 @@ const local: App.I18n.Schema = {
           target: '目标',
           dimension: '维度',
           archivedTime: '撤销时间',
+          createdTime: '建立时间',
           archivedBy: '撤销执行者',
           archiveReason: '撤销原因'
         },

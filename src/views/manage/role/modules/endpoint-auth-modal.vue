@@ -34,6 +34,7 @@ const title = computed(() => $t('common.edit') + $t('page.manage.role.endpointAu
 type EndpointNode = {
   key: string;
   label: string;
+  children?: EndpointNode[];
 };
 
 function synthKey(ep: Api.SystemManage.Endpoint) {
@@ -54,10 +55,22 @@ async function getAllEndpoints() {
   const { error, data } = await fetchGetAllEndpoints();
 
   if (!error) {
-    tree.value = data.map(ep => ({
-      key: synthKey(ep),
-      label: ep.label ? `${ep.method} ${ep.path}（${ep.label}）` : `${ep.method} ${ep.path}`
-    }));
+    // [rev3-inline §3.H/pre-波4] 依 path 第一段分組（/systemManage、/auth…）折成 NTree 父節點；
+    //   group key 前綴 grp: 防與 leaf synthKey 衝突；NTree check-strategy=child → checkedKeys 只含 leaf、submit 邏輯不變
+    const groups = new Map<string, EndpointNode[]>();
+    for (const ep of data) {
+      const seg = ep.path.split('/').filter(Boolean)[0] || 'other';
+      const leaf: EndpointNode = {
+        key: synthKey(ep),
+        label: ep.label ? `${ep.method} ${ep.path}（${ep.label}）` : `${ep.method} ${ep.path}`
+      };
+      const bucket = groups.get(seg);
+      if (bucket) bucket.push(leaf);
+      else groups.set(seg, [leaf]);
+    }
+    tree.value = [...groups.entries()]
+      .sort((a, b) => a[0].localeCompare(b[0]))
+      .map(([seg, children]) => ({ key: `grp:${seg}`, label: `/${seg}`, children }));
   }
 }
 
@@ -101,6 +114,8 @@ watch(visible, val => {
       :data="tree"
       key-field="key"
       label-field="label"
+      check-strategy="child"
+      default-expand-all
       block-line
       checkable
       expand-on-click

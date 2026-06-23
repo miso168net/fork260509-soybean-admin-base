@@ -743,6 +743,7 @@ const local: App.I18n.Schema = {
           target: 'Target',
           dimension: 'Dimension',
           archivedTime: 'Archived Time',
+          createdTime: 'Created Time',
           archivedBy: 'Archived By',
           archiveReason: 'Reason'
         },

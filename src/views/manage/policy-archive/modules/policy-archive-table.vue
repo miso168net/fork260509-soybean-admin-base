@@ -55,6 +55,14 @@ const { columns, data, loading, getDataByPage, mobilePagination } = useNaivePagi
       minWidth: 180
     },
     {
+      key: 'createdTime',
+      title: $t('page.manage.policyArchive.col.createdTime'),
+      align: 'center',
+      minWidth: 180,
+      // [rev3-inline §3.B/pre-波4] 原 policy 授權建立時間（createdTime，nullable）；honest null → empty
+      render: row => (row.createdTime === null ? $t('page.manage.policyArchive.empty') : String(row.createdTime))
+    },
+    {
       key: 'archivedBy',
       title: $t('page.manage.policyArchive.col.archivedBy'),
       align: 'center',
@@ -152,7 +160,7 @@ function search() {
         :data="data"
         size="small"
         :flex-height="!appStore.isMobile"
-        :scroll-x="1000"
+        :scroll-x="1200"
         :loading="loading"
         remote
         :row-key="row => row.id"

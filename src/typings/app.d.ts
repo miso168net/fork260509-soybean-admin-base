@@ -956,6 +956,7 @@ declare namespace App {
               target: string;
               dimension: string;
               archivedTime: string;
+              createdTime: string;
               archivedBy: string;
               archiveReason: string;
             };

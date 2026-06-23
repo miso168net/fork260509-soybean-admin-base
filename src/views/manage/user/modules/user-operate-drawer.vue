@@ -105,6 +105,11 @@ function handleInitModel() {
     //   frozen User 型無此欄 → 顯式讀＋fallback inherit（避免 Object.assign 後型上看不到 sessionPolicy）
     model.value.sessionPolicy =
       (props.rowData as Api.SystemManage.UserListItemRev3).sessionPolicy ?? 'inherit';
+    // [rev3-inline §3.B drawer null-flow] 同理 coalesce honest 讀型 nullable 三欄 null→''（消 type-lie、submit 不送 null）
+    const rev3Row = props.rowData as Api.SystemManage.UserListItemRev3;
+    model.value.nickName = rev3Row.nickName ?? '';
+    model.value.userPhone = rev3Row.userPhone ?? '';
+    model.value.userEmail = rev3Row.userEmail ?? '';
   }
 }
 
