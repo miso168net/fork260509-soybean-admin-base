@@ -916,6 +916,8 @@ declare namespace App {
               method: string;
               path: string;
               status: string;
+              // [rev3-inline 017-audit-center-enhancement C-1 ★] http_status 類別 quick-filter（2xx/4xx/5xx；與精確 status 並存 AND）
+              statusClass: string;
               // [rev3-inline 013-xff-real-ip-forensics ★] clientIp→realIp 改名 + U4 新增 peerIp/ipConfidence（access/login 共用）
               realIp: string;
               peerIp: string;
@@ -950,6 +952,8 @@ declare namespace App {
             // [rev3-inline 017-audit-center-enhancement C-3 ★] CSV 匯出鈕 + 截斷提示
             export: string;
             exportTruncated: string;
+            // [rev3-inline 017-audit-center-enhancement C-1 ★] http_status 類別下拉「全部」option label（2xx/4xx/5xx 字面硬編於 options）
+            statusClassAll: string;
           };
           // [rev3-inline 015-policy-governance ★] 授權回收桶頁（list+restore；先 Schema 後 locale）
           policyArchive: {

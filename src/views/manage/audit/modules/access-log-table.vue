@@ -1,6 +1,7 @@
 <script setup lang="tsx">
 import { ref } from 'vue';
 import { NInput, NSelect } from 'naive-ui';
+import type { SelectOption } from 'naive-ui';
 import { fetchExportAccessLog, fetchGetAccessLog } from '@/service/api/rev3-system-manage';
 import { defaultTransform, useNaivePaginatedTable } from '@/hooks/common/table';
 import { useAppStore } from '@/store/modules/app';
@@ -23,6 +24,16 @@ const methodOptions = [
   { label: 'DELETE', value: 'DELETE' }
 ];
 
+// [rev3-inline 017-audit-center-enhancement C-1 ★] http_status 類別 quick-filter 下拉
+// 「全部」value=null（pruneNullParams 剔除→wire 缺席→後端 None）；2xx/4xx/5xx 字面硬編、與精確 httpStatus 並存＝AND
+// value:null 為 naive-ui 清除態（runtime 合法、型上 SelectOption.value 為 string|number、故單欄 cast）
+const statusClassOptions: SelectOption[] = [
+  { label: () => $t('page.manage.audit.statusClassAll'), value: null as unknown as string },
+  { label: '2xx', value: '2xx' },
+  { label: '4xx', value: '4xx' },
+  { label: '5xx', value: '5xx' }
+];
+
 const searchParams = ref<Api.SystemManage.AccessLogSearchParams>({
   current: 1,
   size: 10,
@@ -30,6 +41,7 @@ const searchParams = ref<Api.SystemManage.AccessLogSearchParams>({
   method: null,
   path: null,
   httpStatus: null,
+  httpStatusClass: null,
   realIp: null,
   peerIp: null,
   ipConfidence: null,
@@ -133,6 +145,7 @@ function reset() {
   searchParams.value.method = null;
   searchParams.value.path = null;
   searchParams.value.httpStatus = null;
+  searchParams.value.httpStatusClass = null;
   searchParams.value.realIp = null;
   searchParams.value.peerIp = null;
   searchParams.value.ipConfidence = null;
@@ -186,6 +199,15 @@ async function onExport() {
               v-model:value="searchParams.httpStatus"
               :placeholder="$t('page.manage.audit.filter.status')"
               class="w-full"
+            />
+          </NFormItemGi>
+          <!-- [rev3-inline 017-audit-center-enhancement C-1 ★] http_status 類別 quick-filter（與精確 status 並存＝AND） -->
+          <NFormItemGi span="24 s:12 m:6" :label="$t('page.manage.audit.filter.statusClass')" class="pr-24px">
+            <NSelect
+              v-model:value="searchParams.httpStatusClass"
+              :placeholder="$t('page.manage.audit.filter.statusClass')"
+              :options="statusClassOptions"
+              clearable
             />
           </NFormItemGi>
           <NFormItemGi span="24 s:12 m:6" :label="$t('page.manage.audit.col.confidence')" class="pr-24px">

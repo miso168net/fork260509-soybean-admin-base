@@ -704,6 +704,8 @@ const local: App.I18n.Schema = {
           method: 'Please select method',
           path: 'Please enter path',
           status: 'Please enter status code',
+          // [rev3-inline 017-audit-center-enhancement C-1 ★] http_status class dropdown
+          statusClass: 'Please select status class',
           realIp: 'Please enter real IP',
           peerIp: 'Please enter peer IP',
           ipConfidence: 'Please select confidence',
@@ -736,7 +738,9 @@ const local: App.I18n.Schema = {
         empty: '—',
         // [rev3-inline 017-audit-center-enhancement C-3 ★] CSV export button + truncation notice
         export: 'Export',
-        exportTruncated: 'Only the first 10,000 rows are exported'
+        exportTruncated: 'Only the first 10,000 rows are exported',
+        // [rev3-inline 017-audit-center-enhancement C-1 ★] http_status class dropdown "All" option
+        statusClassAll: 'All'
       },
       // [rev3-inline 015-policy-governance ★] policy archive page (list+restore)
       policyArchive: {

@@ -700,6 +700,8 @@ const local: App.I18n.Schema = {
           method: '请选择方法',
           path: '请输入路径',
           status: '请输入状态码',
+          // [rev3-inline 017-audit-center-enhancement C-1 ★] http_status 类别下拉
+          statusClass: '请选择状态类别',
           realIp: '请输入真实 IP',
           peerIp: '请输入直连 peer',
           ipConfidence: '请选择可信度',
@@ -732,7 +734,9 @@ const local: App.I18n.Schema = {
         empty: '—',
         // [rev3-inline 017-audit-center-enhancement C-3 ★] CSV 匯出鈕 + 截斷提示
         export: '导出',
-        exportTruncated: '仅导出前 1 万列'
+        exportTruncated: '仅导出前 1 万列',
+        // [rev3-inline 017-audit-center-enhancement C-1 ★] http_status 类别下拉「全部」option
+        statusClassAll: '全部'
       },
       // [rev3-inline 015-policy-governance ★] 授权回收桶页（list+restore）
       policyArchive: {

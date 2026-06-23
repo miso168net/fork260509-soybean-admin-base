@@ -218,6 +218,8 @@ declare namespace Api {
         method: string;
         path: string;
         httpStatus: number;
+        /** [017 C-1] http_status 類別 quick-filter（'2xx'|'4xx'|'5xx'；與 httpStatus 精確並存＝AND；RecordNullable 自動 nullable） */
+        httpStatusClass: '2xx' | '4xx' | '5xx';
         realIp: string;
         peerIp: string;
         ipConfidence: IpConfidence;
