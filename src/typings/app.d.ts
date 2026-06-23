@@ -896,6 +896,8 @@ declare namespace App {
               method: string;
               path: string;
               status: string;
+              // [rev3-inline 017-audit-center-enhancement C-1 ★] class filter 名詞 label（對齊 col.* label 慣例）
+              statusClass: string;
               region: string;
               account: string;
               result: string;

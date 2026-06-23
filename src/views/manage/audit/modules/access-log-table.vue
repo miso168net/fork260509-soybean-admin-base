@@ -202,7 +202,7 @@ async function onExport() {
             />
           </NFormItemGi>
           <!-- [rev3-inline 017-audit-center-enhancement C-1 ★] http_status 類別 quick-filter（與精確 status 並存＝AND） -->
-          <NFormItemGi span="24 s:12 m:6" :label="$t('page.manage.audit.filter.statusClass')" class="pr-24px">
+          <NFormItemGi span="24 s:12 m:6" :label="$t('page.manage.audit.col.statusClass')" class="pr-24px">
             <NSelect
               v-model:value="searchParams.httpStatusClass"
               :placeholder="$t('page.manage.audit.filter.statusClass')"

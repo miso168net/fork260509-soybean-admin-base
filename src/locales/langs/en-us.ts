@@ -685,6 +685,8 @@ const local: App.I18n.Schema = {
           method: 'Method',
           path: 'Path',
           status: 'Status',
+          // [rev3-inline 017-audit-center-enhancement C-1 ★] class filter 名詞 label
+          statusClass: 'Status Class',
           region: 'Region',
           account: 'Account',
           result: 'Result',
