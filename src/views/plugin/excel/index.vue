@@ -3,7 +3,7 @@ import { reactive } from 'vue';
 import { NButton, NTag } from 'naive-ui';
 import { utils, writeFile } from 'xlsx';
 import { enableStatusRecord, userGenderRecord } from '@/constants/business';
-import { fetchGetUserList } from '@/service/api';
+import { fetchGetUserListRev3 } from '@/service/api/rev3-system-manage';
 import { useAppStore } from '@/store/modules/app';
 import { isTableColumnHasKey, useNaiveTable } from '@/hooks/common/table';
 import { $t } from '@/locales';
@@ -22,7 +22,7 @@ const searchParams: Api.SystemManage.UserSearchParams = reactive({
 });
 
 const { columns, data, loading } = useNaiveTable({
-  api: () => fetchGetUserList(searchParams),
+  api: () => fetchGetUserListRev3(searchParams),
   transform: response => {
     const { data: list, error } = response;
 
@@ -134,7 +134,7 @@ function exportExcel() {
   writeFile(workBook, '用户数据.xlsx');
 }
 
-function getTableValue(col: NaiveUI.TableColumn<Api.SystemManage.User>, item: Api.SystemManage.User) {
+function getTableValue(col: NaiveUI.TableColumn<Api.SystemManage.UserListItemRev3>, item: Api.SystemManage.UserListItemRev3) {
   if (!isTableColumnHasKey(col)) {
     return null;
   }
@@ -153,7 +153,7 @@ function getTableValue(col: NaiveUI.TableColumn<Api.SystemManage.User>, item: Ap
     return (item.userGender && $t(userGenderRecord[item.userGender])) || null;
   }
 
-  // @ts-expect-error the key is not in the type of Api.SystemManage.User
+  // @ts-expect-error the key is not in the type of Api.SystemManage.UserListItemRev3
   return item[key] || null;
 }
 

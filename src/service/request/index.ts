@@ -117,6 +117,10 @@ export const request = createFlatRequest(
         // [rev3-inline I18N(i) ⚠️aa BASE-WEB-I18N-WIRING ★] 原行: message = error.response?.data?.msg || message;
         message = error.response?.data?.msg ? translateBackendMsg(error.response.data.msg) : message;
         backendErrorCode = String(error.response?.data?.code || '');
+      } else if (error.response?.data?.msg) {
+        // [rev3-inline I18N(i) ⚠️aa BASE-WEB-I18N-WIRING ★] native axios error（HTTP 403/404 等，code≠BACKEND_ERROR_CODE）仍帶 rust {code,msg} 信封 → 抽 msg 在地化、code 入後續判斷（§3.G）
+        message = translateBackendMsg(error.response.data.msg);
+        backendErrorCode = String(error.response?.data?.code || '');
       }
 
       // the error message is displayed in the modal

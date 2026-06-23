@@ -323,13 +323,19 @@ declare namespace Api {
       label?: string;
     };
 
-    /** role button update body（updateRoleButton；roleId 維 number ⚠️r） */
+    /**
+     * role button update body（updateRoleButton；roleId 維 number ⚠️r）。
+     * [rev3 sweep §3.B] 現未引用（updateRoleButton 走 inline body 型）；保留供未來具名化、BASE-WEB-ADAPT 軌禁刪。
+     */
     type RoleButtonUpdate = {
       roleId: number;
       buttonCodes: string[];
     };
 
-    /** role endpoints update body（updateRoleEndpoints；roleId 維 number ⚠️r） */
+    /**
+     * role endpoints update body（updateRoleEndpoints；roleId 維 number ⚠️r）。
+     * [rev3 sweep §3.B] 現未引用（updateRoleEndpoints 走 inline body 型）；保留供未來具名化、BASE-WEB-ADAPT 軌禁刪。
+     */
     type RoleEndpointsUpdate = {
       roleId: number;
       endpoints: Endpoint[];
