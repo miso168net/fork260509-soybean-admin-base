@@ -729,7 +729,10 @@ const local: App.I18n.Schema = {
           cdn_mismatch: '不符',
           fallback: '退回'
         },
-        empty: '—'
+        empty: '—',
+        // [rev3-inline 017-audit-center-enhancement C-3 ★] CSV 匯出鈕 + 截斷提示
+        export: '导出',
+        exportTruncated: '仅导出前 1 万列'
       },
       // [rev3-inline 015-policy-governance ★] 授权回收桶页（list+restore）
       policyArchive: {

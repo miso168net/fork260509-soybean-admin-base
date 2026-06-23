@@ -1,10 +1,11 @@
 <script setup lang="tsx">
 import { ref } from 'vue';
 import { NDatePicker, NInput, NSelect } from 'naive-ui';
-import { fetchGetOperationLog } from '@/service/api/rev3-system-manage';
+import { fetchExportOperationLog, fetchGetOperationLog } from '@/service/api/rev3-system-manage';
 import { defaultTransform, useNaivePaginatedTable } from '@/hooks/common/table';
 import { useAppStore } from '@/store/modules/app';
 import { $t } from '@/locales';
+import { CSV_EXPORT_CAP, downloadCsv } from '@/utils/download';
 import { renderConfidenceTag } from './ip-confidence-tag';
 import { confidenceOptions } from './ip-confidence-options';
 
@@ -52,7 +53,7 @@ function onDateRangeChange(value: [number, number] | null) {
   }
 }
 
-const { columns, data, loading, getDataByPage, mobilePagination } = useNaivePaginatedTable({
+const { columns, data, loading, getDataByPage, pagination, mobilePagination } = useNaivePaginatedTable({
   api: () => fetchGetOperationLog(searchParams.value),
   transform: response => defaultTransform(response),
   onPaginationParamsChange: params => {
@@ -172,6 +173,16 @@ function reset() {
 function search() {
   getDataByPage();
 }
+
+// [rev3-inline 017-audit-center-enhancement C-3 ★] CSV 匯出（當前篩選；後端 cap 1 萬列、F4 截斷以匯出前同篩選 list total 為準）
+async function onExport() {
+  const { error, data: csv } = await fetchExportOperationLog(searchParams.value);
+  if (error) return;
+  downloadCsv(csv, `operation_${Date.now()}.csv`);
+  if ((pagination.itemCount ?? 0) > CSV_EXPORT_CAP) {
+    window.$message?.warning($t('page.manage.audit.exportTruncated'));
+  }
+}
 </script>
 
 <template>
@@ -254,6 +265,9 @@ function search() {
                   <icon-ic-round-search class="text-icon" />
                 </template>
                 {{ $t('common.search') }}
+              </NButton>
+              <NButton @click="onExport">
+                {{ $t('page.manage.audit.export') }}
               </NButton>
             </NSpace>
           </NFormItemGi>

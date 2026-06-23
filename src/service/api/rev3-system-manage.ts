@@ -331,6 +331,49 @@ export function fetchGetLoginAttempt(params?: Api.SystemManage.LoginAttemptSearc
   });
 }
 
+// [rev3-inline 017-audit-center-enhancement C-3 ★] 審計三分頁 CSV 匯出 wrapper（既有讀端點 export=true 變體）
+// wire 事實（contracts/wire-deltas.md C-3）：export=true 時 envelope data 為 CSV 字串（非 PageRes）→ request<string>；
+//   送出當前篩選 params + export:'true'（沿 pruneNullParams 剔未設 filter，與讀端一致）
+
+/**
+ * export operation log（操作異動 CSV 匯出；GET export=true、R_SUPER、回 CSV 字串）
+ *
+ * @param params operation log search params（當前篩選，皆 optional）
+ */
+export function fetchExportOperationLog(params?: Api.SystemManage.OperationLogSearchParams) {
+  return request<string>({
+    url: '/systemManage/getOperationLog',
+    method: 'get',
+    params: pruneNullParams({ ...params, export: 'true' })
+  });
+}
+
+/**
+ * export access log（API 存取 CSV 匯出；GET export=true、R_SUPER、回 CSV 字串）
+ *
+ * @param params access log search params（當前篩選，皆 optional）
+ */
+export function fetchExportAccessLog(params?: Api.SystemManage.AccessLogSearchParams) {
+  return request<string>({
+    url: '/systemManage/getAccessLog',
+    method: 'get',
+    params: pruneNullParams({ ...params, export: 'true' })
+  });
+}
+
+/**
+ * export login attempt（登入嘗試 CSV 匯出；GET export=true、R_SUPER、回 CSV 字串）
+ *
+ * @param params login attempt search params（當前篩選，皆 optional）
+ */
+export function fetchExportLoginAttempt(params?: Api.SystemManage.LoginAttemptSearchParams) {
+  return request<string>({
+    url: '/systemManage/getLoginAttempt',
+    method: 'get',
+    params: pruneNullParams({ ...params, export: 'true' })
+  });
+}
+
 // [rev3-inline 015-policy-governance WRAPPER MODAL-WIRING(e)] 授權回收桶讀端+復原 wrapper
 // fork-delta：不改既有 system-manage.ts；本檔僅新增；getArchivedPolicies GET R_SUPER 回 PageRes、restorePolicy POST
 // wire 事實：restorePolicy id 走【字串】（沿 009 ⚠️o）；Applied/NoOp→0000、NotFound→2222（biz.policy.notFound）

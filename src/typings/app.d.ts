@@ -947,6 +947,9 @@ declare namespace App {
               fallback: string;
             };
             empty: string;
+            // [rev3-inline 017-audit-center-enhancement C-3 ★] CSV 匯出鈕 + 截斷提示
+            export: string;
+            exportTruncated: string;
           };
           // [rev3-inline 015-policy-governance ★] 授權回收桶頁（list+restore；先 Schema 後 locale）
           policyArchive: {
