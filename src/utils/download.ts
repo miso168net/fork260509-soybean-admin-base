@@ -1,8 +1,6 @@
 // [rev3-inline 017-audit-center-enhancement C-3 ★] CSV 匯出下載 util（審計三分頁共用）
-// 後端 export 分支回 CSV 字串（含 UTF-8 BOM、由 records_to_csv 前綴）；前端僅負責觸發下載
-
-/** 單次匯出上限（與後端 CSV_EXPORT_CAP 對齊；前端用於截斷 toast 判斷） */
-export const CSV_EXPORT_CAP = 10000;
+// 後端 export 分支回 {csv,truncated}（csv 含 UTF-8 BOM、由 records_to_csv 前綴）；前端僅負責觸發下載
+// （F4 後截斷判斷改用後端 truncated 旗標、前端不再鏡像 cap 常數）
 
 /**
  * 下載 CSV 字串為檔案。

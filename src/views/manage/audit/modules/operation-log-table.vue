@@ -5,7 +5,7 @@ import { fetchExportOperationLog, fetchGetOperationLog } from '@/service/api/rev
 import { defaultTransform, useNaivePaginatedTable } from '@/hooks/common/table';
 import { useAppStore } from '@/store/modules/app';
 import { $t } from '@/locales';
-import { CSV_EXPORT_CAP, downloadCsv } from '@/utils/download';
+import { downloadCsv } from '@/utils/download';
 import { renderConfidenceTag } from './ip-confidence-tag';
 import { confidenceOptions } from './ip-confidence-options';
 
@@ -53,7 +53,7 @@ function onDateRangeChange(value: [number, number] | null) {
   }
 }
 
-const { columns, data, loading, getDataByPage, pagination, mobilePagination } = useNaivePaginatedTable({
+const { columns, data, loading, getDataByPage, mobilePagination } = useNaivePaginatedTable({
   api: () => fetchGetOperationLog(searchParams.value),
   transform: response => defaultTransform(response),
   onPaginationParamsChange: params => {
@@ -174,12 +174,12 @@ function search() {
   getDataByPage();
 }
 
-// [rev3-inline 017-audit-center-enhancement C-3 ★] CSV 匯出（當前篩選；後端 cap 1 萬列、F4 截斷以匯出前同篩選 list total 為準）
+// [rev3-inline 017-audit-center-enhancement C-3＋F4 ★] CSV 匯出（當前篩選；後端 cap 1 萬列、截斷以後端 truncated 旗標為準、非 stale list total）
 async function onExport() {
-  const { error, data: csv } = await fetchExportOperationLog(searchParams.value);
-  if (error) return;
-  downloadCsv(csv, `operation_${Date.now()}.csv`);
-  if ((pagination.itemCount ?? 0) > CSV_EXPORT_CAP) {
+  const { error, data } = await fetchExportOperationLog(searchParams.value);
+  if (error || !data) return;
+  downloadCsv(data.csv, `operation_${Date.now()}.csv`);
+  if (data.truncated) {
     window.$message?.warning($t('page.manage.audit.exportTruncated'));
   }
 }

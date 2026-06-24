@@ -260,6 +260,16 @@ declare namespace Api {
     /** login attempt list（PageRes 分頁包） */
     type LoginAttemptList = Common.PaginatingQueryRecord<LoginAttemptItem>;
 
+    /**
+     * 三審計 CSV 匯出信封 data（017 C-3＋F4）。
+     * - `csv`：CSV-in-envelope 全文（BOM＋表頭＋資料列）
+     * - `truncated`：後端權威截斷旗標（list total > 1 萬列上限）；前端據此顯示截斷 toast、取代 stale 的 list itemCount
+     */
+    type AuditCsvExport = {
+      csv: string;
+      truncated: boolean;
+    };
+
     // [rev3-inline 015-policy-governance MODAL-WIRING(e)] 授權回收桶讀端 item／SearchParams／List（honest 逐欄、對齊 rust EU2 wire）
     // wire 事實（rust getArchivedPolicies handler 親抓欄序；GET、R_SUPER、回 PageRes{current,size,total,records}、code 0000）
     //   ★ honest 逐欄：roleCode/target/dimension/archiveReason 為 NN 字串；archivedBy（撤銷執行者 id）可 null；

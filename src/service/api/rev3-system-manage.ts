@@ -336,12 +336,12 @@ export function fetchGetLoginAttempt(params?: Api.SystemManage.LoginAttemptSearc
 //   送出當前篩選 params + export:'true'（沿 pruneNullParams 剔未設 filter，與讀端一致）
 
 /**
- * export operation log（操作異動 CSV 匯出；GET export=true、R_SUPER、回 CSV 字串）
+ * export operation log（操作異動 CSV 匯出；GET export=true、R_SUPER、回 {csv,truncated}）
  *
  * @param params operation log search params（當前篩選，皆 optional）
  */
 export function fetchExportOperationLog(params?: Api.SystemManage.OperationLogSearchParams) {
-  return request<string>({
+  return request<Api.SystemManage.AuditCsvExport>({
     url: '/systemManage/getOperationLog',
     method: 'get',
     params: pruneNullParams({ ...params, export: 'true' })
@@ -349,12 +349,12 @@ export function fetchExportOperationLog(params?: Api.SystemManage.OperationLogSe
 }
 
 /**
- * export access log（API 存取 CSV 匯出；GET export=true、R_SUPER、回 CSV 字串）
+ * export access log（API 存取 CSV 匯出；GET export=true、R_SUPER、回 {csv,truncated}）
  *
  * @param params access log search params（當前篩選，皆 optional）
  */
 export function fetchExportAccessLog(params?: Api.SystemManage.AccessLogSearchParams) {
-  return request<string>({
+  return request<Api.SystemManage.AuditCsvExport>({
     url: '/systemManage/getAccessLog',
     method: 'get',
     params: pruneNullParams({ ...params, export: 'true' })
@@ -362,12 +362,12 @@ export function fetchExportAccessLog(params?: Api.SystemManage.AccessLogSearchPa
 }
 
 /**
- * export login attempt（登入嘗試 CSV 匯出；GET export=true、R_SUPER、回 CSV 字串）
+ * export login attempt（登入嘗試 CSV 匯出；GET export=true、R_SUPER、回 {csv,truncated}）
  *
  * @param params login attempt search params（當前篩選，皆 optional）
  */
 export function fetchExportLoginAttempt(params?: Api.SystemManage.LoginAttemptSearchParams) {
-  return request<string>({
+  return request<Api.SystemManage.AuditCsvExport>({
     url: '/systemManage/getLoginAttempt',
     method: 'get',
     params: pruneNullParams({ ...params, export: 'true' })
