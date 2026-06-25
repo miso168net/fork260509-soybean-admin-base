@@ -823,7 +823,7 @@ const local: App.I18n.Schema = {
   backend: {
     common: { success: '请求成功' },
     auth: {
-      login: { failed: '用户名或密码错误' },
+      login: { failed: '用户名或密码错误', locked: '登录失败次数过多，请稍后再试' },
       token: { expired: '登录已过期' },
       session: { kicked: '账号在他处登录', reLogin: '请重新登录' }
     },

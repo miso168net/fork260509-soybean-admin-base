@@ -827,7 +827,7 @@ const local: App.I18n.Schema = {
   backend: {
     common: { success: 'Success' },
     auth: {
-      login: { failed: 'Incorrect username or password' },
+      login: { failed: 'Incorrect username or password', locked: 'Too many failed login attempts. Please try again later.' },
       token: { expired: 'Login expired' },
       session: { kicked: 'Logged in elsewhere', reLogin: 'Please log in again' }
     },
