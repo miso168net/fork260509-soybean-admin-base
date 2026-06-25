@@ -858,7 +858,9 @@ const local: App.I18n.Schema = {
         inUse: '角色仍有使用者指派、不可删除',
         cannotDeleteSelfRole: '不可删除自身的角色',
         menuProtected: '受保护的系统选单可见性不可移除',
-        endpointProtected: '受保护的核心接口存取不可移除'
+        endpointProtected: '受保护的核心接口存取不可移除',
+        invalidEndpointMethod: '无效的接口方法',
+        grantExceedsOwn: '不可授予超出自身权限范围的项'
       },
       // [rev3-inline 012-audit-log-query I18N(iii) ★] biz.audit（畸形日期范围；攔截器自动 $t('backend.'+msg)）
       audit: {

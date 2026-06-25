@@ -354,6 +354,8 @@ declare namespace App {
             cannotDeleteSelfRole: string;
             menuProtected: string;
             endpointProtected: string;
+            invalidEndpointMethod: string;
+            grantExceedsOwn: string;
           };
           // [rev3-inline 012-audit-log-query I18N(iii) ★] biz.audit（畸形日期範圍；對齊後端 biz.audit.invalidDateRange）
           audit: {
