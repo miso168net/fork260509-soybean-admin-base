@@ -57,7 +57,11 @@ function onDateRangeChange(value: [number, number] | null) {
   dateRange.value = value;
   if (value) {
     searchParams.value.createdFrom = new Date(value[0]).toISOString();
-    searchParams.value.createdTo = new Date(value[1]).toISOString();
+    // H-4 off-by-one：NDatePicker daterange 結束值落當日 00:00:00（本地），補到當日末刻 23:59:59.999
+    // 後端對完整 RFC3339 as-is（不再延），前端延即可、互不重複調整。
+    const end = new Date(value[1]);
+    end.setHours(23, 59, 59, 999);
+    searchParams.value.createdTo = end.toISOString();
   } else {
     searchParams.value.createdFrom = null;
     searchParams.value.createdTo = null;
