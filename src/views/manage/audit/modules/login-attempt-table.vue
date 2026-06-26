@@ -165,76 +165,80 @@ async function onExport() {
 <template>
   <div class="flex-col-stretch gap-16px">
     <NCard :bordered="false" size="small" class="card-wrapper">
-      <NForm :model="searchParams" label-placement="left" :label-width="80">
-        <NGrid responsive="screen" item-responsive>
-          <NFormItemGi span="24 s:12 m:6" :label="$t('page.manage.audit.col.account')" class="pr-24px">
-            <NInput
-              v-model:value="searchParams.attemptedUserName"
-              :placeholder="$t('page.manage.audit.filter.account')"
-            />
-          </NFormItemGi>
-          <NFormItemGi span="24 s:12 m:6" :label="$t('page.manage.audit.col.result')" class="pr-24px">
-            <NSelect
-              :value="resultValue"
-              :placeholder="$t('page.manage.audit.filter.result')"
-              :options="resultOptions"
-              clearable
-              @update:value="onResultChange"
-            />
-          </NFormItemGi>
-          <NFormItemGi span="24 s:12 m:6" :label="$t('page.manage.audit.col.confidence')" class="pr-24px">
-            <NSelect
-              v-model:value="searchParams.ipConfidence"
-              :placeholder="$t('page.manage.audit.filter.ipConfidence')"
-              :options="confidenceOptions"
-              clearable
-            />
-          </NFormItemGi>
-          <NFormItemGi span="24 s:12 m:6" :label="$t('page.manage.audit.col.peerIp')" class="pr-24px">
-            <NInput v-model:value="searchParams.peerIp" :placeholder="$t('page.manage.audit.filter.peerIp')" />
-          </NFormItemGi>
-          <NFormItemGi span="24 s:12 m:6" :label="$t('page.manage.audit.col.realIp')" class="pr-24px">
-            <NInput v-model:value="searchParams.realIp" :placeholder="$t('page.manage.audit.filter.realIp')" />
-          </NFormItemGi>
-          <NFormItemGi span="24 s:12 m:6" :label="$t('page.manage.audit.col.xForwardedFor')" class="pr-24px">
-            <NInput
-              v-model:value="searchParams.xForwardedFor"
-              :placeholder="$t('page.manage.audit.filter.xForwardedFor')"
-            />
-          </NFormItemGi>
-          <NFormItemGi span="24 s:12 m:6" :label="$t('page.manage.audit.col.region')" class="pr-24px">
-            <NInput v-model:value="searchParams.region" :placeholder="$t('page.manage.audit.filter.region')" />
-          </NFormItemGi>
-          <NFormItemGi span="24 s:24 m:12" :label="$t('page.manage.audit.col.time')" class="pr-24px">
-            <NDatePicker
-              :value="dateRange"
-              type="daterange"
-              clearable
-              class="w-full"
-              @update:value="onDateRangeChange"
-            />
-          </NFormItemGi>
-          <NFormItemGi span="24 s:12 m:6">
-            <NSpace class="w-full" justify="end">
-              <NButton @click="reset">
-                <template #icon>
-                  <icon-ic-round-refresh class="text-icon" />
-                </template>
-                {{ $t('common.reset') }}
-              </NButton>
-              <NButton type="primary" ghost @click="search">
-                <template #icon>
-                  <icon-ic-round-search class="text-icon" />
-                </template>
-                {{ $t('common.search') }}
-              </NButton>
-              <NButton @click="onExport">
-                {{ $t('page.manage.audit.export') }}
-              </NButton>
-            </NSpace>
-          </NFormItemGi>
-        </NGrid>
-      </NForm>
+      <NCollapse>
+        <NCollapseItem :title="$t('common.search')" name="audit-login-search">
+          <NForm :model="searchParams" label-placement="left" :label-width="80">
+            <NGrid responsive="screen" item-responsive>
+              <NFormItemGi span="24 s:12 m:6" :label="$t('page.manage.audit.col.account')" class="pr-24px">
+                <NInput
+                  v-model:value="searchParams.attemptedUserName"
+                  :placeholder="$t('page.manage.audit.filter.account')"
+                />
+              </NFormItemGi>
+              <NFormItemGi span="24 s:12 m:6" :label="$t('page.manage.audit.col.result')" class="pr-24px">
+                <NSelect
+                  :value="resultValue"
+                  :placeholder="$t('page.manage.audit.filter.result')"
+                  :options="resultOptions"
+                  clearable
+                  @update:value="onResultChange"
+                />
+              </NFormItemGi>
+              <NFormItemGi span="24 s:12 m:6" :label="$t('page.manage.audit.col.confidence')" class="pr-24px">
+                <NSelect
+                  v-model:value="searchParams.ipConfidence"
+                  :placeholder="$t('page.manage.audit.filter.ipConfidence')"
+                  :options="confidenceOptions"
+                  clearable
+                />
+              </NFormItemGi>
+              <NFormItemGi span="24 s:12 m:6" :label="$t('page.manage.audit.col.peerIp')" class="pr-24px">
+                <NInput v-model:value="searchParams.peerIp" :placeholder="$t('page.manage.audit.filter.peerIp')" />
+              </NFormItemGi>
+              <NFormItemGi span="24 s:12 m:6" :label="$t('page.manage.audit.col.realIp')" class="pr-24px">
+                <NInput v-model:value="searchParams.realIp" :placeholder="$t('page.manage.audit.filter.realIp')" />
+              </NFormItemGi>
+              <NFormItemGi span="24 s:12 m:6" :label="$t('page.manage.audit.col.xForwardedFor')" class="pr-24px">
+                <NInput
+                  v-model:value="searchParams.xForwardedFor"
+                  :placeholder="$t('page.manage.audit.filter.xForwardedFor')"
+                />
+              </NFormItemGi>
+              <NFormItemGi span="24 s:12 m:6" :label="$t('page.manage.audit.col.region')" class="pr-24px">
+                <NInput v-model:value="searchParams.region" :placeholder="$t('page.manage.audit.filter.region')" />
+              </NFormItemGi>
+              <NFormItemGi span="24 s:24 m:12" :label="$t('page.manage.audit.col.time')" class="pr-24px">
+                <NDatePicker
+                  :value="dateRange"
+                  type="daterange"
+                  clearable
+                  class="w-full"
+                  @update:value="onDateRangeChange"
+                />
+              </NFormItemGi>
+              <NFormItemGi span="24 s:12 m:6">
+                <NSpace class="w-full" justify="end">
+                  <NButton @click="reset">
+                    <template #icon>
+                      <icon-ic-round-refresh class="text-icon" />
+                    </template>
+                    {{ $t('common.reset') }}
+                  </NButton>
+                  <NButton type="primary" ghost @click="search">
+                    <template #icon>
+                      <icon-ic-round-search class="text-icon" />
+                    </template>
+                    {{ $t('common.search') }}
+                  </NButton>
+                  <NButton @click="onExport">
+                    {{ $t('page.manage.audit.export') }}
+                  </NButton>
+                </NSpace>
+              </NFormItemGi>
+            </NGrid>
+          </NForm>
+        </NCollapseItem>
+      </NCollapse>
     </NCard>
     <NCard :bordered="false" size="small" class="card-wrapper">
       <NDataTable

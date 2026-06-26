@@ -124,35 +124,39 @@ function search() {
 <template>
   <div class="flex-col-stretch gap-16px">
     <NCard :bordered="false" size="small" class="card-wrapper">
-      <NForm :model="searchParams" label-placement="left" :label-width="80">
-        <NGrid responsive="screen" item-responsive>
-          <NFormItemGi span="24 s:12 m:6" :label="$t('page.manage.policyArchive.col.roleCode')" class="pr-24px">
-            <NInput v-model:value="searchParams.roleCode" :placeholder="$t('page.manage.policyArchive.filter.roleCode')" />
-          </NFormItemGi>
-          <NFormItemGi span="24 s:12 m:6" :label="$t('page.manage.policyArchive.col.dimension')" class="pr-24px">
-            <NInput
-              v-model:value="searchParams.dimension"
-              :placeholder="$t('page.manage.policyArchive.filter.dimension')"
-            />
-          </NFormItemGi>
-          <NFormItemGi span="24 s:12 m:6">
-            <NSpace class="w-full" justify="end">
-              <NButton @click="reset">
-                <template #icon>
-                  <icon-ic-round-refresh class="text-icon" />
-                </template>
-                {{ $t('common.reset') }}
-              </NButton>
-              <NButton type="primary" ghost @click="search">
-                <template #icon>
-                  <icon-ic-round-search class="text-icon" />
-                </template>
-                {{ $t('common.search') }}
-              </NButton>
-            </NSpace>
-          </NFormItemGi>
-        </NGrid>
-      </NForm>
+      <NCollapse>
+        <NCollapseItem :title="$t('common.search')" name="policy-archive-search">
+          <NForm :model="searchParams" label-placement="left" :label-width="80">
+            <NGrid responsive="screen" item-responsive>
+              <NFormItemGi span="24 s:12 m:6" :label="$t('page.manage.policyArchive.col.roleCode')" class="pr-24px">
+                <NInput v-model:value="searchParams.roleCode" :placeholder="$t('page.manage.policyArchive.filter.roleCode')" />
+              </NFormItemGi>
+              <NFormItemGi span="24 s:12 m:6" :label="$t('page.manage.policyArchive.col.dimension')" class="pr-24px">
+                <NInput
+                  v-model:value="searchParams.dimension"
+                  :placeholder="$t('page.manage.policyArchive.filter.dimension')"
+                />
+              </NFormItemGi>
+              <NFormItemGi span="24 s:12 m:6">
+                <NSpace class="w-full" justify="end">
+                  <NButton @click="reset">
+                    <template #icon>
+                      <icon-ic-round-refresh class="text-icon" />
+                    </template>
+                    {{ $t('common.reset') }}
+                  </NButton>
+                  <NButton type="primary" ghost @click="search">
+                    <template #icon>
+                      <icon-ic-round-search class="text-icon" />
+                    </template>
+                    {{ $t('common.search') }}
+                  </NButton>
+                </NSpace>
+              </NFormItemGi>
+            </NGrid>
+          </NForm>
+        </NCollapseItem>
+      </NCollapse>
     </NCard>
     <NCard :bordered="false" size="small" class="card-wrapper">
       <NDataTable

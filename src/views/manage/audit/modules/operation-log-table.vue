@@ -192,91 +192,95 @@ async function onExport() {
 <template>
   <div class="flex-col-stretch gap-16px">
     <NCard :bordered="false" size="small" class="card-wrapper">
-      <NForm :model="searchParams" label-placement="left" :label-width="80">
-        <NGrid responsive="screen" item-responsive>
-          <NFormItemGi span="24 s:12 m:6" :label="$t('page.manage.audit.col.entityTable')" class="pr-24px">
-            <NInput v-model:value="searchParams.entityTable" :placeholder="$t('page.manage.audit.filter.entityTable')" />
-          </NFormItemGi>
-          <NFormItemGi span="24 s:12 m:6" :label="$t('page.manage.audit.col.operation')" class="pr-24px">
-            <NSelect
-              v-model:value="searchParams.operation"
-              :placeholder="$t('page.manage.audit.filter.operation')"
-              :options="operationOptions"
-              clearable
-            />
-          </NFormItemGi>
-          <NFormItemGi span="24 s:12 m:6" :label="$t('page.manage.audit.col.operator')" class="pr-24px">
-            <NInput
-              v-model:value="searchParams.operatorName"
-              :placeholder="$t('page.manage.audit.filter.operatorName')"
-            />
-          </NFormItemGi>
-          <NFormItemGi span="24 s:12 m:6" :label="$t('page.manage.audit.col.confidence')" class="pr-24px">
-            <NSelect
-              v-model:value="searchParams.operatorIpConfidence"
-              :placeholder="$t('page.manage.audit.filter.operatorIpConfidence')"
-              :options="confidenceOptions"
-              clearable
-            />
-          </NFormItemGi>
-          <NFormItemGi span="24 s:12 m:6" :label="$t('page.manage.audit.col.peerIp')" class="pr-24px">
-            <NInput
-              v-model:value="searchParams.operatorPeerIp"
-              :placeholder="$t('page.manage.audit.filter.operatorPeerIp')"
-            />
-          </NFormItemGi>
-          <NFormItemGi span="24 s:12 m:6" :label="$t('page.manage.audit.col.realIp')" class="pr-24px">
-            <NInput
-              v-model:value="searchParams.operatorRealIp"
-              :placeholder="$t('page.manage.audit.filter.operatorRealIp')"
-            />
-          </NFormItemGi>
-          <NFormItemGi span="24 s:12 m:6" :label="$t('page.manage.audit.col.xForwardedFor')" class="pr-24px">
-            <NInput
-              v-model:value="searchParams.operatorXForwardedFor"
-              :placeholder="$t('page.manage.audit.filter.operatorXForwardedFor')"
-            />
-          </NFormItemGi>
-          <NFormItemGi span="24 s:12 m:6" :label="$t('page.manage.audit.col.entityId')" class="pr-24px">
-            <NInputNumber
-              v-model:value="searchParams.entityId"
-              :placeholder="$t('page.manage.audit.filter.entityId')"
-              class="w-full"
-            />
-          </NFormItemGi>
-          <NFormItemGi span="24 s:12 m:6" :label="$t('page.manage.audit.col.traceId')" class="pr-24px">
-            <NInput v-model:value="searchParams.traceId" :placeholder="$t('page.manage.audit.filter.traceId')" />
-          </NFormItemGi>
-          <NFormItemGi span="24 s:24 m:12" :label="$t('page.manage.audit.col.time')" class="pr-24px">
-            <NDatePicker
-              :value="dateRange"
-              type="daterange"
-              clearable
-              class="w-full"
-              @update:value="onDateRangeChange"
-            />
-          </NFormItemGi>
-          <NFormItemGi span="24 s:12 m:6">
-            <NSpace class="w-full" justify="end">
-              <NButton @click="reset">
-                <template #icon>
-                  <icon-ic-round-refresh class="text-icon" />
-                </template>
-                {{ $t('common.reset') }}
-              </NButton>
-              <NButton type="primary" ghost @click="search">
-                <template #icon>
-                  <icon-ic-round-search class="text-icon" />
-                </template>
-                {{ $t('common.search') }}
-              </NButton>
-              <NButton @click="onExport">
-                {{ $t('page.manage.audit.export') }}
-              </NButton>
-            </NSpace>
-          </NFormItemGi>
-        </NGrid>
-      </NForm>
+      <NCollapse>
+        <NCollapseItem :title="$t('common.search')" name="audit-operation-search">
+          <NForm :model="searchParams" label-placement="left" :label-width="80">
+            <NGrid responsive="screen" item-responsive>
+              <NFormItemGi span="24 s:12 m:6" :label="$t('page.manage.audit.col.entityTable')" class="pr-24px">
+                <NInput v-model:value="searchParams.entityTable" :placeholder="$t('page.manage.audit.filter.entityTable')" />
+              </NFormItemGi>
+              <NFormItemGi span="24 s:12 m:6" :label="$t('page.manage.audit.col.operation')" class="pr-24px">
+                <NSelect
+                  v-model:value="searchParams.operation"
+                  :placeholder="$t('page.manage.audit.filter.operation')"
+                  :options="operationOptions"
+                  clearable
+                />
+              </NFormItemGi>
+              <NFormItemGi span="24 s:12 m:6" :label="$t('page.manage.audit.col.operator')" class="pr-24px">
+                <NInput
+                  v-model:value="searchParams.operatorName"
+                  :placeholder="$t('page.manage.audit.filter.operatorName')"
+                />
+              </NFormItemGi>
+              <NFormItemGi span="24 s:12 m:6" :label="$t('page.manage.audit.col.confidence')" class="pr-24px">
+                <NSelect
+                  v-model:value="searchParams.operatorIpConfidence"
+                  :placeholder="$t('page.manage.audit.filter.operatorIpConfidence')"
+                  :options="confidenceOptions"
+                  clearable
+                />
+              </NFormItemGi>
+              <NFormItemGi span="24 s:12 m:6" :label="$t('page.manage.audit.col.peerIp')" class="pr-24px">
+                <NInput
+                  v-model:value="searchParams.operatorPeerIp"
+                  :placeholder="$t('page.manage.audit.filter.operatorPeerIp')"
+                />
+              </NFormItemGi>
+              <NFormItemGi span="24 s:12 m:6" :label="$t('page.manage.audit.col.realIp')" class="pr-24px">
+                <NInput
+                  v-model:value="searchParams.operatorRealIp"
+                  :placeholder="$t('page.manage.audit.filter.operatorRealIp')"
+                />
+              </NFormItemGi>
+              <NFormItemGi span="24 s:12 m:6" :label="$t('page.manage.audit.col.xForwardedFor')" class="pr-24px">
+                <NInput
+                  v-model:value="searchParams.operatorXForwardedFor"
+                  :placeholder="$t('page.manage.audit.filter.operatorXForwardedFor')"
+                />
+              </NFormItemGi>
+              <NFormItemGi span="24 s:12 m:6" :label="$t('page.manage.audit.col.entityId')" class="pr-24px">
+                <NInputNumber
+                  v-model:value="searchParams.entityId"
+                  :placeholder="$t('page.manage.audit.filter.entityId')"
+                  class="w-full"
+                />
+              </NFormItemGi>
+              <NFormItemGi span="24 s:12 m:6" :label="$t('page.manage.audit.col.traceId')" class="pr-24px">
+                <NInput v-model:value="searchParams.traceId" :placeholder="$t('page.manage.audit.filter.traceId')" />
+              </NFormItemGi>
+              <NFormItemGi span="24 s:24 m:12" :label="$t('page.manage.audit.col.time')" class="pr-24px">
+                <NDatePicker
+                  :value="dateRange"
+                  type="daterange"
+                  clearable
+                  class="w-full"
+                  @update:value="onDateRangeChange"
+                />
+              </NFormItemGi>
+              <NFormItemGi span="24 s:12 m:6">
+                <NSpace class="w-full" justify="end">
+                  <NButton @click="reset">
+                    <template #icon>
+                      <icon-ic-round-refresh class="text-icon" />
+                    </template>
+                    {{ $t('common.reset') }}
+                  </NButton>
+                  <NButton type="primary" ghost @click="search">
+                    <template #icon>
+                      <icon-ic-round-search class="text-icon" />
+                    </template>
+                    {{ $t('common.search') }}
+                  </NButton>
+                  <NButton @click="onExport">
+                    {{ $t('page.manage.audit.export') }}
+                  </NButton>
+                </NSpace>
+              </NFormItemGi>
+            </NGrid>
+          </NForm>
+        </NCollapseItem>
+      </NCollapse>
     </NCard>
     <NCard :bordered="false" size="small" class="card-wrapper">
       <NDataTable
