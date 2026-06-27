@@ -15,6 +15,15 @@ defineOptions({
 // restore 鈕無獨立 button-policy 種子 → 不以 hasAuth 假碼隱藏（會對所有人隱藏、破 SC-006）；後端 require_policy 為安全邊界。
 const appStore = useAppStore();
 
+// [rev3-inline 020-role-delete-policy-archive ★ START] archiveReason（wire snake 值）→ i18n 友善標籤 key map
+// 實際 3 值（C3 接地）：role_dimension_revoke（menu+button 撤銷）／role_endpoint_revoke（endpoint 撤銷）／role_soft_delete（角色刪除歸檔）；未知值 fallback 原字串
+const reasonLabelKeyMap: Record<string, App.I18n.I18nKey> = {
+  role_dimension_revoke: 'page.manage.policyArchive.reasonLabels.roleDimensionRevoke',
+  role_endpoint_revoke: 'page.manage.policyArchive.reasonLabels.roleEndpointRevoke',
+  role_soft_delete: 'page.manage.policyArchive.reasonLabels.roleSoftDelete'
+};
+// [rev3-inline 020-role-delete-policy-archive ★ END]
+
 const searchParams = ref<Api.SystemManage.ArchivedPolicySearchParams>({
   current: 1,
   size: 10,
@@ -75,7 +84,11 @@ const { columns, data, loading, getDataByPage, mobilePagination } = useNaivePagi
       title: $t('page.manage.policyArchive.col.archiveReason'),
       align: 'center',
       minWidth: 160,
-      render: row => row.archiveReason || $t('page.manage.policyArchive.empty')
+      // [rev3-inline 020-role-delete-policy-archive] reason snake 值 → $t 友善標籤（已知 3 值映射、未知值 fallback 原字串、空→empty）
+      render: row => {
+        const labelKey = reasonLabelKeyMap[row.archiveReason];
+        return labelKey ? $t(labelKey) : row.archiveReason || $t('page.manage.policyArchive.empty');
+      }
     },
     {
       key: 'operate',
@@ -83,20 +96,28 @@ const { columns, data, loading, getDataByPage, mobilePagination } = useNaivePagi
       align: 'center',
       width: 120,
       // [rev3-inline 015] restore 鈕（鏡像 010 menu restore）：NPopconfirm → fetchRestorePolicy → reload list
-      render: row => (
-        <div class="flex-center justify-center">
-          <NPopconfirm onPositiveClick={() => handleRestore(row.id)}>
-            {{
-              default: () => $t('page.manage.policyArchive.confirmRestore'),
-              trigger: () => (
-                <NButton type="primary" ghost size="small">
-                  {$t('page.manage.policyArchive.restore')}
-                </NButton>
-              )
-            }}
-          </NPopconfirm>
-        </div>
-      )
+      // [rev3-inline 020-role-delete-policy-archive] 依後端單一真相 row.restorable 條件渲染：
+      //   false（role_soft_delete／角色已刪或 code 重用屬舊實例）→ 停用態、無復原鈕（後端 restore 亦拒＝安全邊界）；
+      //   true / undefined 容錯 → 維持既有 NPopconfirm + 復原鈕
+      render: row =>
+        row.restorable === false ? (
+          <NButton type="default" size="small" disabled>
+            {$t('page.manage.policyArchive.notRestorable')}
+          </NButton>
+        ) : (
+          <div class="flex-center justify-center">
+            <NPopconfirm onPositiveClick={() => handleRestore(row.id)}>
+              {{
+                default: () => $t('page.manage.policyArchive.confirmRestore'),
+                trigger: () => (
+                  <NButton type="primary" ghost size="small">
+                    {$t('page.manage.policyArchive.restore')}
+                  </NButton>
+                )
+              }}
+            </NPopconfirm>
+          </div>
+        )
     }
   ]
 });

@@ -291,6 +291,8 @@ declare namespace Api {
       archivedBy: number | null;
       archiveReason: string;
       createdTime: string | null;
+      // [rev3-inline 020-role-delete-policy-archive ADAPT] 此歸檔列是否可經回收桶手動復原（rust 讀時衍生 restorable()；false＝role_soft_delete／角色已刪或 code 重用屬舊實例 → 前端停用復原鈕、後端 restore 亦拒）
+      restorable: boolean;
     };
 
     /**

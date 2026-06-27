@@ -361,6 +361,11 @@ declare namespace App {
           audit: {
             invalidDateRange: string;
           };
+          // [rev3-inline 020-role-delete-policy-archive I18N(iii) ★] biz.policy（角色刪除歸檔不可復原守門 notRestorable + 既有 restore_policy notFound 補入；對齊後端 biz.policy.<condition>）
+          policy: {
+            notRestorable: string;
+            notFound: string;
+          };
         };
         system: { notFound: string; forbidden: string; internal: string };
       };
@@ -979,6 +984,13 @@ declare namespace App {
             confirmRestore: string;
             restoreSuccess: string;
             empty: string;
+            // [rev3-inline 020-role-delete-policy-archive ★] archiveReason 友善標籤（實際 3 值、C3 無 roleButtonRevoke）+ 不可復原停用態指示
+            reasonLabels: {
+              roleDimensionRevoke: string;
+              roleEndpointRevoke: string;
+              roleSoftDelete: string;
+            };
+            notRestorable: string;
           };
         };
       };

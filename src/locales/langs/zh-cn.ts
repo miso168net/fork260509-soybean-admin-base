@@ -759,7 +759,14 @@ const local: App.I18n.Schema = {
         restore: '复原',
         confirmRestore: '确认复原此授权规则？',
         restoreSuccess: '复原成功',
-        empty: '—'
+        empty: '—',
+        // [rev3-inline 020-role-delete-policy-archive ★] archiveReason 友善标签（3 值）+ 不可复原停用态
+        reasonLabels: {
+          roleDimensionRevoke: '选单/按钮撤销',
+          roleEndpointRevoke: '接口撤销',
+          roleSoftDelete: '角色删除'
+        },
+        notRestorable: '不可复原'
       }
     }
   },
@@ -865,6 +872,11 @@ const local: App.I18n.Schema = {
       // [rev3-inline 012-audit-log-query I18N(iii) ★] biz.audit（畸形日期范围；攔截器自动 $t('backend.'+msg)）
       audit: {
         invalidDateRange: '日期范围格式不正确'
+      },
+      // [rev3-inline 020-role-delete-policy-archive ★] biz.policy 错误译文（不可复原守门 + 既有 restore_policy notFound 补入；攔截器自动 $t('backend.'+msg)）
+      policy: {
+        notRestorable: '此授权规则无法复原',
+        notFound: '找不到归档授权规则'
       }
     },
     system: { notFound: '接口不存在', forbidden: '权限不足', internal: '服务器内部错误' }

@@ -763,7 +763,14 @@ const local: App.I18n.Schema = {
         restore: 'Restore',
         confirmRestore: 'Confirm restore this policy?',
         restoreSuccess: 'Restored successfully',
-        empty: '—'
+        empty: '—',
+        // [rev3-inline 020-role-delete-policy-archive ★] archiveReason friendly labels (3 values) + non-restorable disabled state
+        reasonLabels: {
+          roleDimensionRevoke: 'Menu/Button revoked',
+          roleEndpointRevoke: 'Endpoint revoked',
+          roleSoftDelete: 'Role deleted'
+        },
+        notRestorable: 'Cannot restore'
       }
     }
   },
@@ -869,6 +876,11 @@ const local: App.I18n.Schema = {
       // [rev3-inline 012-audit-log-query I18N(iii) ★] biz.audit (invalid date range; interceptor auto $t('backend.'+msg))
       audit: {
         invalidDateRange: 'Invalid date range'
+      },
+      // [rev3-inline 020-role-delete-policy-archive ★] biz.policy error translations (non-restorable guard + existing restore_policy notFound backfill; interceptor auto $t('backend.'+msg))
+      policy: {
+        notRestorable: 'This policy cannot be restored',
+        notFound: 'Archived policy not found'
       }
     },
     system: { notFound: 'Resource not found', forbidden: 'Permission denied', internal: 'Internal server error' }
