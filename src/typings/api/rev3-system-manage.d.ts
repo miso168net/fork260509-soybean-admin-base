@@ -354,5 +354,80 @@ declare namespace Api {
       roleId: number;
       endpoints: Endpoint[];
     };
+
+    // [rev3-inline 022-ip-access-control ADAPT T021] IP 存取規則 CRUD + 手動解鎖 DTO（declaration-merge、honest 逐欄三端對齊）
+    // wire 事實（rust U3 handler 親抓欄序；皆 camelCase、envelope Res{code,msg,data}）：
+    //   getIpRuleList GET 回 PageRes<IpRuleListItem>；addIpRule/updateIpRule/deleteIpRule/restoreIpRule/unlockLogin 回 data:null
+    //   ★ rust IpRuleListItem【無 status 欄】（CommonRecord 自帶 status:EnableStatus|null＝wire 不送 → 以 Omit<,'status'> 消型謊、防 type-lie）
+    //   ★ id 維 number（對齊 IpRuleListItem.id＝CommonRecord.id:number）；單 body id wrapper 內 String(id) 轉字串對齊後端 String 欄（沿 009 ⚠️o）
+
+    /** IP 規則類型（白名單放行 / 黑名單阻擋）；對齊 rust rule_type∈{allow,deny} */
+    type IpRuleType = 'allow' | 'deny';
+
+    /** 手動解鎖維度（帳號 / 來源 IP）；對齊 rust UnlockReq.dimension∈{user,ip} */
+    type IpRuleUnlockDimension = 'user' | 'ip';
+
+    /**
+     * IP 規則清單列（GET getIpRuleList；含已軟刪 deleted flag、回收桶比照 menu）
+     *
+     * - cidr：正規化網段字串（rust IpNetwork::to_string，如 "203.0.113.0/24"）
+     * - ruleType：allow|deny；order：純查看排序（nullable）；description：nullable
+     * - deleted：是否已軟刪（rust deleted_at.is_some()、恆回 bool）
+     * - createBy/createTime/updateBy/updateTime：non-null string（NULL→""、沿 user/role）
+     * - ★ Omit 'status'：rust wire 不送 status（CommonRecord 自帶之），保留會型謊 → 移除
+     */
+    type IpRuleListItem = Omit<
+      Common.CommonRecord<{
+        cidr: string;
+        ruleType: IpRuleType;
+        order: number | null;
+        description: string | null;
+        deleted: boolean;
+      }>,
+      'status'
+    >;
+
+    /**
+     * IP 規則搜尋參數（filter 欄 optional + current/size；沿 RoleSearchParams 範式）
+     *
+     * - cidr：IP 模糊搜尋；ruleType：精確下拉（allow|deny）
+     * - rust handler 空字串守門→當未設（§5.8、axios 把未設 filter 序列化成空字串）
+     */
+    type IpRuleSearchParams = CommonType.RecordNullable<
+      {
+        cidr: string;
+        ruleType: IpRuleType;
+      } & CommonSearchParams
+    >;
+
+    /** IP 規則清單（PageRes 分頁包） */
+    type IpRuleList = Common.PaginatingQueryRecord<IpRuleListItem>;
+
+    /**
+     * IP 規則新增/編輯 write DTO（addIpRule/updateIpRule modal 用）
+     *
+     * - id 可選：add 無 id、update 有 id；id 型用 number 對齊 component（IpRuleListItem.id:number）；
+     *   wrapper 內 String(id) 轉字串對齊後端 String 欄（見 rev3-system-manage.ts）
+     * - cidr：CIDR 字串（前端基本格式驗證 + 後端 invalidCidr 兜底）；ruleType：allow|deny
+     * - order/description：nullable optional
+     */
+    type IpRuleUpsertModel = {
+      id?: number;
+      cidr: string;
+      ruleType: IpRuleType;
+      order?: number | null;
+      description?: string | null;
+    };
+
+    /**
+     * 手動解鎖 write DTO（unlockLogin；FR-010）
+     *
+     * - dimension：user|ip；value：帳號名 or IP 字串（ip 維後端 IpAddr parse 正規化）
+     * - both-dims 提示：被同時依 user+ip 鎖時須兩維皆解（UI 文案 page.manage.ipRule.unlock.bothDimsHint）
+     */
+    type IpRuleUnlockModel = {
+      dimension: IpRuleUnlockDimension;
+      value: string;
+    };
   }
 }

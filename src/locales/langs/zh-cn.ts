@@ -271,6 +271,8 @@ const local: App.I18n.Schema = {
     manage_audit: '审计中心',
     // [rev3-inline 015-policy-governance ★] route 菜单标题（对齐 m002:253 i18n_key route.manage_policy-archive）
     'manage_policy-archive': '授权回收桶',
+    // [rev3-inline 022-ip-access-control ★] route 菜单标题（对齐 m007 i18n_key route.manage_ip-rule）
+    'manage_ip-rule': 'IP 存取控制',
     'multi-menu': '多级菜单',
     'multi-menu_first': '菜单一',
     'multi-menu_first_child': '菜单一子菜单',
@@ -767,6 +769,51 @@ const local: App.I18n.Schema = {
           roleSoftDelete: '角色删除'
         },
         notRestorable: '不可复原'
+      },
+      // [rev3-inline 022-ip-access-control ★] IP 存取规则管理页（list+CRUD+已删复原+手动解锁）
+      ipRule: {
+        title: 'IP 存取控制',
+        cidr: 'IP 网段（CIDR）',
+        ruleType: '规则类型',
+        order: '排序',
+        description: '描述',
+        deleted: '是否已删除',
+        createTime: '建立时间',
+        updateTime: '更新时间',
+        statusActive: '现役',
+        statusDeleted: '已删除',
+        ruleTypeMap: {
+          allow: '白名单（放行）',
+          deny: '黑名单（阻挡）'
+        },
+        addIpRule: '新增 IP 规则',
+        editIpRule: '编辑 IP 规则',
+        restore: '复原',
+        confirmRestore: '确认复原此 IP 规则？',
+        restoreSuccess: '复原成功',
+        empty: '—',
+        form: {
+          cidr: '请输入 IP 网段（如 203.0.113.0/24 或 2001:db8::/32）',
+          cidrInvalid: 'IP 网段格式不正确',
+          ruleType: '请选择规则类型',
+          order: '请输入排序',
+          description: '请输入描述'
+        },
+        unlock: {
+          trigger: '手动解锁',
+          title: '手动解锁登入锁定',
+          dimension: '解锁维度',
+          value: '解锁对象',
+          bothDimsHint: '若同一次登入失败同时触发帐号与来源 IP 两种锁定，需两个维度都解锁才能恢复登入。',
+          success: '解锁成功',
+          dimensionMap: {
+            user: '帐号',
+            ip: '来源 IP'
+          },
+          form: {
+            value: '请输入帐号名或来源 IP'
+          }
+        }
       }
     }
   },
@@ -877,6 +924,15 @@ const local: App.I18n.Schema = {
       policy: {
         notRestorable: '此授权规则无法复原',
         notFound: '找不到归档授权规则'
+      },
+      // [rev3-inline 022-ip-access-control ★] biz.ipRule 错误译文（6 键、与后端 biz.ipRule.<condition> 对齐；攔截器自动 $t('backend.'+msg)）
+      ipRule: {
+        selfLock: '此规则会封锁你自己的来源、不可套用',
+        conflict: '相同网段与类型的规则已存在',
+        notFound: '找不到 IP 存取规则',
+        invalidCidr: 'IP 网段格式不正确',
+        invalidRuleType: '无效的规则类型',
+        invalidDimension: '无效的解锁维度'
       }
     },
     system: { notFound: '接口不存在', forbidden: '权限不足', internal: '服务器内部错误' }

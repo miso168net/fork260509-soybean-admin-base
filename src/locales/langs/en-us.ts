@@ -275,6 +275,8 @@ const local: App.I18n.Schema = {
     manage_audit: 'Audit Center',
     // [rev3-inline 015-policy-governance ★] route menu title (mirrors m002:253 i18n_key route.manage_policy-archive)
     'manage_policy-archive': 'Policy Archive',
+    // [rev3-inline 022-ip-access-control ★] route menu title (mirrors m007 i18n_key route.manage_ip-rule)
+    'manage_ip-rule': 'IP Access Control',
     'multi-menu': 'Multi Menu',
     'multi-menu_first': 'Menu One',
     'multi-menu_first_child': 'Menu One Child',
@@ -771,6 +773,52 @@ const local: App.I18n.Schema = {
           roleSoftDelete: 'Role deleted'
         },
         notRestorable: 'Cannot restore'
+      },
+      // [rev3-inline 022-ip-access-control ★] IP access rule management page (list+CRUD+restore+manual unlock)
+      ipRule: {
+        title: 'IP Access Control',
+        cidr: 'IP Range (CIDR)',
+        ruleType: 'Rule Type',
+        order: 'Order',
+        description: 'Description',
+        deleted: 'Deleted',
+        createTime: 'Create Time',
+        updateTime: 'Update Time',
+        statusActive: 'Active',
+        statusDeleted: 'Deleted',
+        ruleTypeMap: {
+          allow: 'Allowlist (allow)',
+          deny: 'Denylist (block)'
+        },
+        addIpRule: 'Add IP Rule',
+        editIpRule: 'Edit IP Rule',
+        restore: 'Restore',
+        confirmRestore: 'Confirm restore this IP rule?',
+        restoreSuccess: 'Restored successfully',
+        empty: '—',
+        form: {
+          cidr: 'Enter IP range (e.g. 203.0.113.0/24 or 2001:db8::/32)',
+          cidrInvalid: 'IP range format is incorrect',
+          ruleType: 'Please select rule type',
+          order: 'Please enter order',
+          description: 'Please enter description'
+        },
+        unlock: {
+          trigger: 'Manual Unlock',
+          title: 'Manually Unlock Login Lockout',
+          dimension: 'Unlock Dimension',
+          value: 'Unlock Target',
+          bothDimsHint:
+            'If a single login failure triggered both account and source-IP lockouts, both dimensions must be unlocked to restore login.',
+          success: 'Unlocked successfully',
+          dimensionMap: {
+            user: 'Account',
+            ip: 'Source IP'
+          },
+          form: {
+            value: 'Enter account name or source IP'
+          }
+        }
       }
     }
   },
@@ -881,6 +929,15 @@ const local: App.I18n.Schema = {
       policy: {
         notRestorable: 'This policy cannot be restored',
         notFound: 'Archived policy not found'
+      },
+      // [rev3-inline 022-ip-access-control ★] biz.ipRule error translations (6 keys; aligned with backend biz.ipRule.<condition>; interceptor auto $t('backend.'+msg))
+      ipRule: {
+        selfLock: 'This rule would block your own source and cannot be applied',
+        conflict: 'A rule with the same range and type already exists',
+        notFound: 'IP access rule not found',
+        invalidCidr: 'IP range format is incorrect',
+        invalidRuleType: 'Invalid rule type',
+        invalidDimension: 'Invalid unlock dimension'
       }
     },
     system: { notFound: 'Resource not found', forbidden: 'Permission denied', internal: 'Internal server error' }

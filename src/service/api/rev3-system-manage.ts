@@ -526,3 +526,93 @@ export function fetchGetUserListRev3(params?: Api.SystemManage.UserSearchParams)
     params
   });
 }
+
+// [rev3-inline 022-ip-access-control WRAPPER T022] IP 存取規則 CRUD（含已刪+復原比照 menu）+ 手動解鎖 wrapper
+// fork-delta：不改既有 system-manage.ts；本檔僅新增；view 走直接路徑 import（非 barrel）
+// wire 事實（rust U3 已落地、6 endpoint）：getIpRuleList GET 回 PageRes、其餘 5 端回 data:null；皆 R_SUPER（require_policy）
+//   ★ 單 body id 走【字串】（沿 009 ⚠️o）→ String(id) 轉字串對齊後端 String 欄；list 搜尋空字串由 rust normalize 守門（§5.8）
+//   ★ 6 個 biz 2222 碼（selfLock/conflict/notFound/invalidCidr/invalidRuleType/invalidDimension）由攔截器自動 $t('backend.'+msg)
+
+/**
+ * get ip rule list（IP 存取規則清單；GET、R_SUPER；含已軟刪節點＋deleted flag）
+ *
+ * @param params ip rule search params（cidr 模糊 / ruleType 精確 + 分頁，皆 optional；空字串由後端守門當未設）
+ */
+export function fetchGetIpRuleList(params?: Api.SystemManage.IpRuleSearchParams) {
+  return request<Api.SystemManage.IpRuleList>({
+    url: '/systemManage/getIpRuleList',
+    method: 'get',
+    params
+  });
+}
+
+/**
+ * add ip rule（新增 IP 存取規則；POST、R_SUPER）
+ *
+ * 寫端自鎖防護（FR-009）：deny 命中自身來源→後端 2222 biz.ipRule.selfLock；dup→conflict；cidr 畸形→invalidCidr
+ *
+ * @param model ip rule upsert model（無 id）
+ */
+export function fetchAddIpRule(model: Api.SystemManage.IpRuleUpsertModel) {
+  return request<null>({
+    url: '/systemManage/addIpRule',
+    method: 'post',
+    data: model
+  });
+}
+
+/**
+ * update ip rule（編輯 IP 存取規則；POST、R_SUPER）
+ *
+ * wire 事實（沿 009 ⚠️o）：後端 IpRuleUpsertReq.id 走【字串】；前端 model.id 是 number → 送出時 String(id) 轉字串
+ *
+ * @param model ip rule upsert model（含 id）
+ */
+export function fetchUpdateIpRule(model: Api.SystemManage.IpRuleUpsertModel) {
+  return request<null>({
+    url: '/systemManage/updateIpRule',
+    method: 'post',
+    data: { ...model, id: String(model.id) }
+  });
+}
+
+/**
+ * delete ip rule（軟刪除 IP 存取規則；DELETE、R_SUPER）
+ *
+ * @param id ip rule id（number → String 轉字串對齊後端 String 欄）
+ */
+export function fetchDeleteIpRule(id: number) {
+  return request<null>({
+    url: '/systemManage/deleteIpRule',
+    method: 'delete',
+    data: { id: String(id) }
+  });
+}
+
+/**
+ * restore ip rule（軟刪除復原；POST、R_SUPER；同 (cidr,ruleType) 已有 active→2222 conflict）
+ *
+ * @param id ip rule id（number → String 轉字串對齊後端 String 欄）
+ */
+export function fetchRestoreIpRule(id: number) {
+  return request<null>({
+    url: '/systemManage/restoreIpRule',
+    method: 'post',
+    data: { id: String(id) }
+  });
+}
+
+/**
+ * unlock login（管理者手動解鎖登入鎖定；POST、R_SUPER；FR-010、reset-marker per-dim）
+ *
+ * dimension∉{user,ip}→2222 invalidDimension；ip 維 value 畸形→invalidCidr
+ *
+ * @param model unlock model（dimension + value）
+ */
+export function fetchUnlockLogin(model: Api.SystemManage.IpRuleUnlockModel) {
+  return request<null>({
+    url: '/systemManage/unlockLogin',
+    method: 'post',
+    data: model
+  });
+}

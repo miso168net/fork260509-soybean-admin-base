@@ -366,6 +366,15 @@ declare namespace App {
             notRestorable: string;
             notFound: string;
           };
+          // [rev3-inline 022-ip-access-control I18N(iii) ★] biz.ipRule 6 鍵（與後端 biz.ipRule.<condition> 對齊；攔截器自動 $t('backend.'+msg)）
+          ipRule: {
+            selfLock: string;
+            conflict: string;
+            notFound: string;
+            invalidCidr: string;
+            invalidRuleType: string;
+            invalidDimension: string;
+          };
         };
         system: { notFound: string; forbidden: string; internal: string };
       };
@@ -991,6 +1000,51 @@ declare namespace App {
               roleSoftDelete: string;
             };
             notRestorable: string;
+          };
+          // [rev3-inline 022-ip-access-control ★] IP 存取規則管理頁（list+CRUD+已刪復原+手動解鎖；先 Schema 後 locale）
+          ipRule: {
+            title: string;
+            cidr: string;
+            ruleType: string;
+            order: string;
+            description: string;
+            deleted: string;
+            createTime: string;
+            updateTime: string;
+            statusActive: string;
+            statusDeleted: string;
+            ruleTypeMap: {
+              allow: string;
+              deny: string;
+            };
+            addIpRule: string;
+            editIpRule: string;
+            restore: string;
+            confirmRestore: string;
+            restoreSuccess: string;
+            empty: string;
+            form: {
+              cidr: string;
+              cidrInvalid: string;
+              ruleType: string;
+              order: string;
+              description: string;
+            };
+            unlock: {
+              trigger: string;
+              title: string;
+              dimension: string;
+              value: string;
+              bothDimsHint: string;
+              success: string;
+              dimensionMap: {
+                user: string;
+                ip: string;
+              };
+              form: {
+                value: string;
+              };
+            };
           };
         };
       };
