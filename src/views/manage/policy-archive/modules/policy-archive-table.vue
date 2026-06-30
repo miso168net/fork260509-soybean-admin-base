@@ -1,10 +1,13 @@
 <script setup lang="tsx">
 import { ref, watch } from 'vue';
+import { useRoute } from 'vue-router';
 import { NButton, NInput, NPopconfirm } from 'naive-ui';
 import { fetchGetArchivedPolicies, fetchRestorePolicy } from '@/service/api/rev3-system-manage';
 import { defaultTransform, useNaivePaginatedTable } from '@/hooks/common/table';
 // [rev3-inline 023-list-column-sort MW(f)] 列表欄位排序 composable（受控排序 + 點擊序 + wire 字串）
 import { useTableSort } from '@/hooks/common/use-table-sort';
+// [rev3-inline 023-list-column-sort MW(f)] 一鍵清除排序鈕（顯式 import，避免 auto-import 不確定性）
+import SortClearButton from '@/components/advanced/sort-clear-button.vue';
 import { useAppStore } from '@/store/modules/app';
 import { $t } from '@/locales';
 
@@ -33,8 +36,14 @@ const searchParams = ref<Api.SystemManage.ArchivedPolicySearchParams>({
   dimension: null
 });
 
+const route = useRoute();
+
 // [rev3-inline 023-list-column-sort MW(f)] 排序受控狀態（須置於 useNaivePaginatedTable 之前供 columns factory 引用）
-const { handleUpdateSorter, getColumnSortProps, sortString } = useTableSort();
+// storageKey＝route.name（per-route 持久化）、validKeys＝後端白名單欄（FR-015 還原防禦）
+const { handleUpdateSorter, getColumnSortProps, sortString, clearAll } = useTableSort({
+  storageKey: route.name as string,
+  validKeys: ['roleCode', 'target', 'archivedTime', 'createdTime', 'archivedBy', 'archiveReason']
+});
 
 const { columns, data, loading, getDataByPage, mobilePagination } = useNaivePaginatedTable({
   // [rev3-inline 023-list-column-sort MW(f)] sort 走 api closure 合併（不入 searchParams 型）；空字串→undefined 略過
@@ -196,6 +205,8 @@ function search() {
                     </template>
                     {{ $t('common.search') }}
                   </NButton>
+                  <!-- [rev3-inline 023-list-column-sort MW(f)] 一鍵清除排序鈕（無 header 工具列頁 → 搜尋表單末 NSpace inline） -->
+                  <SortClearButton @clear="clearAll" />
                 </NSpace>
               </NFormItemGi>
             </NGrid>

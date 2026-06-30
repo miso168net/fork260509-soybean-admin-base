@@ -1,12 +1,13 @@
 // [rev3-inline 023-list-column-sort T013] useTableSort 純邏輯測（reconcile 點擊序 / wire 字串 / parse 往返）
 //
-// 為何此形：reconcileSortState / toSortWireString / parseSortWireString 為 composable 抽出之純函式，
-// 不依賴 vue 反應式即可斷言點擊序 reconcile（append/改向/移除/清空/保位）與 wire 字串雙向轉換。
+// 為何此形：reconcileSortState / toSortWireString / parseSortWireString / restoreSortState 為純函式，
+// 不依賴 vue 反應式即可斷言點擊序 reconcile（append/改向/移除/清空/保位）、wire 字串雙向轉換與還原 FR-015 防禦。
 // 走既有 devDep `tsx`（無新增 npm dep）；不引入 vitest（專案無）。範本＝locales/__tests__/translate-backend-msg.spec.ts。
-// 注：import composable 檔會連帶 import 'vue'（純 JS 反應式、node 可載）；naive-ui 為 import type（erase）、不觸發 runtime 載入。
+// 注（U4）：改 import use-table-sort-core（僅 naive-ui import type、erase）；不從 use-table-sort.ts import，
+//   因該檔 U4 起 import @/utils/storage(localStg)→連帶 @sa/utils barrel，tsx node 載入會 throw。
 
-import { parseSortWireString, reconcileSortState, toSortWireString } from '../use-table-sort';
-import type { SortEntry, SorterPayload } from '../use-table-sort';
+import { parseSortWireString, reconcileSortState, restoreSortState, toSortWireString } from '../use-table-sort-core';
+import type { SortEntry, SorterPayload } from '../use-table-sort-core';
 
 let failures = 0;
 function expectEq(label: string, got: unknown, want: unknown) {
@@ -121,6 +122,28 @@ const roundTrip: SortEntry[] = [
   { columnKey: 'nickName', order: 'ascend' }
 ];
 expectEq('round-trip parse(toWire(state)) === state', parseSortWireString(toSortWireString(roundTrip)), roundTrip);
+
+// --- restoreSortState（U4 持久化還原；含 FR-015 防禦）---
+expectEq('restore null → empty', restoreSortState(null), []);
+expectEq('restore undefined → empty', restoreSortState(undefined), []);
+expectEq('restore empty string → empty', restoreSortState(''), []);
+expectEq('restore no validKeys → parse all', restoreSortState('userName:desc,status:asc'), [
+  { columnKey: 'userName', order: 'descend' },
+  { columnKey: 'status', order: 'ascend' }
+]);
+// FR-015：注入含失效欄（password 非白名單）→ 丟棄、僅保留白名單欄、保序
+expectEq(
+  'restore FR-015 drops invalid columns (keep whitelist order)',
+  restoreSortState('password:asc,userName:desc', ['userName', 'status']),
+  [{ columnKey: 'userName', order: 'descend' }]
+);
+// FR-015：全部失效 → 空
+expectEq('restore FR-015 all invalid → empty', restoreSortState('password:asc,secret:desc', ['userName']), []);
+// validKeys 給定但全部合法 → 全保留
+expectEq('restore validKeys all valid → keep all', restoreSortState('userName:desc,status:asc', ['userName', 'status']), [
+  { columnKey: 'userName', order: 'descend' },
+  { columnKey: 'status', order: 'ascend' }
+]);
 
 if (failures > 0) {
   console.error(`\nuse-table-sort: ${failures} assertion(s) FAILED`);

@@ -1,5 +1,6 @@
 <script setup lang="tsx">
 import { ref, watch } from 'vue';
+import { useRoute } from 'vue-router';
 import { NButton, NPopconfirm, NTag } from 'naive-ui';
 import { enableStatusRecord, userGenderRecord } from '@/constants/business';
 // [rev3-inline 016-button-endpoint-policy D5] getUserList 改用 honest 讀型 wrapper（nickName/userPhone/userEmail string|null、消型謊）；frozen system-manage.ts 不動
@@ -11,6 +12,8 @@ import { useAppStore } from '@/store/modules/app';
 import { defaultTransform, useNaivePaginatedTable, useTableOperate } from '@/hooks/common/table';
 // [rev3-inline 023-list-column-sort MW(f)] 列表欄位排序 composable（受控排序 + 點擊序 + wire 字串）
 import { useTableSort } from '@/hooks/common/use-table-sort';
+// [rev3-inline 023-list-column-sort MW(f)] 一鍵清除排序鈕（顯式 import，避免 auto-import 不確定性）
+import SortClearButton from '@/components/advanced/sort-clear-button.vue';
 import { $t } from '@/locales';
 import UserOperateDrawer from './modules/user-operate-drawer.vue';
 import UserSearch from './modules/user-search.vue';
@@ -31,8 +34,14 @@ const searchParams = ref<Api.SystemManage.UserSearchParams>({
   userEmail: null
 });
 
+const route = useRoute();
+
 // [rev3-inline 023-list-column-sort MW(f)] 排序受控狀態（須置於 useNaivePaginatedTable 之前供 columns factory 引用）
-const { handleUpdateSorter, getColumnSortProps, sortString } = useTableSort();
+// storageKey＝route.name（per-route 持久化）、validKeys＝後端白名單欄（FR-015 還原防禦）
+const { handleUpdateSorter, getColumnSortProps, sortString, clearAll } = useTableSort({
+  storageKey: route.name as string,
+  validKeys: ['userName', 'userGender', 'nickName', 'userPhone', 'userEmail', 'status']
+});
 
 const { columns, columnChecks, data, getData, getDataByPage, loading, mobilePagination } = useNaivePaginatedTable({
   // [rev3-inline 023-list-column-sort MW(f)] sort 走 api closure 合併（不入 searchParams 型）；空字串→undefined 略過
@@ -215,7 +224,12 @@ function edit(id: number) {
           @add="handleAdd"
           @delete="handleBatchDelete"
           @refresh="getData"
-        />
+        >
+          <!-- [rev3-inline 023-list-column-sort MW(f)] 一鍵清除排序鈕（#suffix slot） -->
+          <template #suffix>
+            <SortClearButton @clear="clearAll" />
+          </template>
+        </TableHeaderOperation>
       </template>
       <NDataTable
         v-model:checked-row-keys="checkedRowKeys"

@@ -1,10 +1,13 @@
 <script setup lang="tsx">
 import { ref, watch } from 'vue';
+import { useRoute } from 'vue-router';
 import { NDatePicker, NInput, NSelect } from 'naive-ui';
 import { fetchExportOperationLog, fetchGetOperationLog } from '@/service/api/rev3-system-manage';
 import { defaultTransform, useNaivePaginatedTable } from '@/hooks/common/table';
 // [rev3-inline 023-list-column-sort MW(f)] 列表欄位排序 composable（受控排序 + 點擊序 + wire 字串）
 import { useTableSort } from '@/hooks/common/use-table-sort';
+// [rev3-inline 023-list-column-sort MW(f)] 一鍵清除排序鈕（顯式 import，避免 auto-import 不確定性）
+import SortClearButton from '@/components/advanced/sort-clear-button.vue';
 import { useAppStore } from '@/store/modules/app';
 import { $t } from '@/locales';
 import { downloadCsv } from '@/utils/download';
@@ -59,8 +62,23 @@ function onDateRangeChange(value: [number, number] | null) {
   }
 }
 
+const route = useRoute();
+
 // [rev3-inline 023-list-column-sort MW(f)] 排序受控狀態（須置於 useNaivePaginatedTable 之前供 columns factory 引用）
-const { handleUpdateSorter, getColumnSortProps, sortString } = useTableSort();
+// audit 3 子表共用父路由 manage_audit → 複合 storageKey `<route.name>:operation` 避免互覆寫（analyze F3）
+const { handleUpdateSorter, getColumnSortProps, sortString, clearAll } = useTableSort({
+  storageKey: `${route.name as string}:operation`,
+  validKeys: [
+    'createTime',
+    'operation',
+    'entityTable',
+    'entityId',
+    'operatorIpConfidence',
+    'operatorPeerIp',
+    'operatorRealIp',
+    'operatorXForwardedFor'
+  ]
+});
 
 const { columns, data, loading, getDataByPage, mobilePagination } = useNaivePaginatedTable({
   // [rev3-inline 023-list-column-sort MW(f)] sort 走 api closure 合併（不入 searchParams 型）；空字串→undefined 略過
@@ -304,6 +322,8 @@ async function onExport() {
                   <NButton @click="onExport">
                     {{ $t('page.manage.audit.export') }}
                   </NButton>
+                  <!-- [rev3-inline 023-list-column-sort MW(f)] 一鍵清除排序鈕（無 header 工具列頁 → 搜尋表單末 NSpace inline） -->
+                  <SortClearButton @clear="clearAll" />
                 </NSpace>
               </NFormItemGi>
             </NGrid>

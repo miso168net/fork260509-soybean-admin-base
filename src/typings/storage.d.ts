@@ -39,5 +39,7 @@ declare namespace StorageType {
     };
     /** The last login user id */
     lastLoginUserId: string;
+    /** 列表欄位排序持久化（per storageKey）023 */
+    listColumnSort: Record<string, string>;
   }
 }

@@ -1,90 +1,18 @@
 // [rev3-inline 023-list-column-sort MW(f) T011] 列表欄位排序 composable（受控排序 + 自維護點擊序 + wire 字串）
-// 從零造（repo 無既有 sorter 用法）。naive-ui 事實（brainstorm §6 實證）：
-//   原生 3-state 循環 無→descend(▼)→ascend(▲)→無（第一下 descend、不設 customNextSortOrder）；
-//   多欄需 column 設 sorter:{multiple:N} 啟用；受控＝column 設 sortOrder('ascend'|'descend'|false)；
-//   @update:sorter payload＝SortState|SortState[]|null（受控多欄下 array 為 column 定義序、非點擊序）；
-//   表 remote → naive-ui 不二次 client 排。
-// 本切片（U2）只實作「受控排序 + 點擊序 reconcile + wire 字串」；clearAll/persist 為 U3/U4 additive、本檔不實作。
-import { computed, ref } from 'vue';
+// 從零造（repo 無既有 sorter 用法）。naive-ui 事實見 use-table-sort-core.ts 檔頭。
+// U2 實作「受控排序 + 點擊序 reconcile + wire 字串」；U4 additive 加 clearAll + per-route 持久化（storageKey/validKeys option）。
+// ★ U4：純函式核心（reconcile/toWire/parse/restore + 型別）已抽至 use-table-sort-core.ts（避免 localStg 模組鏈污染 tsx 純邏輯測）；
+//   本檔 re-export 之，既有 `import { ... } from '@/hooks/common/use-table-sort'` 路徑全不變。
+import { computed, ref, watch } from 'vue';
 import type { Ref } from 'vue';
-import type { DataTableSortState } from 'naive-ui';
+// [rev3-inline 023-list-column-sort MW(f) T027] per-route 持久化（localStorage、prefix SOY_）
+import { localStg } from '@/utils/storage';
+import { reconcileSortState, restoreSortState, toSortWireString } from './use-table-sort-core';
+import type { SortDir, SortEntry, SorterPayload } from './use-table-sort-core';
 
-/** 受控排序方向（naive-ui SortOrder 去 false） */
-export type SortDir = 'ascend' | 'descend';
-
-/** 單一排序欄（清單順序＝點擊序＝優先序） */
-export interface SortEntry {
-  columnKey: string;
-  order: SortDir;
-}
-
-/** naive-ui @update:sorter payload（受控多欄為 array、單欄為物件、clearSorter 為 null） */
-export type SorterPayload = DataTableSortState | DataTableSortState[] | null;
-
-/**
- * reconcile 點擊序（@update:sorter handler 核心；純函式供 tsx 測 T013）
- *
- * - payload null → 清空
- * - 正規化成 array → 建 newMap（columnKey→order，僅 ascend/descend；false/缺＝未排）
- * - 既有欄：仍在 newMap → 留（保位）、order 變則更新；不在 newMap → 移除
- * - newMap 有但既有清單無 → append 尾（單次點擊只一欄變、只 append 一欄 → 點擊序＝優先序）
- * - 【不覆寫】naive-ui 原生 3-state 循環（僅依其結果維護自身有序清單）
- */
-export function reconcileSortState(current: SortEntry[], payload: SorterPayload): SortEntry[] {
-  if (payload == null) {
-    return [];
-  }
-
-  const arr = Array.isArray(payload) ? payload : [payload];
-
-  const newMap = new Map<string, SortDir>();
-  arr.forEach(s => {
-    if (s.order === 'ascend' || s.order === 'descend') {
-      newMap.set(String(s.columnKey), s.order);
-    }
-  });
-
-  const result: SortEntry[] = [];
-
-  // 既有欄保位：仍 active 則保留/更新方向，否則移除
-  current.forEach(entry => {
-    const order = newMap.get(entry.columnKey);
-    if (order !== undefined) {
-      result.push({ columnKey: entry.columnKey, order });
-      newMap.delete(entry.columnKey);
-    }
-  });
-
-  // 新啟用欄 append 尾（保留點擊序）
-  newMap.forEach((order, columnKey) => {
-    result.push({ columnKey, order });
-  });
-
-  return result;
-}
-
-/** 受控狀態 → wire 字串（field:dir,...；dir＝ascend→asc / descend→desc；空清單→''） */
-export function toSortWireString(state: SortEntry[]): string {
-  return state.map(e => `${e.columnKey}:${e.order === 'ascend' ? 'asc' : 'desc'}`).join(',');
-}
-
-/** wire 字串 → 受控狀態（供 U4 持久化還原；malformed token 跳過、不接 view） */
-export function parseSortWireString(wire: string): SortEntry[] {
-  if (!wire) {
-    return [];
-  }
-
-  const result: SortEntry[] = [];
-  wire.split(',').forEach(token => {
-    const [columnKey, dir] = token.split(':');
-    if (!columnKey || (dir !== 'asc' && dir !== 'desc')) {
-      return;
-    }
-    result.push({ columnKey, order: dir === 'asc' ? 'ascend' : 'descend' });
-  });
-
-  return result;
-}
+// re-export 純函式核心符號（既有 import 路徑相容 + tsx 純邏輯測改 import core）
+export { parseSortWireString, reconcileSortState, restoreSortState, toSortWireString } from './use-table-sort-core';
+export type { SortDir, SortEntry, SorterPayload } from './use-table-sort-core';
 
 /**
  * 列表欄位排序 composable（受控排序 + 自維護點擊序 + wire 字串）
@@ -97,15 +25,44 @@ export function parseSortWireString(wire: string): SortEntry[] {
  * 反應式（箭頭隨點擊更新）：getColumnSortProps 於 columns factory（$columns computed，見 hooks/common/table.ts）
  *   內被呼叫，sortOrder 讀 sortState.value 即註冊為該 computed 相依 → sortState 變則 columns 重算、箭頭更新。
  *   （此與 getter 等義：spread 會於同一 computed 追蹤域內求值 sortOrder。）
- * clearAll/persist 為 U3/U4 additive、本切片不實作（API 預留：caller 端再擴）。
+ *
+ * U4 additive（既有 4 回傳與純函式不變、無 arg 呼叫仍合法）：
+ * - options.storageKey：給定則 setup 時還原、變更時持久化（per storageKey，localStorage key listColumnSort）
+ * - options.validKeys：給定則還原時丟棄非白名單欄（FR-015）
+ * - clearAll：一鍵清空（受控→所有 sortOrder=false 箭頭消失、sortString 空 → view watch 重抓回預設、persist watch 刪 key）
  */
-export function useTableSort() {
+export function useTableSort(options?: { storageKey?: string; validKeys?: string[] }) {
   const sortState: Ref<SortEntry[]> = ref([]);
+
+  // [rev3-inline 023-list-column-sort MW(f) T027] setup 還原（須在 sortString computed 前，使首次 fetch 即帶還原值）
+  if (options?.storageKey) {
+    const stored = localStg.get('listColumnSort')?.[options.storageKey];
+    sortState.value = restoreSortState(stored, options.validKeys);
+  }
 
   const sortString = computed(() => toSortWireString(sortState.value));
 
+  // [rev3-inline 023-list-column-sort MW(f) T027] 持久化：sortString 變更 → 寫/刪 per storageKey（空字串→刪鍵）
+  if (options?.storageKey) {
+    const key = options.storageKey;
+    watch(sortString, s => {
+      const all = localStg.get('listColumnSort') || {};
+      if (s) {
+        all[key] = s;
+      } else {
+        delete all[key];
+      }
+      localStg.set('listColumnSort', all);
+    });
+  }
+
   function handleUpdateSorter(payload: SorterPayload) {
     sortState.value = reconcileSortState(sortState.value, payload);
+  }
+
+  // [rev3-inline 023-list-column-sort MW(f) T024] 一鍵清除（受控模式 setState 空、不需 tableRef.clearSorter）
+  function clearAll() {
+    sortState.value = [];
   }
 
   function orderOf(columnKey: string): SortDir | false {
@@ -125,6 +82,7 @@ export function useTableSort() {
     sortState,
     sortString,
     handleUpdateSorter,
-    getColumnSortProps
+    getColumnSortProps,
+    clearAll
   };
 }
