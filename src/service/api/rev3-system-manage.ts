@@ -297,7 +297,8 @@ function pruneNullParams<T extends Record<string, unknown>>(params?: T): Partial
  *
  * @param params operation log search params（filter + 分頁，皆 optional）
  */
-export function fetchGetOperationLog(params?: Api.SystemManage.OperationLogSearchParams) {
+// [rev3-inline 023-list-column-sort WRAPPER T010] param 型放寬含 sort（WithSort）；runtime 整包透傳/pruneNull 不變
+export function fetchGetOperationLog(params?: Api.SystemManage.WithSort<Api.SystemManage.OperationLogSearchParams>) {
   return request<Api.SystemManage.OperationLogList>({
     url: '/systemManage/getOperationLog',
     method: 'get',
@@ -310,7 +311,8 @@ export function fetchGetOperationLog(params?: Api.SystemManage.OperationLogSearc
  *
  * @param params access log search params（filter + 分頁，皆 optional）
  */
-export function fetchGetAccessLog(params?: Api.SystemManage.AccessLogSearchParams) {
+// [rev3-inline 023-list-column-sort WRAPPER T010] param 型放寬含 sort（WithSort）
+export function fetchGetAccessLog(params?: Api.SystemManage.WithSort<Api.SystemManage.AccessLogSearchParams>) {
   return request<Api.SystemManage.AccessLogList>({
     url: '/systemManage/getAccessLog',
     method: 'get',
@@ -323,7 +325,8 @@ export function fetchGetAccessLog(params?: Api.SystemManage.AccessLogSearchParam
  *
  * @param params login attempt search params（filter + 分頁，皆 optional）
  */
-export function fetchGetLoginAttempt(params?: Api.SystemManage.LoginAttemptSearchParams) {
+// [rev3-inline 023-list-column-sort WRAPPER T010] param 型放寬含 sort（WithSort）
+export function fetchGetLoginAttempt(params?: Api.SystemManage.WithSort<Api.SystemManage.LoginAttemptSearchParams>) {
   return request<Api.SystemManage.LoginAttemptList>({
     url: '/systemManage/getLoginAttempt',
     method: 'get',
@@ -340,7 +343,8 @@ export function fetchGetLoginAttempt(params?: Api.SystemManage.LoginAttemptSearc
  *
  * @param params operation log search params（當前篩選，皆 optional）
  */
-export function fetchExportOperationLog(params?: Api.SystemManage.OperationLogSearchParams) {
+// [rev3-inline 023-list-column-sort WRAPPER T010/FR-016] 匯出 param 放寬含 sort（畫面排序帶入匯出查詢、CSV 反映當前排序）
+export function fetchExportOperationLog(params?: Api.SystemManage.WithSort<Api.SystemManage.OperationLogSearchParams>) {
   return request<Api.SystemManage.AuditCsvExport>({
     url: '/systemManage/getOperationLog',
     method: 'get',
@@ -353,7 +357,8 @@ export function fetchExportOperationLog(params?: Api.SystemManage.OperationLogSe
  *
  * @param params access log search params（當前篩選，皆 optional）
  */
-export function fetchExportAccessLog(params?: Api.SystemManage.AccessLogSearchParams) {
+// [rev3-inline 023-list-column-sort WRAPPER T010/FR-016] 匯出 param 放寬含 sort（畫面排序帶入匯出查詢）
+export function fetchExportAccessLog(params?: Api.SystemManage.WithSort<Api.SystemManage.AccessLogSearchParams>) {
   return request<Api.SystemManage.AuditCsvExport>({
     url: '/systemManage/getAccessLog',
     method: 'get',
@@ -366,7 +371,8 @@ export function fetchExportAccessLog(params?: Api.SystemManage.AccessLogSearchPa
  *
  * @param params login attempt search params（當前篩選，皆 optional）
  */
-export function fetchExportLoginAttempt(params?: Api.SystemManage.LoginAttemptSearchParams) {
+// [rev3-inline 023-list-column-sort WRAPPER T010/FR-016] 匯出 param 放寬含 sort（畫面排序帶入匯出查詢）
+export function fetchExportLoginAttempt(params?: Api.SystemManage.WithSort<Api.SystemManage.LoginAttemptSearchParams>) {
   return request<Api.SystemManage.AuditCsvExport>({
     url: '/systemManage/getLoginAttempt',
     method: 'get',
@@ -383,7 +389,8 @@ export function fetchExportLoginAttempt(params?: Api.SystemManage.LoginAttemptSe
  *
  * @param params archived policy search params（filter + 分頁，皆 optional）
  */
-export function fetchGetArchivedPolicies(params?: Api.SystemManage.ArchivedPolicySearchParams) {
+// [rev3-inline 023-list-column-sort WRAPPER T010] param 型放寬含 sort（WithSort）
+export function fetchGetArchivedPolicies(params?: Api.SystemManage.WithSort<Api.SystemManage.ArchivedPolicySearchParams>) {
   return request<Api.SystemManage.ArchivedPolicyList>({
     url: '/systemManage/getArchivedPolicies',
     method: 'get',
@@ -506,7 +513,8 @@ export function fetchUpdateRoleEndpoints(roleId: number, endpoints: Api.SystemMa
  *
  * @param params role search params（filter + 分頁，皆 optional）
  */
-export function fetchGetRoleListRev3(params?: Api.SystemManage.RoleSearchParams) {
+// [rev3-inline 023-list-column-sort WRAPPER T010] param 型放寬含 sort（WithSort）
+export function fetchGetRoleListRev3(params?: Api.SystemManage.WithSort<Api.SystemManage.RoleSearchParams>) {
   return request<Api.Common.PaginatingQueryRecord<Api.SystemManage.RoleListItemRev3>>({
     url: '/systemManage/getRoleList',
     method: 'get',
@@ -539,7 +547,8 @@ export function fetchGetUserListRev3(params?: Api.SystemManage.WithSort<Api.Syst
  *
  * @param params ip rule search params（cidr 模糊 / ruleType 精確 + 分頁，皆 optional；空字串由後端守門當未設）
  */
-export function fetchGetIpRuleList(params?: Api.SystemManage.IpRuleSearchParams) {
+// [rev3-inline 023-list-column-sort WRAPPER T010] param 型放寬含 sort（WithSort）
+export function fetchGetIpRuleList(params?: Api.SystemManage.WithSort<Api.SystemManage.IpRuleSearchParams>) {
   return request<Api.SystemManage.IpRuleList>({
     url: '/systemManage/getIpRuleList',
     method: 'get',

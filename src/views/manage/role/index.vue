@@ -1,5 +1,5 @@
 <script setup lang="tsx">
-import { ref } from 'vue';
+import { ref, watch } from 'vue';
 import { NButton, NPopconfirm, NTag } from 'naive-ui';
 import { enableStatusRecord } from '@/constants/business';
 // [rev3-inline 016-button-endpoint-policy D5] getRoleList 改用 honest 讀型 wrapper（roleDesc string|null、消型謊）；frozen system-manage.ts 不動
@@ -9,6 +9,8 @@ import { fetchBatchDeleteRole, fetchDeleteRole, fetchGetRoleListRev3 } from '@/s
 import { useAuth } from '@/hooks/business/auth';
 import { useAppStore } from '@/store/modules/app';
 import { defaultTransform, useNaivePaginatedTable, useTableOperate } from '@/hooks/common/table';
+// [rev3-inline 023-list-column-sort MW(f)] 列表欄位排序 composable（受控排序 + 點擊序 + wire 字串）
+import { useTableSort } from '@/hooks/common/use-table-sort';
 import { $t } from '@/locales';
 import RoleOperateDrawer from './modules/role-operate-drawer.vue';
 import RoleSearch from './modules/role-search.vue';
@@ -26,8 +28,12 @@ const searchParams = ref<Api.SystemManage.RoleSearchParams>({
   status: null
 });
 
+// [rev3-inline 023-list-column-sort MW(f)] 排序受控狀態（須置於 useNaivePaginatedTable 之前供 columns factory 引用）
+const { handleUpdateSorter, getColumnSortProps, sortString } = useTableSort();
+
 const { columns, columnChecks, data, loading, getData, getDataByPage, mobilePagination } = useNaivePaginatedTable({
-  api: () => fetchGetRoleListRev3(searchParams.value),
+  // [rev3-inline 023-list-column-sort MW(f)] sort 走 api closure 合併（不入 searchParams 型）；空字串→undefined 略過
+  api: () => fetchGetRoleListRev3({ ...searchParams.value, sort: sortString.value || undefined }),
   transform: response => defaultTransform(response),
   onPaginationParamsChange: params => {
     searchParams.value.current = params.page;
@@ -50,24 +56,32 @@ const { columns, columnChecks, data, loading, getData, getDataByPage, mobilePagi
       key: 'roleName',
       title: $t('page.manage.role.roleName'),
       align: 'center',
-      minWidth: 120
+      minWidth: 120,
+      // [rev3-inline 023-list-column-sort MW(f)] 可排序欄
+      ...getColumnSortProps('roleName')
     },
     {
       key: 'roleCode',
       title: $t('page.manage.role.roleCode'),
       align: 'center',
-      minWidth: 120
+      minWidth: 120,
+      // [rev3-inline 023-list-column-sort MW(f)] 可排序欄
+      ...getColumnSortProps('roleCode')
     },
     {
       key: 'roleDesc',
       title: $t('page.manage.role.roleDesc'),
-      minWidth: 120
+      minWidth: 120,
+      // [rev3-inline 023-list-column-sort MW(f)] 可排序欄
+      ...getColumnSortProps('roleDesc')
     },
     {
       key: 'status',
       title: $t('page.manage.role.roleStatus'),
       align: 'center',
       width: 100,
+      // [rev3-inline 023-list-column-sort MW(f)] 可排序欄
+      ...getColumnSortProps('status'),
       render: row => {
         if (row.status === null) {
           return null;
@@ -112,6 +126,11 @@ const { columns, columnChecks, data, loading, getData, getDataByPage, mobilePagi
       )
     }
   ]
+});
+
+// [rev3-inline 023-list-column-sort MW(f)] 排序變更 → 重抓並回第 1 頁（FR-006）
+watch(sortString, () => {
+  getDataByPage(1);
 });
 
 const {
@@ -176,6 +195,7 @@ function edit(id: number) {
         :row-key="row => row.id"
         :pagination="mobilePagination"
         class="sm:h-full"
+        @update:sorter="handleUpdateSorter"
       />
       <RoleOperateDrawer
         v-model:visible="drawerVisible"

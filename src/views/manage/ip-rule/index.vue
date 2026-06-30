@@ -5,8 +5,10 @@ import { useBoolean } from '@sa/hooks';
 import { fetchDeleteIpRule, fetchGetIpRuleList, fetchRestoreIpRule } from '@/service/api/rev3-system-manage';
 import { useAppStore } from '@/store/modules/app';
 import { defaultTransform, useNaivePaginatedTable, useTableOperate } from '@/hooks/common/table';
+// [rev3-inline 023-list-column-sort MW(f)] 列表欄位排序 composable（受控排序 + 點擊序 + wire 字串）
+import { useTableSort } from '@/hooks/common/use-table-sort';
 import { $t } from '@/locales';
-import { ref } from 'vue';
+import { ref, watch } from 'vue';
 import IpRuleSearch from './modules/ip-rule-search.vue';
 import IpRuleOperateModal from './modules/ip-rule-operate-modal.vue';
 import IpRuleUnlockModal from './modules/ip-rule-unlock-modal.vue';
@@ -29,8 +31,12 @@ const searchParams = ref<Api.SystemManage.IpRuleSearchParams>({
   ruleType: null
 });
 
+// [rev3-inline 023-list-column-sort MW(f)] 排序受控狀態（須置於 useNaivePaginatedTable 之前供 columns factory 引用）
+const { handleUpdateSorter, getColumnSortProps, sortString } = useTableSort();
+
 const { columns, columnChecks, data, getData, getDataByPage, loading, mobilePagination } = useNaivePaginatedTable({
-  api: () => fetchGetIpRuleList(searchParams.value),
+  // [rev3-inline 023-list-column-sort MW(f)] sort 走 api closure 合併（不入 searchParams 型）；空字串→undefined 略過
+  api: () => fetchGetIpRuleList({ ...searchParams.value, sort: sortString.value || undefined }),
   transform: response => defaultTransform(response),
   onPaginationParamsChange: params => {
     searchParams.value.current = params.page;
@@ -48,13 +54,17 @@ const { columns, columnChecks, data, getData, getDataByPage, loading, mobilePagi
       key: 'cidr',
       title: $t('page.manage.ipRule.cidr'),
       align: 'center',
-      minWidth: 180
+      minWidth: 180,
+      // [rev3-inline 023-list-column-sort MW(f)] 可排序欄
+      ...getColumnSortProps('cidr')
     },
     {
       key: 'ruleType',
       title: $t('page.manage.ipRule.ruleType'),
       align: 'center',
       width: 140,
+      // [rev3-inline 023-list-column-sort MW(f)] 可排序欄
+      ...getColumnSortProps('ruleType'),
       render: row => {
         const tagMap: Record<Api.SystemManage.IpRuleType, NaiveUI.ThemeColor> = {
           allow: 'success',
@@ -72,6 +82,8 @@ const { columns, columnChecks, data, getData, getDataByPage, loading, mobilePagi
       title: $t('page.manage.ipRule.order'),
       align: 'center',
       width: 80,
+      // [rev3-inline 023-list-column-sort MW(f)] 可排序欄
+      ...getColumnSortProps('order'),
       render: row => (row.order === null ? $t('page.manage.ipRule.empty') : String(row.order))
     },
     {
@@ -79,6 +91,8 @@ const { columns, columnChecks, data, getData, getDataByPage, loading, mobilePagi
       title: $t('page.manage.ipRule.description'),
       align: 'center',
       minWidth: 160,
+      // [rev3-inline 023-list-column-sort MW(f)] 可排序欄
+      ...getColumnSortProps('description'),
       render: row => (row.description === null ? $t('page.manage.ipRule.empty') : row.description)
     },
     {
@@ -96,13 +110,17 @@ const { columns, columnChecks, data, getData, getDataByPage, loading, mobilePagi
       key: 'createTime',
       title: $t('page.manage.ipRule.createTime'),
       align: 'center',
-      minWidth: 160
+      minWidth: 160,
+      // [rev3-inline 023-list-column-sort MW(f)] 可排序欄
+      ...getColumnSortProps('createTime')
     },
     {
       key: 'updateTime',
       title: $t('page.manage.ipRule.updateTime'),
       align: 'center',
-      minWidth: 160
+      minWidth: 160,
+      // [rev3-inline 023-list-column-sort MW(f)] 可排序欄
+      ...getColumnSortProps('updateTime')
     },
     {
       key: 'operate',
@@ -148,6 +166,11 @@ const { columns, columnChecks, data, getData, getDataByPage, loading, mobilePagi
       }
     }
   ]
+});
+
+// [rev3-inline 023-list-column-sort MW(f)] 排序變更 → 重抓並回第 1 頁（FR-006）
+watch(sortString, () => {
+  getDataByPage(1);
 });
 
 const { drawerVisible, operateType, editingData, handleAdd, handleEdit, onDeleted } = useTableOperate(data, 'id', getData);
@@ -203,6 +226,7 @@ function edit(id: number) {
         :row-key="row => row.id"
         :pagination="mobilePagination"
         class="sm:h-full"
+        @update:sorter="handleUpdateSorter"
       />
       <IpRuleOperateModal
         v-model:visible="drawerVisible"

@@ -1,8 +1,10 @@
 <script setup lang="tsx">
-import { ref } from 'vue';
+import { ref, watch } from 'vue';
 import { NInput, NSelect, NTag } from 'naive-ui';
 import { fetchExportLoginAttempt, fetchGetLoginAttempt } from '@/service/api/rev3-system-manage';
 import { defaultTransform, useNaivePaginatedTable } from '@/hooks/common/table';
+// [rev3-inline 023-list-column-sort MW(f)] 列表欄位排序 composable（受控排序 + 點擊序 + wire 字串）
+import { useTableSort } from '@/hooks/common/use-table-sort';
 import { useAppStore } from '@/store/modules/app';
 import { $t } from '@/locales';
 import { downloadCsv } from '@/utils/download';
@@ -60,8 +62,12 @@ function onDateRangeChange(value: [number, number] | null) {
   }
 }
 
+// [rev3-inline 023-list-column-sort MW(f)] 排序受控狀態（須置於 useNaivePaginatedTable 之前供 columns factory 引用）
+const { handleUpdateSorter, getColumnSortProps, sortString } = useTableSort();
+
 const { columns, data, loading, getDataByPage, mobilePagination } = useNaivePaginatedTable({
-  api: () => fetchGetLoginAttempt(searchParams.value),
+  // [rev3-inline 023-list-column-sort MW(f)] sort 走 api closure 合併（不入 searchParams 型）；空字串→undefined 略過
+  api: () => fetchGetLoginAttempt({ ...searchParams.value, sort: sortString.value || undefined }),
   transform: response => defaultTransform(response),
   onPaginationParamsChange: params => {
     searchParams.value.current = params.page;
@@ -72,19 +78,25 @@ const { columns, data, loading, getDataByPage, mobilePagination } = useNaivePagi
       key: 'createTime',
       title: $t('page.manage.audit.col.time'),
       align: 'center',
-      minWidth: 180
+      minWidth: 180,
+      // [rev3-inline 023-list-column-sort MW(f)] 可排序欄
+      ...getColumnSortProps('createTime')
     },
     {
       key: 'attemptedUserName',
       title: $t('page.manage.audit.col.account'),
       align: 'center',
-      minWidth: 120
+      minWidth: 120,
+      // [rev3-inline 023-list-column-sort MW(f)] 可排序欄
+      ...getColumnSortProps('attemptedUserName')
     },
     {
       key: 'success',
       title: $t('page.manage.audit.col.result'),
       align: 'center',
       minWidth: 90,
+      // [rev3-inline 023-list-column-sort MW(f)] 可排序欄
+      ...getColumnSortProps('success'),
       render: row => {
         const type = row.success ? 'success' : 'error';
         const label = row.success
@@ -100,6 +112,8 @@ const { columns, data, loading, getDataByPage, mobilePagination } = useNaivePagi
       title: $t('page.manage.audit.col.confidence'),
       align: 'center',
       minWidth: 110,
+      // [rev3-inline 023-list-column-sort MW(f)] 可排序欄
+      ...getColumnSortProps('ipConfidence'),
       render: row => renderConfidenceTag(row.ipConfidence)
     },
     {
@@ -107,19 +121,25 @@ const { columns, data, loading, getDataByPage, mobilePagination } = useNaivePagi
       title: $t('page.manage.audit.col.peerIp'),
       align: 'center',
       minWidth: 130,
+      // [rev3-inline 023-list-column-sort MW(f)] 可排序欄
+      ...getColumnSortProps('peerIp'),
       render: row => row.peerIp ?? $t('page.manage.audit.empty')
     },
     {
       key: 'realIp',
       title: $t('page.manage.audit.col.realIp'),
       align: 'center',
-      minWidth: 130
+      minWidth: 130,
+      // [rev3-inline 023-list-column-sort MW(f)] 可排序欄
+      ...getColumnSortProps('realIp')
     },
     {
       key: 'xForwardedFor',
       title: $t('page.manage.audit.col.xForwardedFor'),
       align: 'center',
       minWidth: 180,
+      // [rev3-inline 023-list-column-sort MW(f)] 可排序欄
+      ...getColumnSortProps('xForwardedFor'),
       render: row => row.xForwardedFor ?? $t('page.manage.audit.empty')
     },
     {
@@ -127,9 +147,16 @@ const { columns, data, loading, getDataByPage, mobilePagination } = useNaivePagi
       title: $t('page.manage.audit.col.region'),
       align: 'center',
       minWidth: 140,
+      // [rev3-inline 023-list-column-sort MW(f)] 可排序欄
+      ...getColumnSortProps('region'),
       render: row => row.region ?? ''
     }
   ]
+});
+
+// [rev3-inline 023-list-column-sort MW(f)] 排序變更 → 重抓並回第 1 頁（FR-006）
+watch(sortString, () => {
+  getDataByPage(1);
 });
 
 function reset() {
@@ -153,7 +180,8 @@ function search() {
 
 // [rev3-inline 017-audit-center-enhancement C-3＋F4 ★] CSV 匯出（當前篩選；後端 cap 1 萬列、截斷以後端 truncated 旗標為準、非 stale list total）
 async function onExport() {
-  const { error, data } = await fetchExportLoginAttempt(searchParams.value);
+  // [rev3-inline 023-list-column-sort MW(f)/FR-016] 匯出帶入當前排序（CSV 列序與畫面一致）
+  const { error, data } = await fetchExportLoginAttempt({ ...searchParams.value, sort: sortString.value || undefined });
   if (error || !data) return;
   downloadCsv(data.csv, `login_${Date.now()}.csv`);
   if (data.truncated) {
@@ -252,6 +280,7 @@ async function onExport() {
         :row-key="row => row.id"
         :pagination="mobilePagination"
         class="sm:h-full"
+        @update:sorter="handleUpdateSorter"
       />
     </NCard>
   </div>

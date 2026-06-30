@@ -1,8 +1,10 @@
 <script setup lang="tsx">
-import { ref } from 'vue';
+import { ref, watch } from 'vue';
 import { NButton, NInput, NPopconfirm } from 'naive-ui';
 import { fetchGetArchivedPolicies, fetchRestorePolicy } from '@/service/api/rev3-system-manage';
 import { defaultTransform, useNaivePaginatedTable } from '@/hooks/common/table';
+// [rev3-inline 023-list-column-sort MW(f)] 列表欄位排序 composable（受控排序 + 點擊序 + wire 字串）
+import { useTableSort } from '@/hooks/common/use-table-sort';
 import { useAppStore } from '@/store/modules/app';
 import { $t } from '@/locales';
 
@@ -31,8 +33,12 @@ const searchParams = ref<Api.SystemManage.ArchivedPolicySearchParams>({
   dimension: null
 });
 
+// [rev3-inline 023-list-column-sort MW(f)] 排序受控狀態（須置於 useNaivePaginatedTable 之前供 columns factory 引用）
+const { handleUpdateSorter, getColumnSortProps, sortString } = useTableSort();
+
 const { columns, data, loading, getDataByPage, mobilePagination } = useNaivePaginatedTable({
-  api: () => fetchGetArchivedPolicies(searchParams.value),
+  // [rev3-inline 023-list-column-sort MW(f)] sort 走 api closure 合併（不入 searchParams 型）；空字串→undefined 略過
+  api: () => fetchGetArchivedPolicies({ ...searchParams.value, sort: sortString.value || undefined }),
   transform: response => defaultTransform(response),
   onPaginationParamsChange: params => {
     searchParams.value.current = params.page;
@@ -43,31 +49,40 @@ const { columns, data, loading, getDataByPage, mobilePagination } = useNaivePagi
       key: 'roleCode',
       title: $t('page.manage.policyArchive.col.roleCode'),
       align: 'center',
-      minWidth: 140
+      minWidth: 140,
+      // [rev3-inline 023-list-column-sort MW(f)] 可排序欄
+      ...getColumnSortProps('roleCode')
     },
     {
       key: 'target',
       title: $t('page.manage.policyArchive.col.target'),
       align: 'center',
-      minWidth: 180
+      minWidth: 180,
+      // [rev3-inline 023-list-column-sort MW(f)] 可排序欄
+      ...getColumnSortProps('target')
     },
     {
       key: 'dimension',
       title: $t('page.manage.policyArchive.col.dimension'),
       align: 'center',
       minWidth: 100
+      // [rev3-inline 023-list-column-sort MW(f)] dimension 為 computed/v2 衍生、非後端白名單 → 不掛排序
     },
     {
       key: 'archivedTime',
       title: $t('page.manage.policyArchive.col.archivedTime'),
       align: 'center',
-      minWidth: 180
+      minWidth: 180,
+      // [rev3-inline 023-list-column-sort MW(f)] 可排序欄
+      ...getColumnSortProps('archivedTime')
     },
     {
       key: 'createdTime',
       title: $t('page.manage.policyArchive.col.createdTime'),
       align: 'center',
       minWidth: 180,
+      // [rev3-inline 023-list-column-sort MW(f)] 可排序欄
+      ...getColumnSortProps('createdTime'),
       // [rev3-inline §3.B/pre-波4] 原 policy 授權建立時間（createdTime，nullable）；honest null → empty
       render: row => (row.createdTime === null ? $t('page.manage.policyArchive.empty') : String(row.createdTime))
     },
@@ -76,6 +91,8 @@ const { columns, data, loading, getDataByPage, mobilePagination } = useNaivePagi
       title: $t('page.manage.policyArchive.col.archivedBy'),
       align: 'center',
       minWidth: 100,
+      // [rev3-inline 023-list-column-sort MW(f)] 可排序欄
+      ...getColumnSortProps('archivedBy'),
       // [rev3-inline 015] honest null → empty（不用誤導預設值）
       render: row => (row.archivedBy === null ? $t('page.manage.policyArchive.empty') : String(row.archivedBy))
     },
@@ -84,6 +101,8 @@ const { columns, data, loading, getDataByPage, mobilePagination } = useNaivePagi
       title: $t('page.manage.policyArchive.col.archiveReason'),
       align: 'center',
       minWidth: 160,
+      // [rev3-inline 023-list-column-sort MW(f)] 可排序欄
+      ...getColumnSortProps('archiveReason'),
       // [rev3-inline 020-role-delete-policy-archive] reason snake 值 → $t 友善標籤（已知 3 值映射、未知值 fallback 原字串、空→empty）
       render: row => {
         const labelKey = reasonLabelKeyMap[row.archiveReason];
@@ -120,6 +139,11 @@ const { columns, data, loading, getDataByPage, mobilePagination } = useNaivePagi
         )
     }
   ]
+});
+
+// [rev3-inline 023-list-column-sort MW(f)] 排序變更 → 重抓並回第 1 頁（FR-006）
+watch(sortString, () => {
+  getDataByPage(1);
 });
 
 // [rev3-inline 015] 復原回收桶項（Applied/NoOp→0000、NotFound→2222；成功則 reload 當前頁）
@@ -191,6 +215,7 @@ function search() {
         :row-key="row => row.id"
         :pagination="mobilePagination"
         class="sm:h-full"
+        @update:sorter="handleUpdateSorter"
       />
     </NCard>
   </div>
