@@ -328,6 +328,8 @@ declare namespace App {
         // [rev3-inline 011-role-management I18N(iii) ★] biz.role 6 鍵（含 menuProtected＝②protected-reject；與後端 biz.role.<condition> 對齊）
         biz: {
           error: string;
+          // [rev3-inline 023-list-column-sort I18N(iii) ★] biz.common.invalidSort（非白名單欄/非法方向 → 後端回 biz.common.invalidSort）
+          common: { invalidSort: string };
           systemSettings: { invalidValue: string; notFound: string };
           user: {
             duplicateUserName: string;
@@ -391,6 +393,7 @@ declare namespace App {
         selectAll: string;
         expandColumn: string;
         columnSetting: string;
+        clearSort: string;
         config: string;
         confirm: string;
         delete: string;

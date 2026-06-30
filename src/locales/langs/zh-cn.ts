@@ -18,6 +18,7 @@ const local: App.I18n.Schema = {
     selectAll: '全选',
     expandColumn: '展开列',
     columnSetting: '列设置',
+    clearSort: '清除排序',
     config: '配置',
     confirm: '确认',
     delete: '删除',
@@ -887,6 +888,8 @@ const local: App.I18n.Schema = {
     // [rev3-inline 011-role-management ★] biz.role 错误译文（6 键、含 menuProtected＝受保护选单可见性不可移除）
     biz: {
       error: '业务错误',
+      // [rev3-inline 023-list-column-sort ★] biz.common.invalidSort（排序栏位/方向非白名单 → 后端回此 wire msg）
+      common: { invalidSort: '排序栏位或方向无效' },
       systemSettings: { invalidValue: '设定值不符合型别', notFound: '设定键不存在' },
       user: {
         duplicateUserName: '使用者帐号已存在',

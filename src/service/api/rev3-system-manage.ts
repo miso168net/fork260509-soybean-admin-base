@@ -519,7 +519,8 @@ export function fetchGetRoleListRev3(params?: Api.SystemManage.RoleSearchParams)
  *
  * @param params user search params（filter + 分頁，皆 optional）
  */
-export function fetchGetUserListRev3(params?: Api.SystemManage.UserSearchParams) {
+// [rev3-inline 023-list-column-sort WRAPPER T010] param 型放寬含 sort（WithSort）；runtime 整包透傳不變
+export function fetchGetUserListRev3(params?: Api.SystemManage.WithSort<Api.SystemManage.UserSearchParams>) {
   return request<Api.Common.PaginatingQueryRecord<Api.SystemManage.UserListItemRev3>>({
     url: '/systemManage/getUserList',
     method: 'get',

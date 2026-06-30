@@ -1,5 +1,5 @@
 <script setup lang="tsx">
-import { ref } from 'vue';
+import { ref, watch } from 'vue';
 import { NButton, NPopconfirm, NTag } from 'naive-ui';
 import { enableStatusRecord, userGenderRecord } from '@/constants/business';
 // [rev3-inline 016-button-endpoint-policy D5] getUserList 改用 honest 讀型 wrapper（nickName/userPhone/userEmail string|null、消型謊）；frozen system-manage.ts 不動
@@ -9,6 +9,8 @@ import { fetchBatchDeleteUser, fetchDeleteUser, fetchGetUserListRev3 } from '@/s
 import { useAuth } from '@/hooks/business/auth';
 import { useAppStore } from '@/store/modules/app';
 import { defaultTransform, useNaivePaginatedTable, useTableOperate } from '@/hooks/common/table';
+// [rev3-inline 023-list-column-sort MW(f)] 列表欄位排序 composable（受控排序 + 點擊序 + wire 字串）
+import { useTableSort } from '@/hooks/common/use-table-sort';
 import { $t } from '@/locales';
 import UserOperateDrawer from './modules/user-operate-drawer.vue';
 import UserSearch from './modules/user-search.vue';
@@ -29,8 +31,12 @@ const searchParams = ref<Api.SystemManage.UserSearchParams>({
   userEmail: null
 });
 
+// [rev3-inline 023-list-column-sort MW(f)] 排序受控狀態（須置於 useNaivePaginatedTable 之前供 columns factory 引用）
+const { handleUpdateSorter, getColumnSortProps, sortString } = useTableSort();
+
 const { columns, columnChecks, data, getData, getDataByPage, loading, mobilePagination } = useNaivePaginatedTable({
-  api: () => fetchGetUserListRev3(searchParams.value),
+  // [rev3-inline 023-list-column-sort MW(f)] sort 走 api closure 合併（不入 searchParams 型）；空字串→undefined 略過
+  api: () => fetchGetUserListRev3({ ...searchParams.value, sort: sortString.value || undefined }),
   transform: response => defaultTransform(response),
   onPaginationParamsChange: params => {
     searchParams.value.current = params.page;
@@ -53,13 +59,17 @@ const { columns, columnChecks, data, getData, getDataByPage, loading, mobilePagi
       key: 'userName',
       title: $t('page.manage.user.userName'),
       align: 'center',
-      minWidth: 100
+      minWidth: 100,
+      // [rev3-inline 023-list-column-sort MW(f)] 可排序欄：受控 sortOrder + 多欄啟用旗標
+      ...getColumnSortProps('userName')
     },
     {
       key: 'userGender',
       title: $t('page.manage.user.userGender'),
       align: 'center',
       width: 100,
+      // [rev3-inline 023-list-column-sort MW(f)] 可排序欄
+      ...getColumnSortProps('userGender'),
       render: row => {
         if (row.userGender === null) {
           return null;
@@ -79,25 +89,33 @@ const { columns, columnChecks, data, getData, getDataByPage, loading, mobilePagi
       key: 'nickName',
       title: $t('page.manage.user.nickName'),
       align: 'center',
-      minWidth: 100
+      minWidth: 100,
+      // [rev3-inline 023-list-column-sort MW(f)] 可排序欄
+      ...getColumnSortProps('nickName')
     },
     {
       key: 'userPhone',
       title: $t('page.manage.user.userPhone'),
       align: 'center',
-      width: 120
+      width: 120,
+      // [rev3-inline 023-list-column-sort MW(f)] 可排序欄
+      ...getColumnSortProps('userPhone')
     },
     {
       key: 'userEmail',
       title: $t('page.manage.user.userEmail'),
       align: 'center',
-      minWidth: 200
+      minWidth: 200,
+      // [rev3-inline 023-list-column-sort MW(f)] 可排序欄
+      ...getColumnSortProps('userEmail')
     },
     {
       key: 'status',
       title: $t('page.manage.user.userStatus'),
       align: 'center',
       width: 100,
+      // [rev3-inline 023-list-column-sort MW(f)] 可排序欄
+      ...getColumnSortProps('status'),
       render: row => {
         if (row.status === null) {
           return null;
@@ -142,6 +160,11 @@ const { columns, columnChecks, data, getData, getDataByPage, loading, mobilePagi
       )
     }
   ]
+});
+
+// [rev3-inline 023-list-column-sort MW(f)] 排序變更 → 重抓並回第 1 頁（FR-006）
+watch(sortString, () => {
+  getDataByPage(1);
 });
 
 const {
@@ -206,6 +229,7 @@ function edit(id: number) {
         :row-key="row => row.id"
         :pagination="mobilePagination"
         class="sm:h-full"
+        @update:sorter="handleUpdateSorter"
       />
       <UserOperateDrawer
         v-model:visible="drawerVisible"

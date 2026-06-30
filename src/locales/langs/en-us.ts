@@ -18,6 +18,7 @@ const local: App.I18n.Schema = {
     selectAll: 'Select All',
     expandColumn: 'Expand Column',
     columnSetting: 'Column Setting',
+    clearSort: 'Clear sort',
     config: 'Config',
     confirm: 'Confirm',
     delete: 'Delete',
@@ -892,6 +893,8 @@ const local: App.I18n.Schema = {
     // [rev3-inline 011-role-management ★] biz.role error translations (6 keys, incl. menuProtected = protected menu visibility cannot be removed)
     biz: {
       error: 'Operation failed',
+      // [rev3-inline 023-list-column-sort ★] biz.common.invalidSort (sort field/direction not whitelisted → backend returns this wire msg)
+      common: { invalidSort: 'Invalid sort field or direction' },
       systemSettings: { invalidValue: 'Value does not match the expected type', notFound: 'Setting key not found' },
       user: {
         duplicateUserName: 'User name already exists',
