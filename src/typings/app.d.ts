@@ -377,6 +377,12 @@ declare namespace App {
             invalidRuleType: string;
             invalidDimension: string;
           };
+          // [rev3-inline 025-user-center I18N(iii) ★] biz.password 3 鍵淨新（改密碼 tooWeak/mismatch/oldMismatch；與後端 biz.password.<condition> 對齊；notFound 複用 biz.user）
+          password: {
+            tooWeak: string;
+            mismatch: string;
+            oldMismatch: string;
+          };
         };
         system: { notFound: string; forbidden: string; internal: string };
       };
@@ -1050,6 +1056,39 @@ declare namespace App {
                 value: string;
               };
             };
+          };
+        };
+        // [rev3-inline 025-user-center ★] 個人中心 self-service 頁（4 卡：基本资料/手机/邮箱/改密码；綁 MODAL-WIRING (g)；先 Schema 後 locale）
+        userCenter: {
+          title: string;
+          basicInfoTitle: string;
+          phoneTitle: string;
+          emailTitle: string;
+          passwordTitle: string;
+          userName: string;
+          roles: string;
+          gender: string;
+          nickName: string;
+          userPhone: string;
+          userEmail: string;
+          save: string;
+          createdAt: string;
+          updatedAt: string;
+          oldPassword: string;
+          newPassword: string;
+          confirmPassword: string;
+          changePwdBtn: string;
+          origin: {
+            system: string;
+            adminCreated: string;
+            selfCreated: string;
+            adminUpdated: string;
+          };
+          verify: {
+            sendCode: string;
+            codePlaceholder: string;
+            verify: string;
+            comingSoon: string;
           };
         };
       };

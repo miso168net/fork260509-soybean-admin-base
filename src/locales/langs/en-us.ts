@@ -823,6 +823,39 @@ const local: App.I18n.Schema = {
           }
         }
       }
+    },
+    // [rev3-inline 025-user-center ★] User Center self-service page copy (4 cards + created/updated + change password; keys aligned with Schema)
+    userCenter: {
+      title: 'User Center',
+      basicInfoTitle: 'Basic Info',
+      phoneTitle: 'Phone',
+      emailTitle: 'Email',
+      passwordTitle: 'Change Password',
+      userName: 'Account',
+      roles: 'Roles',
+      gender: 'Gender',
+      nickName: 'Nickname',
+      userPhone: 'Phone',
+      userEmail: 'Email',
+      save: 'Save',
+      createdAt: 'Created At',
+      updatedAt: 'Updated At',
+      oldPassword: 'Old Password',
+      newPassword: 'New Password',
+      confirmPassword: 'Confirm New Password',
+      changePwdBtn: 'Change Password',
+      origin: {
+        system: 'Created by system',
+        adminCreated: 'Created by administrator',
+        selfCreated: 'Created by you',
+        adminUpdated: 'Updated by administrator'
+      },
+      verify: {
+        sendCode: 'Send Code',
+        codePlaceholder: 'Verification Code',
+        verify: 'Verify',
+        comingSoon: 'Coming soon'
+      }
     }
   },
   form: {
@@ -943,6 +976,12 @@ const local: App.I18n.Schema = {
         invalidCidr: 'IP range format is incorrect',
         invalidRuleType: 'Invalid rule type',
         invalidDimension: 'Invalid unlock dimension'
+      },
+      // [rev3-inline 025-user-center ★] biz.password error translations (3 net-new keys; interceptor auto $t('backend.'+msg))
+      password: {
+        tooWeak: 'New password does not meet the complexity policy',
+        mismatch: 'The two new passwords do not match',
+        oldMismatch: 'Old password is incorrect'
       }
     },
     system: { notFound: 'Resource not found', forbidden: 'Permission denied', internal: 'Internal server error' }

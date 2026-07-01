@@ -818,6 +818,39 @@ const local: App.I18n.Schema = {
           }
         }
       }
+    },
+    // [rev3-inline 025-user-center ★] 个人中心 self-service 页文案（4 卡＋created/updated＋改密码；键名对齐 Schema）
+    userCenter: {
+      title: '个人中心',
+      basicInfoTitle: '基本资料',
+      phoneTitle: '手机号',
+      emailTitle: '邮箱',
+      passwordTitle: '修改密码',
+      userName: '账号',
+      roles: '角色',
+      gender: '性别',
+      nickName: '昵称',
+      userPhone: '手机号',
+      userEmail: '邮箱',
+      save: '保存',
+      createdAt: '创建时间',
+      updatedAt: '更新时间',
+      oldPassword: '旧密码',
+      newPassword: '新密码',
+      confirmPassword: '确认新密码',
+      changePwdBtn: '修改密码',
+      origin: {
+        system: '系统创建',
+        adminCreated: '由管理员创建',
+        selfCreated: '本人创建',
+        adminUpdated: '由管理员更新'
+      },
+      verify: {
+        sendCode: '发送验证码',
+        codePlaceholder: '验证码',
+        verify: '验证',
+        comingSoon: '功能建置中'
+      }
     }
   },
   form: {
@@ -938,6 +971,12 @@ const local: App.I18n.Schema = {
         invalidCidr: 'IP 网段格式不正确',
         invalidRuleType: '无效的规则类型',
         invalidDimension: '无效的解锁维度'
+      },
+      // [rev3-inline 025-user-center ★] biz.password 错误译文（3 键淨新；攔截器自动 $t('backend.'+msg)）
+      password: {
+        tooWeak: '新密码不符合密码复杂度政策',
+        mismatch: '两次输入的新密码不一致',
+        oldMismatch: '旧密码不正确'
       }
     },
     system: { notFound: '接口不存在', forbidden: '权限不足', internal: '服务器内部错误' }
