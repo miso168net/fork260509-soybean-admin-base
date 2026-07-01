@@ -28,5 +28,18 @@ declare namespace Api {
       newPassword: string;
       confirmPassword: string;
     }
+
+    /**
+     * 個人中心前端 canonical model（index.vue 持、3 卡共綁；US1）。
+     * nick/phone/email coalesce '' 便於 NInput 綁定（消 null type-lie）；userGender number（對齊 i16 wire）。
+     */
+    interface ProfileModel {
+      userName: string;
+      roles: string[];
+      userGender: number | null;
+      nickName: string | null;
+      userPhone: string | null;
+      userEmail: string | null;
+    }
   }
 }
