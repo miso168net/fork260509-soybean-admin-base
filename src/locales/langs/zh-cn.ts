@@ -659,7 +659,9 @@ const local: App.I18n.Schema = {
       },
       // [rev3-inline 008-system-settings ★] 系统设置页标签
       systemSettings: {
-        title: '系统设置'
+        title: '系统设置',
+        passwordPolicyTitle: '密码策略',
+        sessionTitle: '会话设置'
       },
       // [rev3-inline 012-audit-log-query ★] 审计中心页（单页三分页）
       audit: {

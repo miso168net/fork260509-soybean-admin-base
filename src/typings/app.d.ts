@@ -891,6 +891,8 @@ declare namespace App {
           // [rev3-inline MODAL-WIRING(e) §III.2 008-system-settings ★] 系統設定頁標籤
           systemSettings: {
             title: string;
+            passwordPolicyTitle: string;
+            sessionTitle: string;
           };
           // [rev3-inline 012-audit-log-query ★] 審計中心頁（單頁三分頁；先 Schema 後 locale）
           audit: {

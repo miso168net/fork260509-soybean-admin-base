@@ -663,7 +663,9 @@ const local: App.I18n.Schema = {
       },
       // [rev3-inline 008-system-settings ★] system settings page labels
       systemSettings: {
-        title: 'System Settings'
+        title: 'System Settings',
+        passwordPolicyTitle: 'Password Policy',
+        sessionTitle: 'Session Settings'
       },
       // [rev3-inline 012-audit-log-query ★] audit center page (single page, three tabs)
       audit: {

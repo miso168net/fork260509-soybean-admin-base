@@ -1,11 +1,27 @@
 <!-- [rev3-inline MODAL-WIRING(e) §III.2 008-system-settings ★] 系統設定 KV 頁（static、不套分頁/drawer；波1 打樣） -->
 <script setup lang="ts">
-import { onMounted, ref } from 'vue';
+import { computed, onMounted, ref } from 'vue';
 import { fetchGetSystemSettings, fetchUpdateSystemSetting } from '@/service/api/rev3-system-settings';
 import { $t } from '@/locales';
 
 const settings = ref<Api.SystemManage.SystemSetting[]>([]);
 const loading = ref(false);
+
+/** 依 settingKey 前綴分區塊：password_* → 密碼策略、其餘 → 會話設定（空區塊自動略過、保留 server 回傳順序） */
+const groups = computed(() => {
+  const isPassword = (key: string) => key.startsWith('password_');
+  const result: Array<{ titleKey: App.I18n.I18nKey; items: Api.SystemManage.SystemSetting[] }> = [
+    {
+      titleKey: 'page.manage.systemSettings.passwordPolicyTitle',
+      items: settings.value.filter(s => isPassword(s.settingKey))
+    },
+    {
+      titleKey: 'page.manage.systemSettings.sessionTitle',
+      items: settings.value.filter(s => !isPassword(s.settingKey))
+    }
+  ];
+  return result.filter(g => g.items.length > 0);
+});
 
 /** 解析 "enum:on,off" → ['on', 'off']；非 enum 型回 null */
 function parseEnumValues(valueType: string): [string, string] | null {
@@ -60,17 +76,23 @@ onMounted(getSettings);
 <template>
   <!-- [rev3-fix] 卡片列表頁：去 table 頁模板的 overflow-hidden（此頁無內部滾動區、政策項變多會被裁），改讓 layout main 滾（對齊 example pro-naive 內容頁做法） -->
   <div class="flex-col-stretch gap-16px">
-    <NCard :title="$t('page.manage.systemSettings.title')" :bordered="false" size="small" class="card-wrapper">
-      <NSpin :show="loading">
-        <NEmpty v-if="!loading && settings.length === 0" class="py-32px" />
-        <NSpace v-else vertical :size="16">
-          <NCard v-for="item in settings" :key="item.settingKey" size="small" embedded :bordered="false">
-            <div class="flex items-center justify-between gap-16px">
-              <div class="flex-col gap-4px">
-                <span class="font-medium">{{ item.settingKey }}</span>
-                <span v-if="item.description" class="text-12px text-gray-400">{{ item.description }}</span>
-              </div>
-              <div class="flex items-center gap-8px">
+    <NSpin :show="loading">
+      <NEmpty v-if="!loading && settings.length === 0" class="py-32px" />
+      <NSpace v-else vertical :size="16">
+        <!-- [rev3-inline MODAL-WIRING(e)+] 分區塊（密碼策略/會話設定）+ 2 欄緊湊 grid：每格 label 左 control 右、不佔整行 -->
+        <NCard
+          v-for="group in groups"
+          :key="group.titleKey"
+          :title="$t(group.titleKey)"
+          :bordered="false"
+          size="small"
+          segmented
+          class="card-wrapper"
+        >
+          <NGrid cols="1 s:2" :x-gap="24" :y-gap="16" responsive="screen">
+            <NGi v-for="item in group.items" :key="item.settingKey">
+              <div class="flex items-center justify-between gap-12px">
+                <span class="text-14px">{{ item.description || item.settingKey }}</span>
                 <template v-if="parseEnumValues(item.valueType)">
                   <NSwitch
                     :value="item.settingValue === parseEnumValues(item.valueType)![0]"
@@ -86,17 +108,17 @@ onMounted(getSettings);
                     :step="1"
                     :precision="0"
                     :update-value-on-input="false"
-                    class="w-160px"
+                    class="w-140px"
                     @update:value="(v: number | null) => handleNumberUpdate(item, v)"
                   />
                 </template>
                 <span v-else>{{ item.settingValue }}</span>
               </div>
-            </div>
-          </NCard>
-        </NSpace>
-      </NSpin>
-    </NCard>
+            </NGi>
+          </NGrid>
+        </NCard>
+      </NSpace>
+    </NSpin>
   </div>
 </template>
 
