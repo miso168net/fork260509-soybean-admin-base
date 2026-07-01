@@ -39,6 +39,21 @@ async function handleToggle(item: Api.SystemManage.SystemSetting, checked: boole
   await getSettings();
 }
 
+/** NInputNumber 提交 → update → toast + refetch（鏡像 handleToggle；value 為 null（清空）則忽略） */
+async function handleNumberUpdate(item: Api.SystemManage.SystemSetting, value: number | null) {
+  // 清空欄位（value=null）：不送更新，但 refetch 讓受控 NInputNumber 顯示回退到 server 真值（對齊 handleToggle 恆 refetch 語意）
+  if (value === null) {
+    await getSettings();
+    return;
+  }
+  const { error } = await fetchUpdateSystemSetting(item.settingKey, String(value));
+  if (!error) {
+    window.$message?.success($t('common.updateSuccess'));
+  }
+  // 成功或失敗（失敗已由攔截器彈 modal）都 refetch，回到 server 真值
+  await getSettings();
+}
+
 onMounted(getSettings);
 </script>
 
@@ -59,6 +74,19 @@ onMounted(getSettings);
                   <NSwitch
                     :value="item.settingValue === parseEnumValues(item.valueType)![0]"
                     @update:value="(checked: boolean) => handleToggle(item, checked)"
+                  />
+                </template>
+                <!-- [rev3-inline MODAL-WIRING(e)+] number 型設定可編輯控件；upstream 衝突風險 nil（rev3 自撰檔）-->
+                <template v-else-if="item.valueType === 'number'">
+                  <NInputNumber
+                    :value="Number(item.settingValue)"
+                    :min="1"
+                    :max="1024"
+                    :step="1"
+                    :precision="0"
+                    :update-value-on-input="false"
+                    class="w-160px"
+                    @update:value="(v: number | null) => handleNumberUpdate(item, v)"
                   />
                 </template>
                 <span v-else>{{ item.settingValue }}</span>
