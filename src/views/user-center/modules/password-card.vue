@@ -1,8 +1,7 @@
 <!-- [rev3-inline 025-user-center ★MODAL-WIRING(g)] 修改密码卡（US2：舊/新/確認 input＋動態密碼 rule＋改密码送出） -->
 <script setup lang="ts">
 import { computed, onMounted, reactive, ref } from 'vue';
-import { fetchChangePassword } from '@/service/api/rev3-user-center';
-import { fetchGetSystemSettings } from '@/service/api/rev3-system-settings';
+import { fetchChangePassword, fetchGetPasswordPolicy } from '@/service/api/rev3-user-center';
 import { useFormRules, useNaiveForm } from '@/hooks/common/form';
 import { $t } from '@/locales';
 
@@ -20,7 +19,7 @@ const newPasswordRules = ref<App.Global.FormRule[]>([createRequiredRule($t('form
 
 // 依當前 7 個密碼政策鍵組 naive rule（number 鍵 parseInt、bool 鍵 === 'on'）；
 // 訊息統一用「不符合密碼複雜度政策」（避免新增 i18n 鍵）；後端 validate_password_complexity 為權威把關。
-function buildPolicyRules(settings: Api.SystemManage.SystemSetting[]): App.Global.FormRule[] {
+function buildPolicyRules(settings: Api.UserCenter.PasswordPolicyItem[]): App.Global.FormRule[] {
   const map = new Map(settings.map(s => [s.settingKey, s.settingValue]));
   const num = (key: string) => {
     const parsed = Number.parseInt(map.get(key) ?? '', 10);
@@ -50,7 +49,9 @@ const rules = computed(() => ({
 }));
 
 async function loadPolicyRules() {
-  const { data, error } = await fetchGetSystemSettings();
+  // 讀 auth-only /userCenter/getPasswordPolicy（任一登入者可讀、僅 7 個政策 KV）；
+  // 刻意不讀 super-only /systemManage/getSystemSettings（非-super 會撞 403 toast＋政策靜默退化）。
+  const { data, error } = await fetchGetPasswordPolicy();
   if (!error && data) {
     newPasswordRules.value = buildPolicyRules(data);
   }

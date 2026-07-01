@@ -19,6 +19,14 @@ export function fetchUpdateProfile(model: Api.UserCenter.UpdateProfileReq) {
   });
 }
 
+/** 讀密碼政策（auth-only、任一登入者可讀、僅 7 個 password_* KV；改密頁即時提示用、避 super-only getSystemSettings 的 403） */
+export function fetchGetPasswordPolicy() {
+  return request<Api.UserCenter.PasswordPolicyItem[]>({
+    url: '/userCenter/getPasswordPolicy',
+    method: 'get'
+  });
+}
+
 /** 改自己密碼（auth-only、舊密 verify → 套 024 政策 → hash → 窄寫 password） */
 export function fetchChangePassword(model: Api.UserCenter.ChangePwdReq) {
   return request<null>({

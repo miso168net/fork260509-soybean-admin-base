@@ -29,6 +29,12 @@ declare namespace Api {
       confirmPassword: string;
     }
 
+    /** GET /userCenter/getPasswordPolicy 回（單一密碼政策 KV；改密頁提示用、僅 7 個 password_* 鍵） */
+    interface PasswordPolicyItem {
+      settingKey: string;
+      settingValue: string;
+    }
+
     /**
      * 個人中心前端 canonical model（index.vue 持、3 卡共綁；US1）。
      * nick/phone/email coalesce '' 便於 NInput 綁定（消 null type-lie）；userGender number（對齊 i16 wire）。
