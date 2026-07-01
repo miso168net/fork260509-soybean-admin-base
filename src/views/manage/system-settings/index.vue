@@ -58,7 +58,8 @@ onMounted(getSettings);
 </script>
 
 <template>
-  <div class="min-h-500px flex-col-stretch gap-16px overflow-hidden lt-sm:overflow-auto">
+  <!-- [rev3-fix] 卡片列表頁：去 table 頁模板的 overflow-hidden（此頁無內部滾動區、政策項變多會被裁），改讓 layout main 滾（對齊 example pro-naive 內容頁做法） -->
+  <div class="flex-col-stretch gap-16px">
     <NCard :title="$t('page.manage.systemSettings.title')" :bordered="false" size="small" class="card-wrapper">
       <NSpin :show="loading">
         <NEmpty v-if="!loading && settings.length === 0" class="py-32px" />
