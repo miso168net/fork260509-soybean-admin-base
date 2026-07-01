@@ -1,10 +1,10 @@
 // [rev3-inline 025-user-center ADAPT ★] 個人中心 self-service DTO 型（新 namespace Api.UserCenter；declaration-merge）
 // fork-delta：add-only 新檔；不改既有 typings。3 端點 wire：getProfile/updateProfile/changePassword。
 // ★ 3 端型對齊：rust serde camelCase ↔ 此 typings ↔ component state。
-// ★ U0 GetProfileRes 只 6 欄（createdAt/createdBy/adminUpdatedAt 由 US3 擴）。
+// ★ GetProfileRes ＝ US1 子集 6 欄 ＋ US3 created/updated 語意 3 欄（createdAt/createdBy/adminUpdatedAt）。
 declare namespace Api {
   namespace UserCenter {
-    /** GET /userCenter/getProfile 回（U0 子集 6 欄；created/updated 由 US3 擴） */
+    /** GET /userCenter/getProfile 回（US1 子集 6 欄 ＋ US3 created/updated 語意 3 欄） */
     interface GetProfileRes {
       userName: string;
       roles: string[];
@@ -12,6 +12,12 @@ declare namespace Api {
       nickName?: string | null;
       userPhone?: string | null;
       userEmail?: string | null;
+      /** 建立時間（rfc3339）；always 回 */
+      createdAt: string;
+      /** 建立來源語意類別（不洩露 operator 身分） */
+      createdBy: 'system' | 'self' | 'admin';
+      /** 管理員更新時間（rfc3339）；本人更新/未更新→null（前端隱藏更新列） */
+      adminUpdatedAt?: string | null;
     }
 
     /** POST /userCenter/updateProfile 收（各卡保存共用、送全 model；不含 user_name/roles/password/status） */
@@ -46,6 +52,10 @@ declare namespace Api {
       nickName: string | null;
       userPhone: string | null;
       userEmail: string | null;
+      /** US3 唯讀顯示欄（basic-info-card 資訊列用；**不**納入 updateProfile 送出） */
+      createdAt: string;
+      createdBy: 'system' | 'self' | 'admin';
+      adminUpdatedAt: string | null;
     }
   }
 }

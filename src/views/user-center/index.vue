@@ -16,7 +16,11 @@ const model = reactive<Api.UserCenter.ProfileModel>({
   userGender: null,
   nickName: '',
   userPhone: '',
-  userEmail: ''
+  userEmail: '',
+  // US3 唯讀顯示欄（不納入 handleSave 送出）
+  createdAt: '',
+  createdBy: 'system',
+  adminUpdatedAt: null
 });
 
 async function getProfile() {
@@ -28,6 +32,9 @@ async function getProfile() {
     model.nickName = data.nickName ?? '';
     model.userPhone = data.userPhone ?? '';
     model.userEmail = data.userEmail ?? '';
+    model.createdAt = data.createdAt;
+    model.createdBy = data.createdBy;
+    model.adminUpdatedAt = data.adminUpdatedAt ?? null;
   }
 }
 
