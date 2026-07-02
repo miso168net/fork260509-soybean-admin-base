@@ -1,6 +1,6 @@
 <!-- [rev3-inline 025-user-center ★MODAL-WIRING(g)] 修改密码塊：验证方式 radio（旧密码 default 真改密／邮箱・手机验证码 純佔位）＋新/确认密码；header 保存＝旧密码路徑改密、其餘 toast 建置中 -->
 <script setup lang="ts">
-import { computed, onMounted, reactive, ref, toRef } from 'vue';
+import { computed, onMounted, reactive, ref, toRef, watch } from 'vue';
 import { fetchChangePassword, fetchGetPasswordPolicy } from '@/service/api/rev3-user-center';
 import { useFormRules, useNaiveForm } from '@/hooks/common/form';
 import { $t } from '@/locales';
@@ -17,6 +17,12 @@ const model = reactive({
   credential: '',
   newPassword: '',
   confirmPassword: ''
+});
+
+// ★ 切換验证方式即清空回填框：credential 的 :type 隨方式翻 password↔text，
+//   不清空會讓已輸入的舊密碼在切到驗證碼模式時明文顯示（shoulder-surfing）。
+watch(verifyMethod, () => {
+  model.credential = '';
 });
 
 // 前方輸入框的 placeholder＝當前驗證方式（回填提示）
