@@ -1,4 +1,4 @@
-// [rev3-inline 025-user-center ★] 個人中心 self-service wrapper（3 auth-only 端點）
+// [rev3-inline 025-user-center ★] 個人中心 self-service wrapper（4 auth-only 端點）
 // fork-delta：view 走直接路徑 import（不經 barrel src/service/api/index.ts、避免 vite stale-export）
 import { request } from '../request';
 
@@ -10,7 +10,7 @@ export function fetchGetProfile() {
   });
 }
 
-/** 改自己 gender/nick/phone/email（auth-only、不信 body id、各卡保存共用送全 model） */
+/** 改自己 gender/nick/phone/email（auth-only、不信 body id、部分更新：各區塊保存只送自己欄位、未帶欄不動） */
 export function fetchUpdateProfile(model: Api.UserCenter.UpdateProfileReq) {
   return request<null>({
     url: '/userCenter/updateProfile',

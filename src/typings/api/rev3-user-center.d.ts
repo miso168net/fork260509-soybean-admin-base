@@ -1,5 +1,5 @@
 // [rev3-inline 025-user-center ADAPT ★] 個人中心 self-service DTO 型（新 namespace Api.UserCenter；declaration-merge）
-// fork-delta：add-only 新檔；不改既有 typings。3 端點 wire：getProfile/updateProfile/changePassword。
+// fork-delta：add-only 新檔；不改既有 typings。4 端點 wire：getProfile/getPasswordPolicy/updateProfile/changePassword。
 // ★ 3 端型對齊：rust serde camelCase ↔ 此 typings ↔ component state。
 // ★ GetProfileRes ＝ profile 子集 ＋ createdAt/createdBy ＋ updatedAt/updatedBy（建立/修改來源語意 system/self/admin、不洩 operator）。
 declare namespace Api {

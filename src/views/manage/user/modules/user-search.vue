@@ -40,6 +40,8 @@ function resetModel() {
 async function reset() {
   await restoreValidation();
   resetModel();
+  // [rev3-inline REVIEW-20260702 F-4] 重置後立即重查（對齊全站「清空＋重查」慣例；upstream 原樣僅清表單）
+  emit('search');
 }
 
 async function search() {

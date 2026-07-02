@@ -23,6 +23,12 @@ function resetModel() {
   Object.assign(model.value, defaultModel);
 }
 
+// [rev3-inline REVIEW-20260702 F-4] 重置後立即重查（對齊全站「清空＋重查」慣例；upstream 原樣僅清表單）
+function reset() {
+  resetModel();
+  emit('search');
+}
+
 function search() {
   emit('search');
 }
@@ -50,7 +56,7 @@ function search() {
             </NFormItemGi>
             <NFormItemGi span="24 s:12 m:6">
               <NSpace class="w-full" justify="end">
-                <NButton @click="resetModel">
+                <NButton @click="reset">
                   <template #icon>
                     <icon-ic-round-refresh class="text-icon" />
                   </template>
