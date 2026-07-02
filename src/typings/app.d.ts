@@ -1074,14 +1074,15 @@ declare namespace App {
           save: string;
           createdAt: string;
           updatedAt: string;
+          notModified: string;
           oldPassword: string;
           newPassword: string;
           confirmPassword: string;
           changePwdBtn: string;
           origin: {
-            system: string;
+            systemCreated: string;
             adminCreated: string;
-            selfCreated: string;
+            systemUpdated: string;
             adminUpdated: string;
           };
           verify: {
@@ -1089,6 +1090,9 @@ declare namespace App {
             codePlaceholder: string;
             verify: string;
             comingSoon: string;
+            emailCode: string;
+            phoneCode: string;
+            backfillHint: string;
           };
         };
       };

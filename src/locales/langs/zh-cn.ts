@@ -834,22 +834,26 @@ const local: App.I18n.Schema = {
       userEmail: '邮箱',
       save: '保存',
       createdAt: '创建时间',
-      updatedAt: '更新时间',
+      updatedAt: '修改时间',
+      notModified: '未修改',
       oldPassword: '旧密码',
       newPassword: '新密码',
       confirmPassword: '确认新密码',
       changePwdBtn: '修改密码',
       origin: {
-        system: '系统创建',
-        adminCreated: '由管理员创建',
-        selfCreated: '本人创建',
-        adminUpdated: '由管理员更新'
+        systemCreated: '系统创建',
+        adminCreated: '管理员创建',
+        systemUpdated: '系统修改',
+        adminUpdated: '管理员修改'
       },
       verify: {
         sendCode: '发送验证码',
         codePlaceholder: '验证码',
         verify: '验证',
-        comingSoon: '功能建置中'
+        comingSoon: '功能建置中',
+        emailCode: '邮箱验证码',
+        phoneCode: '手机验证码',
+        backfillHint: '回填前方输入框'
       }
     }
   },

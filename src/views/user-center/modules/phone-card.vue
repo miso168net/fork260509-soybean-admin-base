@@ -1,18 +1,18 @@
-<!-- [rev3-inline 025-user-center ★MODAL-WIRING(g)] 手机号卡（US1：userPhone input＋保存〔patternRules.phone〕；US4 加驗證入口預留控件） -->
+<!-- [rev3-inline 025-user-center ★MODAL-WIRING(g)] 手机号塊：手机号 input（col1、patternRules.phone）＋預留驗證控件（col2、純佔位）；header 保存只送 userPhone（部分更新） -->
 <script setup lang="ts">
 import { ref } from 'vue';
 import { useFormRules, useNaiveForm } from '@/hooks/common/form';
 import { $t } from '@/locales';
 
 interface Props {
-  /** 個人中心 canonical model（index.vue 持、共綁；本卡編 userPhone） */
+  /** 個人中心 canonical model（index.vue 持；本塊編 userPhone） */
   model: Api.UserCenter.ProfileModel;
 }
 
 defineProps<Props>();
 
 interface Emits {
-  /** 觸發共用 handleSave（送全 model） */
+  /** 觸發 index.vue savePhone（部分更新：只送 userPhone） */
   (e: 'save'): void;
 }
 
@@ -41,21 +41,27 @@ function handleComingSoon() {
 
 <template>
   <NCard :title="$t('page.userCenter.phoneTitle')" :bordered="false" size="small" segmented class="card-wrapper">
-    <NForm ref="formRef" :model="model" :rules="rules" label-placement="left" :label-width="80">
-      <NFormItem :label="$t('page.userCenter.userPhone')" path="userPhone">
-        <NInput v-model:value="model.userPhone" />
-      </NFormItem>
-      <!-- [rev3-inline 025-user-center ★] US4 驗證入口預留（發送驗證碼／驗證碼／驗證；純佔位、不接後端） -->
-      <NFormItem>
-        <NInputGroup>
-          <NButton @click="handleComingSoon">{{ $t('page.userCenter.verify.sendCode') }}</NButton>
-          <NInput v-model:value="verifyCode" :placeholder="$t('page.userCenter.verify.codePlaceholder')" />
-          <NButton type="primary" @click="handleComingSoon">{{ $t('page.userCenter.verify.verify') }}</NButton>
-        </NInputGroup>
-      </NFormItem>
-      <NFormItem>
-        <NButton type="primary" @click="handleSave">{{ $t('page.userCenter.save') }}</NButton>
-      </NFormItem>
+    <template #header-extra>
+      <NButton type="primary" size="small" @click="handleSave">{{ $t('page.userCenter.save') }}</NButton>
+    </template>
+    <NForm ref="formRef" :model="model" :rules="rules" label-placement="left" :label-width="76">
+      <NGrid cols="1 s:2" responsive="screen" :x-gap="24">
+        <NGi>
+          <NFormItem :label="$t('page.userCenter.userPhone')" path="userPhone">
+            <NInput v-model:value="model.userPhone" />
+          </NFormItem>
+        </NGi>
+        <NGi>
+          <!-- [rev3-inline 025-user-center ★] US4 驗證入口預留（發送驗證碼／驗證碼／驗證；純佔位、不接後端） -->
+          <NFormItem>
+            <NInputGroup>
+              <NButton @click="handleComingSoon">{{ $t('page.userCenter.verify.sendCode') }}</NButton>
+              <NInput v-model:value="verifyCode" :placeholder="$t('page.userCenter.verify.codePlaceholder')" />
+              <NButton type="primary" @click="handleComingSoon">{{ $t('page.userCenter.verify.verify') }}</NButton>
+            </NInputGroup>
+          </NFormItem>
+        </NGi>
+      </NGrid>
     </NForm>
   </NCard>
 </template>

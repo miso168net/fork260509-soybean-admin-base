@@ -839,22 +839,26 @@ const local: App.I18n.Schema = {
       userEmail: 'Email',
       save: 'Save',
       createdAt: 'Created At',
-      updatedAt: 'Updated At',
+      updatedAt: 'Last Modified',
+      notModified: 'Not modified',
       oldPassword: 'Old Password',
       newPassword: 'New Password',
       confirmPassword: 'Confirm New Password',
       changePwdBtn: 'Change Password',
       origin: {
-        system: 'Created by system',
+        systemCreated: 'Created by system',
         adminCreated: 'Created by administrator',
-        selfCreated: 'Created by you',
-        adminUpdated: 'Updated by administrator'
+        systemUpdated: 'Modified by system',
+        adminUpdated: 'Modified by administrator'
       },
       verify: {
         sendCode: 'Send Code',
         codePlaceholder: 'Verification Code',
         verify: 'Verify',
-        comingSoon: 'Coming soon'
+        comingSoon: 'Coming soon',
+        emailCode: 'Email code',
+        phoneCode: 'Phone code',
+        backfillHint: 'fills the input on the left'
       }
     }
   },

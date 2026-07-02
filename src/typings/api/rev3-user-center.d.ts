@@ -1,10 +1,10 @@
 // [rev3-inline 025-user-center ADAPT ★] 個人中心 self-service DTO 型（新 namespace Api.UserCenter；declaration-merge）
 // fork-delta：add-only 新檔；不改既有 typings。3 端點 wire：getProfile/updateProfile/changePassword。
 // ★ 3 端型對齊：rust serde camelCase ↔ 此 typings ↔ component state。
-// ★ GetProfileRes ＝ US1 子集 6 欄 ＋ US3 created/updated 語意 3 欄（createdAt/createdBy/adminUpdatedAt）。
+// ★ GetProfileRes ＝ profile 子集 ＋ createdAt/createdBy（來源語意）＋ updatedAt（最後修改時間、不分本人/管理員）。
 declare namespace Api {
   namespace UserCenter {
-    /** GET /userCenter/getProfile 回（US1 子集 6 欄 ＋ US3 created/updated 語意 3 欄） */
+    /** GET /userCenter/getProfile 回（profile 子集 ＋ 來源語意 ＋ 最後修改時間） */
     interface GetProfileRes {
       userName: string;
       roles: string[];
@@ -16,11 +16,13 @@ declare namespace Api {
       createdAt: string;
       /** 建立來源語意類別（不洩露 operator 身分） */
       createdBy: 'system' | 'self' | 'admin';
-      /** 管理員更新時間（rfc3339）；本人更新/未更新→null（前端隱藏更新列） */
-      adminUpdatedAt?: string | null;
+      /** 最後修改時間（rfc3339）；從未修改→null（前端顯示「未修改」） */
+      updatedAt?: string | null;
+      /** 修改來源語意類別（不洩露 operator 身分；updatedAt 有值時前端才顯示其 origin） */
+      updatedBy: 'system' | 'self' | 'admin';
     }
 
-    /** POST /userCenter/updateProfile 收（各卡保存共用、送全 model；不含 user_name/roles/password/status） */
+    /** POST /userCenter/updateProfile 收（各區塊只送自己欄位、部分更新；不含 user_name/roles/password/status） */
     interface UpdateProfileReq {
       userGender?: number | null;
       nickName?: string | null;
@@ -42,7 +44,7 @@ declare namespace Api {
     }
 
     /**
-     * 個人中心前端 canonical model（index.vue 持、3 卡共綁；US1）。
+     * 個人中心前端 canonical model（index.vue 持、各卡共綁；各區塊只送自己欄位＝部分更新）。
      * nick/phone/email coalesce '' 便於 NInput 綁定（消 null type-lie）；userGender number（對齊 i16 wire）。
      */
     interface ProfileModel {
@@ -52,10 +54,13 @@ declare namespace Api {
       nickName: string | null;
       userPhone: string | null;
       userEmail: string | null;
-      /** US3 唯讀顯示欄（basic-info-card 資訊列用；**不**納入 updateProfile 送出） */
+      /** 唯讀顯示欄（basic-info-card 資訊列用；**不**納入 updateProfile 送出） */
       createdAt: string;
       createdBy: 'system' | 'self' | 'admin';
-      adminUpdatedAt: string | null;
+      /** 最後修改時間；null→前端顯示「未修改」 */
+      updatedAt: string | null;
+      /** 修改來源語意（system/self/admin）；self→無標註、updatedAt null→未修改 */
+      updatedBy: 'system' | 'self' | 'admin';
     }
   }
 }

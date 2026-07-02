@@ -1,15 +1,15 @@
-<!-- [rev3-inline 025-user-center ★MODAL-WIRING(g)] 个人中心 self-service 頁：4 卡容器（基本资料/手机/邮箱/改密码） -->
-<!-- root 用 flex-col-stretch gap-16px（不用 table 模板 overflow-hidden、避免裁溢出、對齊 024 system-settings scroll-fix ⚠️ag） -->
+<!-- [rev3-inline 025-user-center ★MODAL-WIRING(g)] 个人中心 self-service 頁：4 塊（修改密码/邮箱/手机/基本资料） -->
+<!-- 塊狀佈局（segmented NCard、2 欄、參考 system-settings）；各區塊只送自己欄位＝部分更新（後端只 Set 有帶的欄） -->
 <script setup lang="ts">
 import { onMounted, reactive } from 'vue';
 import { fetchGetProfile, fetchUpdateProfile } from '@/service/api/rev3-user-center';
 import { $t } from '@/locales';
-import BasicInfoCard from './modules/basic-info-card.vue';
-import PhoneCard from './modules/phone-card.vue';
-import EmailCard from './modules/email-card.vue';
 import PasswordCard from './modules/password-card.vue';
+import EmailCard from './modules/email-card.vue';
+import PhoneCard from './modules/phone-card.vue';
+import BasicInfoCard from './modules/basic-info-card.vue';
 
-// canonical profile model（單一真相；3 卡共綁；handleSave 一律送全 4 可編欄、不論由哪張卡觸發）
+// canonical profile model（單一真相；各卡共綁；保存時各區塊只送自己欄位）
 const model = reactive<Api.UserCenter.ProfileModel>({
   userName: '',
   roles: [],
@@ -17,10 +17,11 @@ const model = reactive<Api.UserCenter.ProfileModel>({
   nickName: '',
   userPhone: '',
   userEmail: '',
-  // US3 唯讀顯示欄（不納入 handleSave 送出）
+  // 唯讀顯示欄（不納入 updateProfile 送出）
   createdAt: '',
   createdBy: 'system',
-  adminUpdatedAt: null
+  updatedAt: null,
+  updatedBy: 'system'
 });
 
 async function getProfile() {
@@ -34,18 +35,30 @@ async function getProfile() {
     model.userEmail = data.userEmail ?? '';
     model.createdAt = data.createdAt;
     model.createdBy = data.createdBy;
-    model.adminUpdatedAt = data.adminUpdatedAt ?? null;
+    model.updatedAt = data.updatedAt ?? null;
+    model.updatedBy = data.updatedBy;
   }
 }
 
-// 各卡「保存」共用：一律送全 4 可編欄（送全 model；後端只作用於自己、不信 body id）
-async function handleSave() {
-  const { error } = await fetchUpdateProfile({
-    userGender: model.userGender,
-    nickName: model.nickName,
-    userPhone: model.userPhone,
-    userEmail: model.userEmail
-  });
+// 各區塊「保存」只送自己欄位（部分更新；後端只 Set 有帶的欄、未帶者 Unchanged）→ 天然避免跨區塊填錯值被連帶送出。
+async function saveBasic() {
+  const { error } = await fetchUpdateProfile({ userGender: model.userGender, nickName: model.nickName });
+  if (!error) {
+    window.$message?.success($t('common.updateSuccess'));
+    await getProfile();
+  }
+}
+
+async function saveEmail() {
+  const { error } = await fetchUpdateProfile({ userEmail: model.userEmail });
+  if (!error) {
+    window.$message?.success($t('common.updateSuccess'));
+    await getProfile();
+  }
+}
+
+async function savePhone() {
+  const { error } = await fetchUpdateProfile({ userPhone: model.userPhone });
   if (!error) {
     window.$message?.success($t('common.updateSuccess'));
     await getProfile();
@@ -57,10 +70,10 @@ onMounted(getProfile);
 
 <template>
   <div class="flex-col-stretch gap-16px">
-    <BasicInfoCard :model="model" @save="handleSave" />
-    <PhoneCard :model="model" @save="handleSave" />
-    <EmailCard :model="model" @save="handleSave" />
     <PasswordCard />
+    <EmailCard :model="model" @save="saveEmail" />
+    <PhoneCard :model="model" @save="savePhone" />
+    <BasicInfoCard :model="model" @save="saveBasic" />
   </div>
 </template>
 
