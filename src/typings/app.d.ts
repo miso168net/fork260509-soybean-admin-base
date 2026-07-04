@@ -311,6 +311,22 @@ declare namespace App {
     };
 
     type Schema = {
+      // [rev4-inline I18N-WIRING(iii) 004-system-settings START] top-level backend 命名空間型（映射 wire msg → 在地化）
+      backend: {
+        common: {
+          success: string;
+        };
+        biz: {
+          systemSettings: {
+            notFound: string;
+            invalidValue: string;
+          };
+        };
+        system: {
+          forbidden: string;
+        };
+      };
+      // [rev4-inline I18N-WIRING(iii) 004-system-settings END]
       system: {
         title: string;
         updateTitle: string;
@@ -698,6 +714,12 @@ declare namespace App {
           };
         };
         manage: {
+          // [rev4-inline I18N-WIRING(iii) 004-system-settings START] 系統設定頁字串型
+          systemSettings: {
+            passwordPolicyTitle: string;
+            sessionTitle: string;
+          };
+          // [rev4-inline I18N-WIRING(iii) 004-system-settings END]
           common: {
             status: {
               enable: string;

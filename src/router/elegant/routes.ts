@@ -276,6 +276,18 @@ export const generatedRoutes: GeneratedRoute[] = [
         }
       },
       {
+        name: 'manage_system-settings',
+        path: '/manage/system-settings',
+        component: 'view.manage_system-settings',
+        meta: {
+          title: 'manage_system-settings',
+          i18nKey: 'route.manage_system-settings',
+          icon: 'ic:round-settings',
+          order: 4,
+          roles: ['R_SUPER']
+        }
+      },
+      {
         name: 'manage_user',
         path: '/manage/user',
         component: 'view.manage_user',

@@ -1,4 +1,20 @@
 const local: App.I18n.Schema = {
+  // [rev4-inline I18N-WIRING(ii) 004-system-settings START] backend 命名空間（映射 wire msg → 在地化顯示）
+  backend: {
+    common: {
+      success: '操作成功'
+    },
+    biz: {
+      systemSettings: {
+        notFound: '设置项不存在',
+        invalidValue: '设置值无效'
+      }
+    },
+    system: {
+      forbidden: '没有权限执行此操作'
+    }
+  },
+  // [rev4-inline I18N-WIRING(ii) 004-system-settings END]
   system: {
     title: 'Soybean 管理系统',
     updateTitle: '系统版本更新通知',
@@ -265,6 +281,8 @@ const local: App.I18n.Schema = {
     'manage_user-detail': '用户详情',
     manage_role: '角色管理',
     manage_menu: '菜单管理',
+    // [rev4-inline MODAL-WIRING(e) 004-system-settings] gen-route 產出 manage_system-settings route → route locale 型閘門要求補鍵
+    'manage_system-settings': '系统设置',
     'multi-menu': '多级菜单',
     'multi-menu_first': '菜单一',
     'multi-menu_first_child': '菜单一子菜单',
@@ -519,6 +537,12 @@ const local: App.I18n.Schema = {
       }
     },
     manage: {
+      // [rev4-inline I18N-WIRING(ii) 004-system-settings START] 系統設定頁字串
+      systemSettings: {
+        passwordPolicyTitle: '密码策略',
+        sessionTitle: '会话设置'
+      },
+      // [rev4-inline I18N-WIRING(ii) 004-system-settings END]
       common: {
         status: {
           enable: '启用',

@@ -1,4 +1,20 @@
 const local: App.I18n.Schema = {
+  // [rev4-inline I18N-WIRING(ii) 004-system-settings START] backend 命名空間（映射 wire msg → 在地化顯示）
+  backend: {
+    common: {
+      success: 'Operation successful'
+    },
+    biz: {
+      systemSettings: {
+        notFound: 'Setting item not found',
+        invalidValue: 'Invalid setting value'
+      }
+    },
+    system: {
+      forbidden: 'You do not have permission to perform this action'
+    }
+  },
+  // [rev4-inline I18N-WIRING(ii) 004-system-settings END]
   system: {
     title: 'SoybeanAdmin',
     updateTitle: 'System Version Update Notification',
@@ -269,6 +285,8 @@ const local: App.I18n.Schema = {
     'manage_user-detail': 'User Detail',
     manage_role: 'Role Manage',
     manage_menu: 'Menu Manage',
+    // [rev4-inline MODAL-WIRING(e) 004-system-settings] gen-route 產出 manage_system-settings route → route locale 型閘門要求補鍵
+    'manage_system-settings': 'System Settings',
     'multi-menu': 'Multi Menu',
     'multi-menu_first': 'Menu One',
     'multi-menu_first_child': 'Menu One Child',
@@ -523,6 +541,12 @@ const local: App.I18n.Schema = {
       }
     },
     manage: {
+      // [rev4-inline I18N-WIRING(ii) 004-system-settings START] 系統設定頁字串
+      systemSettings: {
+        passwordPolicyTitle: 'Password Policy',
+        sessionTitle: 'Session Settings'
+      },
+      // [rev4-inline I18N-WIRING(ii) 004-system-settings END]
       common: {
         status: {
           enable: 'Enable',
