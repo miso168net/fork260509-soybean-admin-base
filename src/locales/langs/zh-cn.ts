@@ -4,10 +4,26 @@ const local: App.I18n.Schema = {
     common: {
       success: '操作成功'
     },
+    // [rev4-inline I18N-WIRING(ii) 005-auth-login] auth 命名空間（登入失敗／token 逾期／session 重登在地化）
+    auth: {
+      login: {
+        failed: '用户名或密码错误'
+      },
+      token: {
+        expired: '登录已过期'
+      },
+      session: {
+        reLogin: '请重新登录'
+      }
+    },
     biz: {
       systemSettings: {
         notFound: '设置项不存在',
         invalidValue: '设置值无效'
+      },
+      // [rev4-inline I18N-WIRING(ii) 005-auth-login] biz.auth（stub 端點未開放提示）
+      auth: {
+        notSupported: '该功能暂未开放'
       }
     },
     system: {

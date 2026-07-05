@@ -317,10 +317,26 @@ declare namespace App {
         common: {
           success: string;
         };
+        // [rev4-inline I18N-WIRING(iii) 005-auth-login] auth 命名空間型（逐鍵鏡像 locale）
+        auth: {
+          login: {
+            failed: string;
+          };
+          token: {
+            expired: string;
+          };
+          session: {
+            reLogin: string;
+          };
+        };
         biz: {
           systemSettings: {
             notFound: string;
             invalidValue: string;
+          };
+          // [rev4-inline I18N-WIRING(iii) 005-auth-login] biz.auth 型（逐鍵鏡像 locale）
+          auth: {
+            notSupported: string;
           };
         };
         system: {

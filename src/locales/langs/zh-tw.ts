@@ -3,10 +3,24 @@ const local: App.I18n.Schema = {
     common: {
       success: '操作成功'
     },
+    auth: {
+      login: {
+        failed: '使用者名稱或密碼錯誤'
+      },
+      token: {
+        expired: '登入已過期'
+      },
+      session: {
+        reLogin: '請重新登入'
+      }
+    },
     biz: {
       systemSettings: {
         notFound: '設定項不存在',
         invalidValue: '設定值無效'
+      },
+      auth: {
+        notSupported: '該功能暫未開放'
       }
     },
     system: {

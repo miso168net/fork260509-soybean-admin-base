@@ -160,7 +160,8 @@ export const useRouteStore = defineStore(SetupStoreId.Route, () => {
       const { data, error } = await fetchGetConstantRoutes();
 
       if (!error) {
-        addConstantRoutes(data);
+        // [rev4-inline ★AUTH-WIRING(a) 005-auth-login] 原行: addConstantRoutes(data);
+        addConstantRoutes([...staticRoute.constantRoutes, ...data]);
       } else {
         // if fetch constant routes failed, use static constant routes
         addConstantRoutes(staticRoute.constantRoutes);
