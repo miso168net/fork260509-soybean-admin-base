@@ -13,13 +13,53 @@ const numberRanges: Record<string, { min?: number; max?: number }> = {
   password_max_length: { min: 1, max: 256 }
 };
 
-/** 依 settingKey 前綴分區：password_* → 密碼策略、其餘 → 會話設定（空區塊自動略過、保 server 回傳順序） */
+/** 密碼策略區顯示順序（固定、語意由弱到強；覆蓋 server 字母序）。未列 password_* 鍵排最後、保 server 相對序。 */
+const PASSWORD_KEY_ORDER = [
+  'password_min_length',
+  'password_max_length',
+  'password_require_lowercase',
+  'password_require_uppercase',
+  'password_require_digit',
+  'password_require_special',
+  'password_forbid_username'
+];
+
+/** settingKey → i18n label 鍵（typed literal、typecheck 驗每鍵存在）。未映射鍵 fallback item.description || settingKey。 */
+const labelKeyMap: Record<string, App.I18n.I18nKey> = {
+  password_min_length: 'page.manage.systemSettings.items.passwordMinLength',
+  password_max_length: 'page.manage.systemSettings.items.passwordMaxLength',
+  password_require_lowercase: 'page.manage.systemSettings.items.passwordRequireLowercase',
+  password_require_uppercase: 'page.manage.systemSettings.items.passwordRequireUppercase',
+  password_require_digit: 'page.manage.systemSettings.items.passwordRequireDigit',
+  password_require_special: 'page.manage.systemSettings.items.passwordRequireSpecial',
+  password_forbid_username: 'page.manage.systemSettings.items.passwordForbidUsername',
+  single_session_default: 'page.manage.systemSettings.items.singleSessionDefault'
+};
+
+function labelOf(item: Api.SystemManage.SystemSetting) {
+  const key = labelKeyMap[item.settingKey];
+  return key ? $t(key) : item.description || item.settingKey;
+}
+
+/** 依固定順序穩定排序：未列鍵 rank＝order.length、排最後並保 server 相對序（Array.sort ES2019 起穩定）。不 mutate 入參。 */
+function sortByFixedOrder(items: Api.SystemManage.SystemSetting[], order: string[]) {
+  const rankOf = (key: string) => {
+    const idx = order.indexOf(key);
+    return idx === -1 ? order.length : idx;
+  };
+  return items.slice().sort((a, b) => rankOf(a.settingKey) - rankOf(b.settingKey));
+}
+
+/** 依 settingKey 前綴分區：password_* → 密碼策略（固定序）、其餘 → 會話設定（保 server 回傳順序）。空區塊自動略過。 */
 const groups = computed(() => {
   const isPassword = (key: string) => key.startsWith('password_');
   const result: Array<{ titleKey: App.I18n.I18nKey; items: Api.SystemManage.SystemSetting[] }> = [
     {
       titleKey: 'page.manage.systemSettings.passwordPolicyTitle',
-      items: settings.value.filter(s => isPassword(s.settingKey))
+      items: sortByFixedOrder(
+        settings.value.filter(s => isPassword(s.settingKey)),
+        PASSWORD_KEY_ORDER
+      )
     },
     {
       titleKey: 'page.manage.systemSettings.sessionTitle',
@@ -97,7 +137,10 @@ onMounted(getSettings);
           <NGrid cols="1 s:2" :x-gap="24" :y-gap="16" responsive="screen">
             <NGi v-for="item in group.items" :key="item.settingKey">
               <div class="flex items-center justify-between gap-12px">
-                <span class="text-14px">{{ item.description || item.settingKey }}</span>
+                <div class="flex items-center gap-4px">
+                  <span class="text-14px">{{ labelOf(item) }}</span>
+                  <IconTooltip v-if="item.description" :desc="item.description" />
+                </div>
                 <template v-if="parseEnumValues(item.settingType)">
                   <NSwitch
                     :value="item.settingValue === parseEnumValues(item.settingType)![0]"

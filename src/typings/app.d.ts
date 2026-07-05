@@ -715,10 +715,20 @@ declare namespace App {
           };
         };
         manage: {
-          // [rev4-inline I18N-WIRING(iii) 004-system-settings START] 系統設定頁字串型
+          // [rev4-inline I18N-WIRING(iii) 004-system-settings START] 系統設定頁字串型（items＝per-key label、單元⑧延伸）
           systemSettings: {
             passwordPolicyTitle: string;
             sessionTitle: string;
+            items: {
+              passwordMinLength: string;
+              passwordMaxLength: string;
+              passwordRequireLowercase: string;
+              passwordRequireUppercase: string;
+              passwordRequireDigit: string;
+              passwordRequireSpecial: string;
+              passwordForbidUsername: string;
+              singleSessionDefault: string;
+            };
           };
           // [rev4-inline I18N-WIRING(iii) 004-system-settings END]
           common: {

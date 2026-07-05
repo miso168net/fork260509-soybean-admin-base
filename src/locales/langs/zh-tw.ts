@@ -536,7 +536,17 @@ const local: App.I18n.Schema = {
     manage: {
       systemSettings: {
         passwordPolicyTitle: '密碼策略',
-        sessionTitle: '工作階段設定'
+        sessionTitle: '工作階段設定',
+        items: {
+          passwordMinLength: '密碼最小長度',
+          passwordMaxLength: '密碼最大長度',
+          passwordRequireLowercase: '需含小寫字母',
+          passwordRequireUppercase: '需含大寫字母',
+          passwordRequireDigit: '需含數字',
+          passwordRequireSpecial: '需含特殊符號',
+          passwordForbidUsername: '禁止密碼與帳號相同',
+          singleSessionDefault: '單一工作階段（全站）'
+        }
       },
       common: {
         status: {

@@ -540,7 +540,17 @@ const local: App.I18n.Schema = {
       // [rev4-inline I18N-WIRING(ii) 004-system-settings START] 系統設定頁字串
       systemSettings: {
         passwordPolicyTitle: '密码策略',
-        sessionTitle: '会话设置'
+        sessionTitle: '会话设置',
+        items: {
+          passwordMinLength: '密码最小长度',
+          passwordMaxLength: '密码最大长度',
+          passwordRequireLowercase: '需含小写字母',
+          passwordRequireUppercase: '需含大写字母',
+          passwordRequireDigit: '需含数字',
+          passwordRequireSpecial: '需含特殊符号',
+          passwordForbidUsername: '禁止密码与账号相同',
+          singleSessionDefault: '单一工作会话（全站）'
+        }
       },
       // [rev4-inline I18N-WIRING(ii) 004-system-settings END]
       common: {

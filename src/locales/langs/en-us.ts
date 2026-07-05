@@ -544,7 +544,17 @@ const local: App.I18n.Schema = {
       // [rev4-inline I18N-WIRING(ii) 004-system-settings START] 系統設定頁字串
       systemSettings: {
         passwordPolicyTitle: 'Password Policy',
-        sessionTitle: 'Session Settings'
+        sessionTitle: 'Session Settings',
+        items: {
+          passwordMinLength: 'Minimum password length',
+          passwordMaxLength: 'Maximum password length',
+          passwordRequireLowercase: 'Require lowercase letter',
+          passwordRequireUppercase: 'Require uppercase letter',
+          passwordRequireDigit: 'Require digit',
+          passwordRequireSpecial: 'Require special character',
+          passwordForbidUsername: 'Forbid password same as username',
+          singleSessionDefault: 'Single session (global)'
+        }
       },
       // [rev4-inline I18N-WIRING(ii) 004-system-settings END]
       common: {
