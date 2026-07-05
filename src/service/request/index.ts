@@ -68,7 +68,7 @@ export const request = createFlatRequest(
 
         window.$dialog?.error({
           title: $t('common.error'),
-          // [rev4-inline I18N-WIRING(i) 004-system-settings] wire msg → $t(backend.*) 譯顯示；不碰碼分組/retry，missing 回退原 msg
+          // [rev4-inline I18N-WIRING(i) 004-system-settings] 原行: content: response.data.msg,
           content: $t(`backend.${response.data.msg}` as App.I18n.I18nKey, response.data.msg),
           positiveText: $t('common.confirm'),
           maskClosable: false,
@@ -107,7 +107,7 @@ export const request = createFlatRequest(
 
       // get backend error message and code
       if (error.code === BACKEND_ERROR_CODE) {
-        // [rev4-inline I18N-WIRING(i) 004-system-settings] wire msg → $t(backend.*) 譯顯示；保留原 `|| message` 回退語意，missing 回退原 msg
+        // [rev4-inline I18N-WIRING(i) 004-system-settings] 原行: message = error.response?.data?.msg || message;
         const backendMsg = error.response?.data?.msg;
         message = backendMsg ? $t(`backend.${backendMsg}` as App.I18n.I18nKey, backendMsg) : message;
         backendErrorCode = String(error.response?.data?.code || '');

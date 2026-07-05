@@ -4,7 +4,7 @@ import { localStg } from '@/utils/storage';
 import messages from './locale';
 
 const i18n = createI18n({
-  // [rev4-inline I18N-WIRING(iv) 004-system-settings] 預設 locale zh-CN→zh-TW（ADR 0028 primary＝zh-TW）
+  // [rev4-inline I18N-WIRING(iv) 004-system-settings] 原行: locale: localStg.get('lang') || 'zh-CN',
   locale: localStg.get('lang') || 'zh-TW',
   fallbackLocale: 'en',
   messages,

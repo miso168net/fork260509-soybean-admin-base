@@ -296,7 +296,7 @@ declare namespace App {
   namespace I18n {
     type RouteKey = import('@elegant-router/types').RouteKey;
 
-    // [rev4-inline I18N-WIRING(iv) 004-system-settings] LangType 加 'zh-TW'（ADR 0028；ripple：所有 Record<LangType,X> 須補 zh-TW）
+    // [rev4-inline I18N-WIRING(iv) 004-system-settings] 原行: type LangType = 'en-US' | 'zh-CN';
     type LangType = 'en-US' | 'zh-CN' | 'zh-TW';
 
     type LangOption = {

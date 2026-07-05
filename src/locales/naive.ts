@@ -1,4 +1,4 @@
-// [rev4-inline I18N-WIRING(iv) 004-system-settings] 引入 naive-ui zhTW/dateZhTW（ADR 0028）
+// [rev4-inline I18N-WIRING(iv) 004-system-settings] 原行: import { dateEnUS, dateZhCN, enUS, zhCN } from 'naive-ui';
 import { dateEnUS, dateZhCN, dateZhTW, enUS, zhCN, zhTW } from 'naive-ui';
 import type { NDateLocale, NLocale } from 'naive-ui';
 

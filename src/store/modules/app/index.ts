@@ -49,12 +49,12 @@ export const useAppStore = defineStore(SetupStoreId.App, () => {
     routeStore.resetRouteCache();
   }
 
-  // [rev4-inline I18N-WIRING(iv) 004-system-settings] 預設 locale zh-CN→zh-TW（ADR 0028 primary＝zh-TW）
+  // [rev4-inline I18N-WIRING(iv) 004-system-settings] 原行: const locale = ref<App.I18n.LangType>(localStg.get('lang') || 'zh-CN');
   const locale = ref<App.I18n.LangType>(localStg.get('lang') || 'zh-TW');
 
   const localeOptions: App.I18n.LangOption[] = [
     {
-      // [rev4-inline I18N-WIRING(iv) 004-system-settings] 語言選單三語 簡/繁/English：zh-CN 標籤明確為簡體中文
+      // [rev4-inline I18N-WIRING(iv) 004-system-settings] 原行: label: '中文',
       label: '简体中文',
       key: 'zh-CN'
     },
