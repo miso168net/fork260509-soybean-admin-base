@@ -2,6 +2,7 @@
 import { computed, reactive } from 'vue';
 import { useRouterPush } from '@/hooks/common/router';
 import { useFormRules, useNaiveForm } from '@/hooks/common/form';
+import { fetchResetPwd } from '@/service/api/rev4-auth-stub';
 import { $t } from '@/locales';
 
 defineOptions({
@@ -40,7 +41,8 @@ const rules = computed<RuleRecord>(() => {
 async function handleSubmit() {
   await validate();
   // request to reset password
-  window.$message?.success($t('page.login.common.validateSuccess'));
+  // [rev4-inline ★AUTH-WIRING(b) 005-auth-login] 原行: window.$message?.success($t('page.login.common.validateSuccess'));
+  await fetchResetPwd(model);
 }
 </script>
 

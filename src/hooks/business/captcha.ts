@@ -1,6 +1,7 @@
 import { computed } from 'vue';
 import { useCountDown, useLoading } from '@sa/hooks';
 import { REG_PHONE } from '@/constants/reg';
+import { fetchSendCaptcha } from '@/service/api/rev4-auth-stub';
 import { $t } from '@/locales';
 
 export function useCaptcha() {
@@ -49,13 +50,15 @@ export function useCaptcha() {
     startLoading();
 
     // request
-    await new Promise(resolve => {
-      setTimeout(resolve, 500);
-    });
+    // [rev4-inline ★AUTH-WIRING(c) 005-auth-login] 原行: await new Promise(resolve => {
+    // [rev4-inline ★AUTH-WIRING(c) 005-auth-login] 原行: setTimeout(resolve, 500);
+    // [rev4-inline ★AUTH-WIRING(c) 005-auth-login] 原行: window.$message?.success?.($t('page.login.codeLogin.sendCodeSuccess'));
+    const { error } = await fetchSendCaptcha({ phone });
 
-    window.$message?.success?.($t('page.login.codeLogin.sendCodeSuccess'));
-
-    start();
+    // ★成功才啟動倒數；stub 恆回 2222（error 非空）→ 不啟動、toast 由攔截器 onError 自動顯示。
+    if (!error) {
+      start();
+    }
 
     endLoading();
   }
