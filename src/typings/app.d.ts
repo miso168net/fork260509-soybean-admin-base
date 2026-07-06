@@ -327,6 +327,7 @@ declare namespace App {
           };
           session: {
             reLogin: string;
+            kicked: string;
           };
         };
         biz: {

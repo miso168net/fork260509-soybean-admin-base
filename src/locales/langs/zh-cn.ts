@@ -13,7 +13,8 @@ const local: App.I18n.Schema = {
         expired: '登录已过期'
       },
       session: {
-        reLogin: '请重新登录'
+        reLogin: '请重新登录',
+        kicked: '您的账号已在他处登录'
       }
     },
     biz: {

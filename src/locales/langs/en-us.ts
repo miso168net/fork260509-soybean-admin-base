@@ -13,7 +13,8 @@ const local: App.I18n.Schema = {
         expired: 'Login expired'
       },
       session: {
-        reLogin: 'Please log in again'
+        reLogin: 'Please log in again',
+        kicked: 'Your account is logged in on another device'
       }
     },
     biz: {
