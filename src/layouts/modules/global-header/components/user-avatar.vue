@@ -4,6 +4,8 @@ import type { VNode } from 'vue';
 import { useAuthStore } from '@/store/modules/auth';
 import { useRouterPush } from '@/hooks/common/router';
 import { useSvgIcon } from '@/hooks/common/icon';
+import { localStg } from '@/utils/storage';
+import { fetchLogout } from '@/service/api/rev4-session-logout';
 import { $t } from '@/locales';
 
 defineOptions({
@@ -58,7 +60,15 @@ function logout() {
     content: $t('common.logoutConfirm'),
     positiveText: $t('common.confirm'),
     negativeText: $t('common.cancel'),
-    onPositiveClick: () => {
+    // [rev4-inline ★BASE-WEB-LOGOUT-UX-WIRING(i) 006-session-lifecycle] 原行: onPositiveClick: () => {
+    onPositiveClick: async () => {
+      // 先 await fetchLogout（帶 refreshToken）通知後端撤銷工作階段；失敗吞掉、不阻本地登出
+      try {
+        await fetchLogout(localStg.get('refreshToken') || '');
+      } catch {
+        // 後端 logout 失敗：仍 resetStore 清本地、完成登出
+      }
+      // [rev4-inline ★BASE-WEB-LOGOUT-UX-WIRING(i) 006-session-lifecycle] 原行: authStore.resetStore();
       authStore.resetStore();
     }
   });

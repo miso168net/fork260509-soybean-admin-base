@@ -54,6 +54,9 @@ export const request = createFlatRequest(
       // when the backend response code is in `logoutCodes`, it means the user will be logged out and redirected to login page
       const logoutCodes = import.meta.env.VITE_SERVICE_LOGOUT_CODES?.split(',') || [];
       if (logoutCodes.includes(responseCode)) {
+        // [rev4-inline ★BASE-WEB-LOGOUT-UX-WIRING(ii) 006-session-lifecycle] 原行: handleLogout();
+        // 閒置過期：handleLogout() 為靜默 resetStore，前插輕量 toast「請重新登入」提示後再登出
+        window.$message?.info($t('backend.auth.session.reLogin'));
         handleLogout();
         return null;
       }
