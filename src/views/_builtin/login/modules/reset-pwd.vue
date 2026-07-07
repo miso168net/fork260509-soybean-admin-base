@@ -2,6 +2,7 @@
 import { computed, reactive } from 'vue';
 import { useRouterPush } from '@/hooks/common/router';
 import { useFormRules, useNaiveForm } from '@/hooks/common/form';
+// [rev4-inline ★AUTH-WIRING(b) 005-auth-login] alt-login stub wrapper（reset-pwd 真打後端 stub）import
 import { fetchResetPwd } from '@/service/api/rev4-auth-stub';
 import { $t } from '@/locales';
 

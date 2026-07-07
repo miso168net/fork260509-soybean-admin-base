@@ -3,6 +3,7 @@ import { computed, reactive } from 'vue';
 import { useRouterPush } from '@/hooks/common/router';
 import { useFormRules, useNaiveForm } from '@/hooks/common/form';
 import { useCaptcha } from '@/hooks/business/captcha';
+// [rev4-inline ★AUTH-WIRING(b) 005-auth-login] alt-login stub wrapper（register 真打後端 stub）import
 import { fetchRegister } from '@/service/api/rev4-auth-stub';
 import { $t } from '@/locales';
 

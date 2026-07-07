@@ -1,6 +1,7 @@
 import { computed } from 'vue';
 import { useCountDown, useLoading } from '@sa/hooks';
 import { REG_PHONE } from '@/constants/reg';
+// [rev4-inline ★AUTH-WIRING(c) 005-auth-login] captcha stub wrapper（sendCaptcha 真打後端 stub）import
 import { fetchSendCaptcha } from '@/service/api/rev4-auth-stub';
 import { $t } from '@/locales';
 

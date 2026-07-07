@@ -4,6 +4,7 @@ import type { VNode } from 'vue';
 import { useAuthStore } from '@/store/modules/auth';
 import { useRouterPush } from '@/hooks/common/router';
 import { useSvgIcon } from '@/hooks/common/icon';
+// [rev4-inline ★BASE-WEB-LOGOUT-UX-WIRING(i) 006-session-lifecycle] logout wiring import（localStg 讀 refresh 憑證＋fetchLogout WRAPPER）
 import { localStg } from '@/utils/storage';
 import { fetchLogout } from '@/service/api/rev4-session-logout';
 import { $t } from '@/locales';
