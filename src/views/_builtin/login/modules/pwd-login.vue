@@ -1,9 +1,12 @@
 <script setup lang="ts">
-import { computed, reactive } from 'vue';
+// [rev4-inline ★BASE-WEB-LOGIN-CAPTCHA-WIRING(i) 007-login-throttle] 原行: import { computed, reactive } from 'vue';
+import { computed, reactive, ref, watch } from 'vue';
 import { loginModuleRecord } from '@/constants/app';
 import { useAuthStore } from '@/store/modules/auth';
 import { useRouterPush } from '@/hooks/common/router';
 import { useFormRules, useNaiveForm } from '@/hooks/common/form';
+// [rev4-inline ★BASE-WEB-LOGIN-CAPTCHA-WIRING(i) 007-login-throttle] 取題 wrapper（直接路徑 import、避 barrel stale-export）
+import { fetchLoginCaptcha } from '@/service/api/rev4-login-captcha';
 import { $t } from '@/locales';
 
 defineOptions({
@@ -34,9 +37,48 @@ const rules = computed<Record<keyof FormModel, App.Global.FormRule[]>>(() => {
   };
 });
 
+// [rev4-inline ★BASE-WEB-LOGIN-CAPTCHA-WIRING(i) 007-login-throttle START] CAPTCHA 軟區狀態＋取題（ADR 0040 一用途 (i)）
+const captchaVisible = ref(false);
+const captchaId = ref('');
+const captchaCode = ref('');
+const captchaImg = ref('');
+
+/** 取（換）題：challenge 綁定帳號名；換題即清空舊輸入（舊題已失效） */
+async function refreshCaptcha() {
+  const { data } = await fetchLoginCaptcha(model.userName);
+  if (data) {
+    captchaId.value = data.captchaId;
+    captchaImg.value = data.captchaImg;
+    captchaCode.value = '';
+  }
+}
+
+// 帳號名變更→重取題（challenge 綁定帳號名，跨帳號呈遞必拒——spec US2 場景 5）
+watch(
+  () => model.userName,
+  () => {
+    if (captchaVisible.value) {
+      refreshCaptcha();
+    }
+  }
+);
+// [rev4-inline ★BASE-WEB-LOGIN-CAPTCHA-WIRING(i) 007-login-throttle END]
+
 async function handleSubmit() {
   await validate();
-  await authStore.login(model.userName, model.password);
+  // [rev4-inline ★BASE-WEB-LOGIN-CAPTCHA-WIRING(i) 007-login-throttle] 原行: await authStore.login(model.userName, model.password);
+  // 軟區接线：驗證碼欄可見→附掛 captchaId/captchaCode；回 captchaRequired→顯欄＋清空重取
+  // （首次觸發＝自動取題；已附過 captcha 仍回 captchaRequired＝答錯/過期/重放，提交即消耗→自動換新題）
+  const msg = await authStore.login(
+    model.userName,
+    model.password,
+    true,
+    captchaVisible.value ? { captchaId: captchaId.value, captchaCode: captchaCode.value } : undefined
+  );
+  if (msg === 'auth.login.captchaRequired') {
+    captchaVisible.value = true;
+    await refreshCaptcha();
+  }
 }
 
 type AccountKey = 'super' | 'admin' | 'user';
@@ -87,6 +129,20 @@ async function handleAccountLogin(account: Account) {
         :placeholder="$t('page.login.common.passwordPlaceholder')"
       />
     </NFormItem>
+    <!-- [rev4-inline ★BASE-WEB-LOGIN-CAPTCHA-WIRING(i) 007-login-throttle START] CAPTCHA 軟區條件渲染：輸入欄＋驗證碼圖（點圖換題）；文案復用 upstream 既有 i18n 鍵（FR-018 零新 page.* 鍵） -->
+    <NFormItem v-if="captchaVisible">
+      <div class="w-full flex-y-center gap-12px">
+        <NInput v-model:value="captchaCode" :placeholder="$t('page.login.codeLogin.imageCodePlaceholder')" />
+        <img
+          v-if="captchaImg"
+          :src="captchaImg"
+          :alt="$t('page.login.codeLogin.imageCodePlaceholder')"
+          class="h-40px cursor-pointer"
+          @click="refreshCaptcha"
+        />
+      </div>
+    </NFormItem>
+    <!-- [rev4-inline ★BASE-WEB-LOGIN-CAPTCHA-WIRING(i) 007-login-throttle END] -->
     <NSpace vertical :size="24">
       <div class="flex-y-center justify-between">
         <NCheckbox>{{ $t('page.login.pwdLogin.rememberMe') }}</NCheckbox>

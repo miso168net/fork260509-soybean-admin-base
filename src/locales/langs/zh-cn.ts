@@ -8,7 +8,8 @@ const local: App.I18n.Schema = {
     auth: {
       login: {
         failed: '用户名或密码错误',
-        locked: '登录失败次数过多，请稍后再试'
+        locked: '登录失败次数过多，请稍后再试',
+        captchaRequired: '请完成验证码后再试'
       },
       token: {
         expired: '登录已过期'

@@ -2,7 +2,9 @@ import { computed, reactive, ref } from 'vue';
 import { useRoute } from 'vue-router';
 import { defineStore } from 'pinia';
 import { useLoading } from '@sa/hooks';
-import { fetchGetUserInfo, fetchLogin } from '@/service/api';
+// [rev4-inline ★BASE-WEB-LOGIN-CAPTCHA-WIRING(i) 007-login-throttle] 原行: import { fetchGetUserInfo, fetchLogin } from '@/service/api';
+import { fetchGetUserInfo } from '@/service/api';
+import { fetchLoginWithCaptcha } from '@/service/api/rev4-login-captcha';
 import { useRouterPush } from '@/hooks/common/router';
 import { localStg } from '@/utils/storage';
 import { SetupStoreId } from '@/enum';
@@ -95,11 +97,25 @@ export const useAuthStore = defineStore(SetupStoreId.Auth, () => {
    * @param userName User name
    * @param password Password
    * @param [redirect=true] Whether to redirect after login. Default is `true`
+   * [rev4-inline ★BASE-WEB-LOGIN-CAPTCHA-WIRING(i) 007-login-throttle] 下兩行 doc＝captcha 入參＋失敗 msg 回傳擴充
+   * @param [captcha] 軟區圖形驗證碼（captchaId/captchaCode，additive optional——契約 §1）
+   * @returns 失敗時回傳後端 msg（如 auth.login.locked / auth.login.captchaRequired）；成功＝undefined
    */
-  async function login(userName: string, password: string, redirect = true) {
+  // [rev4-inline ★BASE-WEB-LOGIN-CAPTCHA-WIRING(i) 007-login-throttle] 原行: async function login(userName: string, password: string, redirect = true) {
+  // 最小 store 接线（ADR 0040／research R12 (b) 形）：擴 captcha 入參＋失敗回傳後端 msg
+  async function login(
+    userName: string,
+    password: string,
+    redirect = true,
+    captcha?: { captchaId: string; captchaCode: string }
+  ) {
     startLoading();
 
-    const { data: loginToken, error } = await fetchLogin(userName, password);
+    // [rev4-inline ★BASE-WEB-LOGIN-CAPTCHA-WIRING(i) 007-login-throttle] 原行: const { data: loginToken, error } = await fetchLogin(userName, password);
+    const { data: loginToken, error } = await fetchLoginWithCaptcha(userName, password, captcha);
+
+    // [rev4-inline ★BASE-WEB-LOGIN-CAPTCHA-WIRING(i) 007-login-throttle] 失敗 msg 暫存（locked／captchaRequired 兩態同碼 2222、僅 msg 相異）
+    let failMsg: string | undefined;
 
     if (!error) {
       const pass = await loginByToken(loginToken);
@@ -123,9 +139,14 @@ export const useAuthStore = defineStore(SetupStoreId.Auth, () => {
       }
     } else {
       resetStore();
+      // [rev4-inline ★BASE-WEB-LOGIN-CAPTCHA-WIRING(i) 007-login-throttle] 直讀 error.response.data.msg（R12 (c) 先驗：flat 形 error 為 AxiosError 且必附 response——packages/axios/src/index.ts:68-78,164-166）
+      failMsg = error.response?.data?.msg;
     }
 
     endLoading();
+
+    // [rev4-inline ★BASE-WEB-LOGIN-CAPTCHA-WIRING(i) 007-login-throttle] 回傳失敗 msg 供 pwd-login 區分兩態（成功＝undefined）
+    return failMsg;
   }
 
   async function loginByToken(loginToken: Api.Auth.LoginToken) {

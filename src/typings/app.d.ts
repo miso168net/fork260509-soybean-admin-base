@@ -322,6 +322,7 @@ declare namespace App {
           login: {
             failed: string;
             locked: string;
+            captchaRequired: string;
           };
           token: {
             expired: string;
