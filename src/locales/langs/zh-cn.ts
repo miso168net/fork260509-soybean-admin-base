@@ -7,7 +7,8 @@ const local: App.I18n.Schema = {
     // [rev4-inline I18N-WIRING(ii) 005-auth-login] auth 命名空間（登入失敗／token 逾期／session 重登在地化）
     auth: {
       login: {
-        failed: '用户名或密码错误'
+        failed: '用户名或密码错误',
+        locked: '登录失败次数过多，请稍后再试'
       },
       token: {
         expired: '登录已过期'

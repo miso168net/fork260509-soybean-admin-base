@@ -321,6 +321,7 @@ declare namespace App {
         auth: {
           login: {
             failed: string;
+            locked: string;
           };
           token: {
             expired: string;
