@@ -68,7 +68,9 @@ export function getServiceBaseURL(env: Env.ImportMeta, isProxy: boolean) {
  */
 function createProxyPattern(key?: App.Service.OtherBaseURLKey) {
   if (!key) {
-    return '/proxy-default';
+    // [rev4-inline ★BASE-WEB-DEVPROXY-WIRING(i) 008-ip-gate] 原行: return '/proxy-default';
+    // dev API 請求與 prod 同形（同源相對前綴 /api、單跳；B-079/ADR 0042）
+    return '/api';
   }
 
   return `/proxy-${key}`;
