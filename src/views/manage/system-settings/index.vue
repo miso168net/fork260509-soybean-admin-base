@@ -10,7 +10,11 @@ const loading = ref(false);
 /** number 型 per-key 顯示界（UX 護欄；真值約束由後端型驗 registry 把關）。未列鍵→不設界。 */
 const numberRanges: Record<string, { min?: number; max?: number }> = {
   password_min_length: { min: 1, max: 128 },
-  password_max_length: { min: 1, max: 256 }
+  password_max_length: { min: 1, max: 256 },
+  // 007-login-throttle US6 三鍵（與後端 NUMBER_RANGES 一致；MODAL-WIRING (e) 用途補完、ADR 0041）
+  login_throttle_max_fails: { min: 1, max: 100 },
+  login_throttle_window_minutes: { min: 1, max: 1440 },
+  login_throttle_captcha_after: { min: 1, max: 100 }
 };
 
 /** 密碼策略區顯示順序（固定、語意由弱到強；覆蓋 server 字母序）。未列 password_* 鍵排最後、保 server 相對序。 */
@@ -33,7 +37,11 @@ const labelKeyMap: Record<string, App.I18n.I18nKey> = {
   password_require_digit: 'page.manage.systemSettings.items.passwordRequireDigit',
   password_require_special: 'page.manage.systemSettings.items.passwordRequireSpecial',
   password_forbid_username: 'page.manage.systemSettings.items.passwordForbidUsername',
-  single_session_default: 'page.manage.systemSettings.items.singleSessionDefault'
+  single_session_default: 'page.manage.systemSettings.items.singleSessionDefault',
+  // 007-login-throttle US6 三鍵（MODAL-WIRING (e) 用途補完、ADR 0041）
+  login_throttle_max_fails: 'page.manage.systemSettings.items.loginThrottleMaxFails',
+  login_throttle_window_minutes: 'page.manage.systemSettings.items.loginThrottleWindowMinutes',
+  login_throttle_captcha_after: 'page.manage.systemSettings.items.loginThrottleCaptchaAfter'
 };
 
 function labelOf(item: Api.SystemManage.SystemSetting) {

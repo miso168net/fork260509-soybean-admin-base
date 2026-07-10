@@ -572,7 +572,10 @@ const local: App.I18n.Schema = {
           passwordRequireDigit: 'Require digit',
           passwordRequireSpecial: 'Require special character',
           passwordForbidUsername: 'Forbid password same as username',
-          singleSessionDefault: 'Single session (global)'
+          singleSessionDefault: 'Single session (global)',
+          loginThrottleMaxFails: 'Login failure lockout threshold',
+          loginThrottleWindowMinutes: 'Failure counting sliding window (minutes)',
+          loginThrottleCaptchaAfter: 'Captcha soft-zone threshold'
         }
       },
       // [rev4-inline I18N-WIRING(ii) 004-system-settings END]

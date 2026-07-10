@@ -568,7 +568,10 @@ const local: App.I18n.Schema = {
           passwordRequireDigit: '需含数字',
           passwordRequireSpecial: '需含特殊符号',
           passwordForbidUsername: '禁止密码与账号相同',
-          singleSessionDefault: '单一工作会话（全站）'
+          singleSessionDefault: '单一工作会话（全站）',
+          loginThrottleMaxFails: '登录失败锁定阈值',
+          loginThrottleWindowMinutes: '失败计数滑动窗（分钟）',
+          loginThrottleCaptchaAfter: '验证码软区阈值'
         }
       },
       // [rev4-inline I18N-WIRING(ii) 004-system-settings END]

@@ -562,7 +562,10 @@ const local: App.I18n.Schema = {
           passwordRequireDigit: '需含數字',
           passwordRequireSpecial: '需含特殊符號',
           passwordForbidUsername: '禁止密碼與帳號相同',
-          singleSessionDefault: '單一工作階段（全站）'
+          singleSessionDefault: '單一工作階段（全站）',
+          loginThrottleMaxFails: '登入失敗鎖定門檻',
+          loginThrottleWindowMinutes: '失敗計數滑動窗（分鐘）',
+          loginThrottleCaptchaAfter: '驗證碼軟區門檻'
         }
       },
       common: {

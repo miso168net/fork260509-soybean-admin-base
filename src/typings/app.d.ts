@@ -747,6 +747,9 @@ declare namespace App {
               passwordRequireSpecial: string;
               passwordForbidUsername: string;
               singleSessionDefault: string;
+              loginThrottleMaxFails: string;
+              loginThrottleWindowMinutes: string;
+              loginThrottleCaptchaAfter: string;
             };
           };
           // [rev4-inline I18N-WIRING(iii) 004-system-settings END]
