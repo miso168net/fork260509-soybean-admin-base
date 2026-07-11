@@ -129,17 +129,19 @@ async function handleAccountLogin(account: Account) {
         :placeholder="$t('page.login.common.passwordPlaceholder')"
       />
     </NFormItem>
-    <!-- [rev4-inline ★BASE-WEB-LOGIN-CAPTCHA-WIRING(i) 007-login-throttle START] CAPTCHA 軟區條件渲染：輸入欄＋驗證碼圖（點圖換題）；文案復用 upstream 既有 i18n 鍵（FR-018 零新 page.* 鍵） -->
+    <!-- [rev4-inline ★BASE-WEB-LOGIN-CAPTCHA-WIRING(i) 007-login-throttle START] CAPTCHA 軟區條件渲染：驗證碼圖（原尺寸 220×120、點圖換題）在上、輸入欄在下（w-220px wrapper 約束 NInput 寬、否則其預設寬撐滿）；文案復用 upstream 既有 i18n 鍵（FR-018 零新 page.* 鍵） -->
     <NFormItem v-if="captchaVisible">
-      <div class="w-full flex-y-center gap-12px">
-        <NInput v-model:value="captchaCode" :placeholder="$t('page.login.codeLogin.imageCodePlaceholder')" />
+      <div class="w-full flex-col items-start gap-10px">
         <img
           v-if="captchaImg"
           :src="captchaImg"
           :alt="$t('page.login.codeLogin.imageCodePlaceholder')"
-          class="h-40px cursor-pointer"
+          class="h-120px w-220px cursor-pointer"
           @click="refreshCaptcha"
         />
+        <div class="w-220px">
+          <NInput v-model:value="captchaCode" :placeholder="$t('page.login.codeLogin.imageCodePlaceholder')" />
+        </div>
       </div>
     </NFormItem>
     <!-- [rev4-inline ★BASE-WEB-LOGIN-CAPTCHA-WIRING(i) 007-login-throttle END] -->
