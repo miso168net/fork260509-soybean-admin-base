@@ -28,6 +28,13 @@ const PASSWORD_KEY_ORDER = [
   'password_forbid_username'
 ];
 
+/** 會話設定區顯示順序（單一在線→閒置逾時）。 */
+const SESSION_KEY_ORDER = ['single_session_default', 'session_idle_timeout'];
+/** IP源登入設定區顯示順序（窗口→最大值→驗證碼；2 欄由左至右逐列）。 */
+const IP_KEY_ORDER = ['ip_window_minutes', 'ip_max_fails', 'ip_captcha_after'];
+/** 帳號登入設定區顯示順序（窗口→最大值→驗證碼）。 */
+const ACCOUNT_KEY_ORDER = ['login_throttle_window_minutes', 'login_throttle_max_fails', 'login_throttle_captcha_after'];
+
 /** settingKey → i18n label 鍵（typed literal、typecheck 驗每鍵存在）。未映射鍵 fallback item.description || settingKey。 */
 const labelKeyMap: Record<string, App.I18n.I18nKey> = {
   password_min_length: 'page.manage.systemSettings.items.passwordMinLength',
@@ -41,7 +48,12 @@ const labelKeyMap: Record<string, App.I18n.I18nKey> = {
   // 007-login-throttle US6 三鍵（MODAL-WIRING (e) 用途補完、ADR 0041）
   login_throttle_max_fails: 'page.manage.systemSettings.items.loginThrottleMaxFails',
   login_throttle_window_minutes: 'page.manage.systemSettings.items.loginThrottleWindowMinutes',
-  login_throttle_captcha_after: 'page.manage.systemSettings.items.loginThrottleCaptchaAfter'
+  login_throttle_captcha_after: 'page.manage.systemSettings.items.loginThrottleCaptchaAfter',
+  // 008-ip-gate 來源維三鍵＋005 遺漏之 session_idle_timeout（MODAL-WIRING (e) 用途補完、ADR 0041；B-059 部分消化）
+  ip_max_fails: 'page.manage.systemSettings.items.ipMaxFails',
+  ip_window_minutes: 'page.manage.systemSettings.items.ipWindowMinutes',
+  ip_captcha_after: 'page.manage.systemSettings.items.ipCaptchaAfter',
+  session_idle_timeout: 'page.manage.systemSettings.items.sessionIdleTimeout'
 };
 
 function labelOf(item: Api.SystemManage.SystemSetting) {
@@ -58,20 +70,28 @@ function sortByFixedOrder(items: Api.SystemManage.SystemSetting[], order: string
   return items.slice().sort((a, b) => rankOf(a.settingKey) - rankOf(b.settingKey));
 }
 
-/** 依 settingKey 前綴分區：password_* → 密碼策略（固定序）、其餘 → 會話設定（保 server 回傳順序）。空區塊自動略過。 */
+/** 依 settingKey 前綴分四區：password_*（密碼策略）／會話（single+idle）／ip_*（IP源登入）／login_throttle_*（帳號登入）。各區固定序、空區塊自動略過。 */
 const groups = computed(() => {
   const isPassword = (key: string) => key.startsWith('password_');
+  const isIp = (key: string) => key.startsWith('ip_');
+  const isAccount = (key: string) => key.startsWith('login_throttle_');
+  const isSession = (key: string) => !isPassword(key) && !isIp(key) && !isAccount(key);
   const result: Array<{ titleKey: App.I18n.I18nKey; items: Api.SystemManage.SystemSetting[] }> = [
     {
       titleKey: 'page.manage.systemSettings.passwordPolicyTitle',
-      items: sortByFixedOrder(
-        settings.value.filter(s => isPassword(s.settingKey)),
-        PASSWORD_KEY_ORDER
-      )
+      items: sortByFixedOrder(settings.value.filter(s => isPassword(s.settingKey)), PASSWORD_KEY_ORDER)
     },
     {
       titleKey: 'page.manage.systemSettings.sessionTitle',
-      items: settings.value.filter(s => !isPassword(s.settingKey))
+      items: sortByFixedOrder(settings.value.filter(s => isSession(s.settingKey)), SESSION_KEY_ORDER)
+    },
+    {
+      titleKey: 'page.manage.systemSettings.ipLoginTitle',
+      items: sortByFixedOrder(settings.value.filter(s => isIp(s.settingKey)), IP_KEY_ORDER)
+    },
+    {
+      titleKey: 'page.manage.systemSettings.accountLoginTitle',
+      items: sortByFixedOrder(settings.value.filter(s => isAccount(s.settingKey)), ACCOUNT_KEY_ORDER)
     }
   ];
   return result.filter(g => g.items.length > 0);

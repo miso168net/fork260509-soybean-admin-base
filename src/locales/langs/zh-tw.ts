@@ -554,6 +554,8 @@ const local: App.I18n.Schema = {
       systemSettings: {
         passwordPolicyTitle: '密碼策略',
         sessionTitle: '工作階段設定',
+        ipLoginTitle: 'IP源登入設定',
+        accountLoginTitle: '帳號登入設定',
         items: {
           passwordMinLength: '密碼最小長度',
           passwordMaxLength: '密碼最大長度',
@@ -562,10 +564,14 @@ const local: App.I18n.Schema = {
           passwordRequireDigit: '需含數字',
           passwordRequireSpecial: '需含特殊符號',
           passwordForbidUsername: '禁止密碼與帳號相同',
-          singleSessionDefault: '單一工作階段（全站）',
-          loginThrottleMaxFails: '登入失敗鎖定門檻',
-          loginThrottleWindowMinutes: '失敗計數滑動窗（分鐘）',
-          loginThrottleCaptchaAfter: '驗證碼軟區門檻'
+          singleSessionDefault: 'Session 單一在線（全站）',
+          sessionIdleTimeout: 'Session 閒置逾時（分鐘）',
+          ipMaxFails: 'IP源登入失敗-計數最大值（次）',
+          ipWindowMinutes: 'IP源登入失敗-計數窗口（分鐘）',
+          ipCaptchaAfter: 'IP源登入失敗-觸發驗證碼（次）',
+          loginThrottleMaxFails: '帳號登入失敗-計數最大值（次）',
+          loginThrottleWindowMinutes: '帳號登入失敗-計數窗口（分鐘）',
+          loginThrottleCaptchaAfter: '帳號登入失敗-觸發驗證碼（次）'
         }
       },
       common: {

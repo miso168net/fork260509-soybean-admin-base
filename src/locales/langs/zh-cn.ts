@@ -560,6 +560,8 @@ const local: App.I18n.Schema = {
       systemSettings: {
         passwordPolicyTitle: '密码策略',
         sessionTitle: '会话设置',
+        ipLoginTitle: 'IP源登录设置',
+        accountLoginTitle: '账号登录设置',
         items: {
           passwordMinLength: '密码最小长度',
           passwordMaxLength: '密码最大长度',
@@ -568,10 +570,14 @@ const local: App.I18n.Schema = {
           passwordRequireDigit: '需含数字',
           passwordRequireSpecial: '需含特殊符号',
           passwordForbidUsername: '禁止密码与账号相同',
-          singleSessionDefault: '单一工作会话（全站）',
-          loginThrottleMaxFails: '登录失败锁定阈值',
-          loginThrottleWindowMinutes: '失败计数滑动窗（分钟）',
-          loginThrottleCaptchaAfter: '验证码软区阈值'
+          singleSessionDefault: 'Session 单一在线（全站）',
+          sessionIdleTimeout: 'Session 空闲超时（分钟）',
+          ipMaxFails: 'IP源登录失败-计数最大值（次）',
+          ipWindowMinutes: 'IP源登录失败-计数窗口（分钟）',
+          ipCaptchaAfter: 'IP源登录失败-触发验证码（次）',
+          loginThrottleMaxFails: '账号登录失败-计数最大值（次）',
+          loginThrottleWindowMinutes: '账号登录失败-计数窗口（分钟）',
+          loginThrottleCaptchaAfter: '账号登录失败-触发验证码（次）'
         }
       },
       // [rev4-inline I18N-WIRING(ii) 004-system-settings END]

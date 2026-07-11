@@ -738,6 +738,8 @@ declare namespace App {
           systemSettings: {
             passwordPolicyTitle: string;
             sessionTitle: string;
+            ipLoginTitle: string;
+            accountLoginTitle: string;
             items: {
               passwordMinLength: string;
               passwordMaxLength: string;
@@ -750,6 +752,10 @@ declare namespace App {
               loginThrottleMaxFails: string;
               loginThrottleWindowMinutes: string;
               loginThrottleCaptchaAfter: string;
+              ipMaxFails: string;
+              ipWindowMinutes: string;
+              ipCaptchaAfter: string;
+              sessionIdleTimeout: string;
             };
           };
           // [rev4-inline I18N-WIRING(iii) 004-system-settings END]

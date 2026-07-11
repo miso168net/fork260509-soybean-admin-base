@@ -564,6 +564,8 @@ const local: App.I18n.Schema = {
       systemSettings: {
         passwordPolicyTitle: 'Password Policy',
         sessionTitle: 'Session Settings',
+        ipLoginTitle: 'IP-source login settings',
+        accountLoginTitle: 'Account login settings',
         items: {
           passwordMinLength: 'Minimum password length',
           passwordMaxLength: 'Maximum password length',
@@ -573,9 +575,13 @@ const local: App.I18n.Schema = {
           passwordRequireSpecial: 'Require special character',
           passwordForbidUsername: 'Forbid password same as username',
           singleSessionDefault: 'Single session (global)',
-          loginThrottleMaxFails: 'Login failure lockout threshold',
-          loginThrottleWindowMinutes: 'Failure counting sliding window (minutes)',
-          loginThrottleCaptchaAfter: 'Captcha soft-zone threshold'
+          sessionIdleTimeout: 'Session idle timeout (min)',
+          ipMaxFails: 'IP-source login failure - max count (times)',
+          ipWindowMinutes: 'IP-source login failure - counting window (min)',
+          ipCaptchaAfter: 'IP-source login failure - trigger captcha (times)',
+          loginThrottleMaxFails: 'Account login failure - max count (times)',
+          loginThrottleWindowMinutes: 'Account login failure - counting window (min)',
+          loginThrottleCaptchaAfter: 'Account login failure - trigger captcha (times)'
         }
       },
       // [rev4-inline I18N-WIRING(ii) 004-system-settings END]
