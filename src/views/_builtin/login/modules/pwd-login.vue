@@ -1,6 +1,8 @@
 <script setup lang="ts">
 // [rev4-inline ★BASE-WEB-LOGIN-CAPTCHA-WIRING(i) 007-login-throttle] 原行: import { computed, reactive } from 'vue';
 import { computed, reactive, ref, watch } from 'vue';
+// [rev4-inline ★BASE-WEB-LOGIN-CAPTCHA-WIRING(i) B-075①] userName 連續輸入節流取題（用既有 @vueuse/core、非新依賴）
+import { useDebounceFn } from '@vueuse/core';
 import { loginModuleRecord } from '@/constants/app';
 import { useAuthStore } from '@/store/modules/auth';
 import { useRouterPush } from '@/hooks/common/router';
@@ -53,12 +55,15 @@ async function refreshCaptcha() {
   }
 }
 
+// B-075①：帳號名連續輸入時 debounce 取題（300ms、沿 search-modal useDebounceFn 慣例），避免每鍵擊一發
+const debouncedRefreshCaptcha = useDebounceFn(refreshCaptcha, 300);
+
 // 帳號名變更→重取題（challenge 綁定帳號名，跨帳號呈遞必拒——spec US2 場景 5）
 watch(
   () => model.userName,
   () => {
     if (captchaVisible.value) {
-      refreshCaptcha();
+      debouncedRefreshCaptcha();
     }
   }
 );
