@@ -2,7 +2,10 @@
 import { computed, ref, watch } from 'vue';
 import type { SelectOption } from 'naive-ui';
 import { enableStatusOptions, menuIconTypeOptions, menuTypeOptions } from '@/constants/business';
-import { fetchGetAllRoles } from '@/service/api';
+// [rev4-inline MODAL-WIRING(d) 010-menu-admin] parentId selector 消費凍結 fetchGetMenuTree（現有選單樹、經 barrel；★絕不重建）原行: import { fetchGetAllRoles } from '@/service/api';
+import { fetchGetAllRoles, fetchGetMenuTree } from '@/service/api';
+// [rev4-inline MODAL-WIRING(a) 010-menu-admin] add/update 接線 WRAPPER（★直接路徑、不經 barrel、避 vite stale-export）
+import { fetchAddMenu, fetchUpdateMenu } from '@/service/api/rev4-menu-admin';
 import { useFormRules, useNaiveForm } from '@/hooks/common/form';
 import { getLocalIcons } from '@/utils/icon';
 import { $t } from '@/locales';
@@ -122,6 +125,21 @@ const rules: Record<RuleKey, App.Global.FormRule> = {
 };
 
 const disabledMenuType = computed(() => props.operateType === 'edit');
+
+// [rev4-inline MODAL-WIRING(a) 010-menu-admin] edit 判定＋目標 id（submit 分流 add/update；沿 009 role-operate-drawer 範式）
+const isEdit = computed(() => props.operateType === 'edit');
+const menuId = computed(() => props.rowData?.id || -1);
+
+// [rev4-inline MODAL-WIRING(d) 010-menu-admin START] edit 模式父層選擇器選項源＝凍結 fetchGetMenuTree（現有選單樹、經 barrel 復用；permissive 選取、後端環檢測/parent 驗為權威、最小可行；watch(visible) 開啟重取，鏡像 getRoleOptions）
+const menuTreeOptions = ref<Api.SystemManage.MenuTree[]>([]);
+
+async function getMenuTreeOptions() {
+  const { error, data } = await fetchGetMenuTree();
+  if (!error) {
+    menuTreeOptions.value = data;
+  }
+}
+// [rev4-inline MODAL-WIRING(d) 010-menu-admin END]
 
 const localIcons = getLocalIcons();
 const localIconOptions = localIcons.map<SelectOption>(item => ({
@@ -254,9 +272,15 @@ async function handleSubmit() {
 
   const params = getSubmitParams();
 
-  console.log('params: ', params);
-
-  // request
+  // [rev4-inline MODAL-WIRING(a) 010-menu-admin] submit 接真 API：新增／新增子選單→fetchAddMenu、編輯→fetchUpdateMenu（成功經 submitted 復用凍結 fetchGetMenuList 刷新）
+  // [rev4-inline MODAL-WIRING(a) 010-menu-admin] 原行: console.log('params: ', params);
+  // [rev4-inline MODAL-WIRING(a) 010-menu-admin] 原行: // request
+  const { error } = isEdit.value
+    ? await fetchUpdateMenu({ id: menuId.value, ...params })
+    : await fetchAddMenu(params);
+  if (error) {
+    return;
+  }
   window.$message?.success($t('common.updateSuccess'));
   closeDrawer();
   emit('submitted');
@@ -267,6 +291,8 @@ watch(visible, () => {
     handleInitModel();
     restoreValidation();
     getRoleOptions();
+    // [rev4-inline MODAL-WIRING(d) 010-menu-admin] edit 父層選擇器選項於開啟時重取（鏡像 getRoleOptions；options 空時 NTreeSelect 靜默、僅 edit 模式呈現）
+    getMenuTreeOptions();
   }
 });
 
@@ -289,11 +315,18 @@ watch(
               <NRadio v-for="item in menuTypeOptions" :key="item.value" :value="item.value" :label="$t(item.label)" />
             </NRadioGroup>
           </NFormItemGi>
+          <!-- [rev4-inline MODAL-WIRING(d) 010-menu-admin START] edit 模式父層選擇器（re-parent 維運控制；選項源＝現有選單樹、permissive 選取、後端 parent/環檢測為權威、最小可行） -->
+          <NFormItemGi v-if="isEdit" span="24 m:12" :label="$t('page.manage.menu.parentId')" path="parentId">
+            <NTreeSelect v-model:value="model.parentId" :options="menuTreeOptions" key-field="id" label-field="label" />
+          </NFormItemGi>
+          <!-- [rev4-inline MODAL-WIRING(d) 010-menu-admin END] -->
           <NFormItemGi span="24 m:12" :label="$t('page.manage.menu.menuName')" path="menuName">
             <NInput v-model:value="model.menuName" :placeholder="$t('page.manage.menu.form.menuName')" />
           </NFormItemGi>
           <NFormItemGi span="24 m:12" :label="$t('page.manage.menu.routeName')" path="routeName">
-            <NInput v-model:value="model.routeName" :placeholder="$t('page.manage.menu.form.routeName')" />
+            <!-- [rev4-inline MODAL-WIRING(a) 010-menu-admin] edit 模式 routeName 唯讀鎖欄（對稱 menuType 之 disabledMenuType；後端顯式拒為權威、前端鎖欄為體驗）原行: <NInput v-model:value="model.routeName" :placeholder="$t('page.manage.menu.form.routeName')" />
+            -->
+            <NInput v-model:value="model.routeName" :disabled="disabledMenuType" :placeholder="$t('page.manage.menu.form.routeName')" />
           </NFormItemGi>
           <NFormItemGi span="24 m:12" :label="$t('page.manage.menu.routePath')" path="routePath">
             <NInput v-model:value="model.routePath" disabled :placeholder="$t('page.manage.menu.form.routePath')" />

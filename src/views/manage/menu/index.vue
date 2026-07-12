@@ -6,6 +6,10 @@ import { useBoolean } from '@sa/hooks';
 import { yesOrNoRecord } from '@/constants/common';
 import { enableStatusRecord, menuTypeRecord } from '@/constants/business';
 import { fetchGetAllPages, fetchGetMenuList } from '@/service/api';
+// [rev4-inline MODAL-WIRING(a) 010-menu-admin] delete/batchDelete 接線 WRAPPER（★直接路徑、不經 barrel、避 vite stale-export）
+import { fetchBatchDeleteMenu, fetchDeleteMenu } from '@/service/api/rev4-menu-admin';
+// [rev4-inline MODAL-WIRING(b) 010-menu-admin] hasAuth gating 取用（menu:add/edit/delete 按鈕顯隱）
+import { useAuth } from '@/hooks/business/auth';
 import { useAppStore } from '@/store/modules/app';
 import { defaultTransform, useNaivePaginatedTable, useTableOperate } from '@/hooks/common/table';
 import { $t } from '@/locales';
@@ -13,6 +17,9 @@ import SvgIcon from '@/components/custom/svg-icon.vue';
 import MenuOperateModal, { type OperateType } from './modules/menu-operate-modal.vue';
 
 const appStore = useAppStore();
+
+// [rev4-inline MODAL-WIRING(b) 010-menu-admin] hasAuth：操作鈕以 menu:add/edit/delete 按鈕碼 gating
+const { hasAuth } = useAuth();
 
 const { bool: visible, setTrue: openModal } = useBoolean();
 
@@ -145,26 +152,32 @@ const { columns, columnChecks, data, loading, pagination, getData, getDataByPage
       title: $t('common.operate'),
       align: 'center',
       width: 230,
+      // [rev4-inline MODAL-WIRING(b) 010-menu-admin] 列操作鈕 hasAuth gating：addChild→menu:add（疊 menuType==='1'）、edit→menu:edit、delete→menu:delete 顯隱
+      // [rev4-inline MODAL-WIRING(b) 010-menu-admin] 原行: {row.menuType === '1' && (
       render: row => (
         <div class="flex-center justify-end gap-8px">
-          {row.menuType === '1' && (
+          {row.menuType === '1' && hasAuth('menu:add') && (
             <NButton type="primary" ghost size="small" onClick={() => handleAddChildMenu(row)}>
               {$t('page.manage.menu.addChildMenu')}
             </NButton>
           )}
-          <NButton type="primary" ghost size="small" onClick={() => handleEdit(row)}>
-            {$t('common.edit')}
-          </NButton>
-          <NPopconfirm onPositiveClick={() => handleDelete(row.id)}>
-            {{
-              default: () => $t('common.confirmDelete'),
-              trigger: () => (
-                <NButton type="error" ghost size="small">
-                  {$t('common.delete')}
-                </NButton>
-              )
-            }}
-          </NPopconfirm>
+          {hasAuth('menu:edit') && (
+            <NButton type="primary" ghost size="small" onClick={() => handleEdit(row)}>
+              {$t('common.edit')}
+            </NButton>
+          )}
+          {hasAuth('menu:delete') && (
+            <NPopconfirm onPositiveClick={() => handleDelete(row.id)}>
+              {{
+                default: () => $t('common.confirmDelete'),
+                trigger: () => (
+                  <NButton type="error" ghost size="small">
+                    {$t('common.delete')}
+                  </NButton>
+                )
+              }}
+            </NPopconfirm>
+          )}
         </div>
       )
     }
@@ -181,16 +194,25 @@ function handleAdd() {
 }
 
 async function handleBatchDelete() {
-  // request
-  console.log(checkedRowKeys.value);
+  // [rev4-inline MODAL-WIRING(a) 010-menu-admin] 原行: console.log(checkedRowKeys.value);
+  const { error } = await fetchBatchDeleteMenu(checkedRowKeys.value.map(Number));
+  if (error) {
+    return;
+  }
 
+  // onBatchDeleted 內部復用凍結 fetchGetMenuList（getData）刷新列表＋清選取
   onBatchDeleted();
 }
 
-function handleDelete(id: number) {
-  // request
-  console.log(id);
+// [rev4-inline MODAL-WIRING(a) 010-menu-admin] 原行: function handleDelete(id: number) {
+async function handleDelete(id: number) {
+  // [rev4-inline MODAL-WIRING(a) 010-menu-admin] 原行: console.log(id);
+  const { error } = await fetchDeleteMenu(id);
+  if (error) {
+    return;
+  }
 
+  // onDeleted 內部復用凍結 fetchGetMenuList（getData）刷新列表
   onDeleted();
 }
 
@@ -238,7 +260,29 @@ init();
           @add="handleAdd"
           @delete="handleBatchDelete"
           @refresh="getData"
-        />
+        >
+          <!-- [rev4-inline MODAL-WIRING(b) 010-menu-admin START] 覆寫 default slot、以 menu:add/menu:delete 顯隱 add/batchDelete 鈕（憲法 §III MODAL-WIRING (b)；不動共用 table-header-operation.vue、gating 全落 index.vue） -->
+          <template #default>
+            <NButton v-if="hasAuth('menu:add')" size="small" ghost type="primary" @click="handleAdd">
+              <template #icon>
+                <icon-ic-round-plus class="text-icon" />
+              </template>
+              {{ $t('common.add') }}
+            </NButton>
+            <NPopconfirm v-if="hasAuth('menu:delete')" @positive-click="handleBatchDelete">
+              <template #trigger>
+                <NButton size="small" ghost type="error" :disabled="checkedRowKeys.length === 0">
+                  <template #icon>
+                    <icon-ic-round-delete class="text-icon" />
+                  </template>
+                  {{ $t('common.batchDelete') }}
+                </NButton>
+              </template>
+              {{ $t('common.confirmDelete') }}
+            </NPopconfirm>
+          </template>
+          <!-- [rev4-inline MODAL-WIRING(b) 010-menu-admin END] -->
+        </TableHeaderOperation>
       </template>
       <NDataTable
         v-model:checked-row-keys="checkedRowKeys"
