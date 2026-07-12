@@ -84,5 +84,15 @@ declare namespace Api {
 
     /** 回收桶列表（archived_at desc、restorable 隨列下發；contracts P3 #19） */
     type ArchivedPolicyList = Common.PaginatingQueryRecord<ArchivedPolicy>;
+
+    /**
+     * protectedRevoke（2222 `biz.role.protectedRevoke`）拒因明細（信封 data；ADR 0050／R4 第 2 層）
+     *
+     * blocked＝被擋撤銷的目標清單（target＝casbin v1 授權標的、dimension＝menu／button／endpoint 維度標籤）；
+     * 由三 auth-modal 呼叫端局部讀 `error.response.data.data` 結構化渲染——物件/陣列類明細不進 `$t` 插值。
+     */
+    type ProtectedRevokeDetail = {
+      blocked: { target: string; dimension: string }[];
+    };
   }
 }

@@ -341,6 +341,22 @@ declare namespace App {
           auth: {
             notSupported: string;
           };
+          // [rev4-inline I18N-WIRING(iii) 009-role-admin] biz.role/policy 拒因型（逐鍵鏡像 locale；ADR 0050）
+          role: {
+            seededProtected: string;
+            inUse: string;
+            cannotDeleteSelfRole: string;
+            cannotDisableSelfRole: string;
+            superCannotDisable: string;
+            codeImmutable: string;
+            codeExists: string;
+            codeInvalid: string;
+            notFound: string;
+            protectedRevoke: string;
+          };
+          policy: {
+            notRestorable: string;
+          };
         };
         system: {
           forbidden: string;

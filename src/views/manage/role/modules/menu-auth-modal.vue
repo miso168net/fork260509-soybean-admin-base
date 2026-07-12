@@ -8,6 +8,8 @@ import {
   fetchUpdateRoleHome,
   fetchUpdateRoleMenu
 } from '@/service/api/rev4-role-admin';
+// [rev4-inline MODAL-WIRING(a) 009-role-admin] protectedRevoke 明細呼叫端渲染 helper（R4 第 2 層／ADR 0050）
+import { showProtectedRevokeDetail } from './protected-revoke-detail';
 import { $t } from '@/locales';
 
 defineOptions({
@@ -95,6 +97,8 @@ async function handleSubmit() {
   // [rev4-inline MODAL-WIRING(a) 009-role-admin] 原行: console.log(checks.value, props.roleId);
   const { error } = await fetchUpdateRoleMenu({ roleId: props.roleId, menuIds: checks.value });
   if (error) {
+    // [rev4-inline MODAL-WIRING(a) 009-role-admin] protectedRevoke 明細：讀信封 data.blocked[] 結構化列出被擋目標（與共用層泛化 toast 並存）
+    showProtectedRevokeDetail(error.response?.data);
     return;
   }
 

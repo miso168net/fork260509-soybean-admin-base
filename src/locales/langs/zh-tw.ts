@@ -24,6 +24,22 @@ const local: App.I18n.Schema = {
       },
       auth: {
         notSupported: '該功能暫未開放'
+      },
+      // [rev4-inline I18N-WIRING(ii) 009-role-admin] biz.role/policy 治理拒因（distinct key；inUse 攜 {userCount} 插值、protectedRevoke 泛化訊息＋blocked 明細走呼叫端；ADR 0050）
+      role: {
+        seededProtected: '系統內建角色，不可刪除',
+        inUse: '該角色掛有 {userCount} 個使用者，不可刪除',
+        cannotDeleteSelfRole: '不能刪除目前登入使用者所屬的角色',
+        cannotDisableSelfRole: '不能停用目前登入使用者所屬的角色',
+        superCannotDisable: '超級管理員角色不可停用',
+        codeImmutable: '角色編碼建立後不可修改',
+        codeExists: '角色編碼已存在',
+        codeInvalid: '角色編碼格式不正確（僅允許字母、數字、底線，最長 64 位）',
+        notFound: '角色不存在',
+        protectedRevoke: '存在受保護的授權，無法撤銷'
+      },
+      policy: {
+        notRestorable: '該歸檔授權不可復原'
       }
     },
     system: {

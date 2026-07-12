@@ -27,6 +27,22 @@ const local: App.I18n.Schema = {
       // [rev4-inline I18N-WIRING(ii) 005-auth-login] biz.auth（stub 端點未開放提示）
       auth: {
         notSupported: 'This feature is not yet available'
+      },
+      // [rev4-inline I18N-WIRING(ii) 009-role-admin] biz.role/policy 治理拒因（distinct key；inUse 攜 {userCount} 插值、protectedRevoke 泛化訊息＋blocked 明細走呼叫端；ADR 0050）
+      role: {
+        seededProtected: 'System built-in role cannot be deleted',
+        inUse: 'This role is assigned to {userCount} user(s) and cannot be deleted',
+        cannotDeleteSelfRole: 'Cannot delete a role assigned to the current user',
+        cannotDisableSelfRole: 'Cannot disable a role assigned to the current user',
+        superCannotDisable: 'The super administrator role cannot be disabled',
+        codeImmutable: 'Role code cannot be changed after creation',
+        codeExists: 'Role code already exists',
+        codeInvalid: 'Invalid role code (letters, digits and underscore only, up to 64 characters)',
+        notFound: 'Role not found',
+        protectedRevoke: 'Some protected grants exist and cannot be revoked'
+      },
+      policy: {
+        notRestorable: 'This archived grant cannot be restored'
       }
     },
     system: {

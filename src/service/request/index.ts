@@ -10,6 +10,17 @@ import type { RequestInstanceState } from './type';
 const isHttpProxy = import.meta.env.DEV && import.meta.env.VITE_HTTP_PROXY === 'Y';
 const { baseURL, otherBaseURL } = getServiceBaseURL(import.meta.env, isHttpProxy);
 
+// [rev4-inline I18N-WIRING(i) 009-role-admin START] 拒因結構化明細插值 helper（ADR 0050／R4 第 1 層）：
+// 信封 data 為 plain object（如 {userCount}）→ 走 $t(key, detail, msg) named 三參插值供 scalar 佔位；
+// 否則維持現行 $t(key, msg) 2 參 fallback（既有無明細錯誤路徑行為不變）。物件/陣列類明細（blocked[]）
+// 不進 $t、走呼叫端結構化渲染（T032）——key 形紀律見 ADR 0050。
+function translateBackendMsg(msg: string, detail: unknown) {
+  const key = `backend.${msg}` as App.I18n.I18nKey;
+  const isPlainObject = typeof detail === 'object' && detail !== null && !Array.isArray(detail);
+  return isPlainObject ? $t(key, detail as Record<string, unknown>, msg) : $t(key, msg);
+}
+// [rev4-inline I18N-WIRING(i) 009-role-admin END]
+
 export const request = createFlatRequest(
   {
     baseURL,
@@ -71,8 +82,8 @@ export const request = createFlatRequest(
 
         window.$dialog?.error({
           title: $t('common.error'),
-          // [rev4-inline I18N-WIRING(i) 004-system-settings] 原行: content: response.data.msg,
-          content: $t(`backend.${response.data.msg}` as App.I18n.I18nKey, response.data.msg),
+          // [rev4-inline I18N-WIRING(i) 004-system-settings 009-role-admin] 原行: content: response.data.msg,
+          content: translateBackendMsg(response.data.msg, response.data.data),
           positiveText: $t('common.confirm'),
           maskClosable: false,
           closeOnEsc: false,
@@ -110,9 +121,9 @@ export const request = createFlatRequest(
 
       // get backend error message and code
       if (error.code === BACKEND_ERROR_CODE) {
-        // [rev4-inline I18N-WIRING(i) 004-system-settings] 原行: message = error.response?.data?.msg || message;
+        // [rev4-inline I18N-WIRING(i) 004-system-settings 009-role-admin] 原行: message = error.response?.data?.msg || message;
         const backendMsg = error.response?.data?.msg;
-        message = backendMsg ? $t(`backend.${backendMsg}` as App.I18n.I18nKey, backendMsg) : message;
+        message = backendMsg ? translateBackendMsg(backendMsg, error.response?.data?.data) : message;
         backendErrorCode = String(error.response?.data?.code || '');
       }
 

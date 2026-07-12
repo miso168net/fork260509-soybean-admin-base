@@ -4,6 +4,8 @@
 import { computed, shallowRef, watch } from 'vue';
 import type { TreeOption } from 'naive-ui';
 import { fetchGetAllEndpoints, fetchGetRoleEndpoints, fetchUpdateRoleEndpoints } from '@/service/api/rev4-role-admin';
+// protectedRevoke 明細呼叫端渲染 helper（R4 第 2 層／ADR 0050；net-new 檔零原行）
+import { showProtectedRevokeDetail } from './protected-revoke-detail';
 import { $t } from '@/locales';
 
 defineOptions({
@@ -82,6 +84,8 @@ async function handleSubmit() {
   const { error } = await fetchUpdateRoleEndpoints({ roleId: props.roleId, endpoints });
 
   if (error) {
+    // protectedRevoke 明細：讀信封 data.blocked[] 結構化列出被擋目標（與共用層泛化 toast 並存）
+    showProtectedRevokeDetail(error.response?.data);
     return;
   }
 

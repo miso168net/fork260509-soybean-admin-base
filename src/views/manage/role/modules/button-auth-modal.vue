@@ -3,6 +3,8 @@ import { computed, shallowRef, watch } from 'vue';
 // [rev4-inline MODAL-WIRING(a) 009-role-admin] 原行: import { computed, shallowRef } from 'vue';
 // [rev4-inline MODAL-WIRING(a) 009-role-admin] button 授權讀寫 WRAPPER（★直接路徑、不經 barrel、避 vite stale-export）
 import { fetchGetAllButtons, fetchGetRoleButton, fetchUpdateRoleButton } from '@/service/api/rev4-role-admin';
+// [rev4-inline MODAL-WIRING(a) 009-role-admin] protectedRevoke 明細呼叫端渲染 helper（R4 第 2 層／ADR 0050）
+import { showProtectedRevokeDetail } from './protected-revoke-detail';
 import { $t } from '@/locales';
 
 defineOptions({
@@ -73,6 +75,8 @@ async function handleSubmit() {
   // [rev4-inline MODAL-WIRING(a) 009-role-admin] 原行: console.log(checks.value, props.roleId);
   const { error } = await fetchUpdateRoleButton({ roleId: props.roleId, buttons: checks.value });
   if (error) {
+    // [rev4-inline MODAL-WIRING(a) 009-role-admin] protectedRevoke 明細：讀信封 data.blocked[] 結構化列出被擋目標（與共用層泛化 toast 並存）
+    showProtectedRevokeDetail(error.response?.data);
     return;
   }
 
