@@ -21,6 +21,8 @@ const defaultModel = jsonClone(toRaw(model.value));
 
 function resetModel() {
   Object.assign(model.value, defaultModel);
+  // [rev4-inline MODAL-WIRING(a) 009-role-admin] reset 後補 emit('search')（沿 rev3 拍板）——重置即刷新列表
+  emit('search');
 }
 
 function search() {

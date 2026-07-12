@@ -4,6 +4,8 @@ import { jsonClone } from '@sa/utils';
 import { useBoolean } from '@sa/hooks';
 import { enableStatusOptions } from '@/constants/business';
 import { useFormRules, useNaiveForm } from '@/hooks/common/form';
+// [rev4-inline MODAL-WIRING(a) 009-role-admin] add/update 接線 WRAPPER（★直接路徑、不經 barrel、避 vite stale-export）
+import { fetchAddRole, fetchUpdateRole } from '@/service/api/rev4-role-admin';
 import { $t } from '@/locales';
 import MenuAuthModal from './menu-auth-modal.vue';
 import ButtonAuthModal from './button-auth-modal.vue';
@@ -83,7 +85,13 @@ function closeDrawer() {
 
 async function handleSubmit() {
   await validate();
-  // request
+  // [rev4-inline MODAL-WIRING(a) 009-role-admin] submit 接真 API：新增→fetchAddRole／編輯→fetchUpdateRole（成功經 submitted 復用凍結 fetchGetRoleList 刷新）
+  const { error } = isEdit.value
+    ? await fetchUpdateRole({ id: roleId.value, ...model.value })
+    : await fetchAddRole(model.value);
+  if (error) {
+    return;
+  }
   window.$message?.success($t('common.updateSuccess'));
   closeDrawer();
   emit('submitted');
