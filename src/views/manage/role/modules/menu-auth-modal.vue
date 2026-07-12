@@ -1,6 +1,13 @@
 <script setup lang="ts">
 import { computed, shallowRef, watch } from 'vue';
 import { fetchGetAllPages, fetchGetMenuTree } from '@/service/api';
+// [rev4-inline MODAL-WIRING(a) 009-role-admin] menu 授權＋roleHome 讀寫 WRAPPER（★直接路徑、不經 barrel、避 vite stale-export）
+import {
+  fetchGetRoleHome,
+  fetchGetRoleMenu,
+  fetchUpdateRoleHome,
+  fetchUpdateRoleMenu
+} from '@/service/api/rev4-role-admin';
 import { $t } from '@/locales';
 
 defineOptions({
@@ -27,15 +34,20 @@ const title = computed(() => $t('common.edit') + $t('page.manage.role.menuAuth')
 const home = shallowRef('');
 
 async function getHome() {
-  console.log(props.roleId);
-
-  home.value = 'home';
+  // [rev4-inline MODAL-WIRING(a) 009-role-admin] 原行: console.log(props.roleId);
+  // [rev4-inline MODAL-WIRING(a) 009-role-admin] 原行: home.value = 'home';
+  const { error, data } = await fetchGetRoleHome(props.roleId);
+  if (!error) {
+    home.value = data;
+  }
 }
 
 async function updateHome(val: string) {
-  // request
-
-  home.value = val;
+  // [rev4-inline MODAL-WIRING(a) 009-role-admin] home 寫端接線（updateRoleHome；成功才落 home=val、失敗不改本地）
+  const { error } = await fetchUpdateRoleHome({ roleId: props.roleId, home: val });
+  if (!error) {
+    home.value = val;
+  }
 }
 
 const pages = shallowRef<string[]>([]);
@@ -70,14 +82,21 @@ async function getTree() {
 const checks = shallowRef<number[]>([]);
 
 async function getChecks() {
-  console.log(props.roleId);
-  // request
-  checks.value = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21];
+  // [rev4-inline MODAL-WIRING(a) 009-role-admin] 原行: console.log(props.roleId);
+  // [rev4-inline MODAL-WIRING(a) 009-role-admin] 原行: checks.value = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21];
+  const { error, data } = await fetchGetRoleMenu(props.roleId);
+  if (!error) {
+    checks.value = data;
+  }
 }
 
-function handleSubmit() {
-  console.log(checks.value, props.roleId);
-  // request
+// [rev4-inline MODAL-WIRING(a) 009-role-admin] 原行: function handleSubmit() {
+async function handleSubmit() {
+  // [rev4-inline MODAL-WIRING(a) 009-role-admin] 原行: console.log(checks.value, props.roleId);
+  const { error } = await fetchUpdateRoleMenu({ roleId: props.roleId, menuIds: checks.value });
+  if (error) {
+    return;
+  }
 
   window.$message?.success?.($t('common.modifySuccess'));
 

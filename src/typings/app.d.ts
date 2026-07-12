@@ -781,6 +781,8 @@ declare namespace App {
             editRole: string;
             menuAuth: string;
             buttonAuth: string;
+            // [rev4-inline MODAL-WIRING(c) 009-role-admin] endpoint-auth-modal net-new key 型（逐鍵鏡像 locale）
+            endpointAuth: string;
           };
           user: {
             title: string;

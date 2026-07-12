@@ -599,6 +599,8 @@ const local: App.I18n.Schema = {
         roleDesc: 'Role Description',
         menuAuth: 'Menu Auth',
         buttonAuth: 'Button Auth',
+        // [rev4-inline MODAL-WIRING(c) 009-role-admin] endpoint-auth-modal net-new modal 自身 key（(c) 明文授權）
+        endpointAuth: 'Endpoint Auth',
         form: {
           roleName: 'Please enter role name',
           roleCode: 'Please enter role code',

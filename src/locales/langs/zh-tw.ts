@@ -588,6 +588,8 @@ const local: App.I18n.Schema = {
         roleDesc: '角色描述',
         menuAuth: '選單權限',
         buttonAuth: '按鈕權限',
+        // [rev4-inline MODAL-WIRING(c) 009-role-admin] endpoint-auth-modal net-new modal 自身 key（(c) 明文授權）
+        endpointAuth: '端點權限',
         form: {
           roleName: '請輸入角色名稱',
           roleCode: '請輸入角色編碼',

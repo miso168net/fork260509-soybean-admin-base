@@ -15,5 +15,39 @@ declare namespace Api {
     type UpdateRoleReq = { id: number } & Partial<
       Pick<Api.SystemManage.Role, 'roleCode' | 'roleName' | 'roleDesc' | 'status'>
     >;
+
+    /**
+     * 端點（path＋method 二元組；contracts P2 #16）
+     *
+     * getAllEndpoints 回應項＝updateRoleEndpoints desired 項、同形共用（endpoint-auth-modal 候選與現況）。
+     */
+    type Endpoint = {
+      path: string;
+      method: string;
+    };
+
+    /** 更新角色 menu 授權請求（POST updateRoleMenu；contracts P2 #8；menuIds＝勾選 menu id 全集） */
+    type UpdateRoleMenuReq = {
+      roleId: number;
+      menuIds: number[];
+    };
+
+    /** 更新角色 button 授權請求（POST updateRoleButton；contracts P2 #10；buttons＝勾選 button code 全集） */
+    type UpdateRoleButtonReq = {
+      roleId: number;
+      buttons: string[];
+    };
+
+    /** 更新角色 endpoint 授權請求（POST updateRoleEndpoints；contracts P2 #12；endpoints＝勾選 (path,method) 全集） */
+    type UpdateRoleEndpointsReq = {
+      roleId: number;
+      endpoints: Endpoint[];
+    };
+
+    /** 更新角色首頁請求（POST updateRoleHome；contracts P2 #18；寫端不驗一致性、讀端兜底 FR-039） */
+    type UpdateRoleHomeReq = {
+      roleId: number;
+      home: string;
+    };
   }
 }

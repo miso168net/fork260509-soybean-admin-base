@@ -9,6 +9,8 @@ import { fetchAddRole, fetchUpdateRole } from '@/service/api/rev4-role-admin';
 import { $t } from '@/locales';
 import MenuAuthModal from './menu-auth-modal.vue';
 import ButtonAuthModal from './button-auth-modal.vue';
+// [rev4-inline MODAL-WIRING(c) 009-role-admin] endpoint-auth-modal net-new（(c) 明文授權；觸發鈕＋掛載鏡像 menu/button auth-modal）
+import EndpointAuthModal from './endpoint-auth-modal.vue';
 
 defineOptions({
   name: 'RoleOperateDrawer'
@@ -37,6 +39,8 @@ const { formRef, validate, restoreValidation } = useNaiveForm();
 const { defaultRequiredRule } = useFormRules();
 const { bool: menuAuthVisible, setTrue: openMenuAuthModal } = useBoolean();
 const { bool: buttonAuthVisible, setTrue: openButtonAuthModal } = useBoolean();
+// [rev4-inline MODAL-WIRING(c) 009-role-admin] endpoint 授權 modal 開關
+const { bool: endpointAuthVisible, setTrue: openEndpointAuthModal } = useBoolean();
 
 const title = computed(() => {
   const titles: Record<NaiveUI.TableOperateType, string> = {
@@ -129,6 +133,9 @@ watch(visible, () => {
         <MenuAuthModal v-model:visible="menuAuthVisible" :role-id="roleId" />
         <NButton @click="openButtonAuthModal">{{ $t('page.manage.role.buttonAuth') }}</NButton>
         <ButtonAuthModal v-model:visible="buttonAuthVisible" :role-id="roleId" />
+        <!-- [rev4-inline MODAL-WIRING(c) 009-role-admin] endpoint 授權觸發鈕＋掛載（鏡像 menu/button；(c) 明文授權新 modal） -->
+        <NButton @click="openEndpointAuthModal">{{ $t('page.manage.role.endpointAuth') }}</NButton>
+        <EndpointAuthModal v-model:visible="endpointAuthVisible" :role-id="roleId" />
       </NSpace>
       <template #footer>
         <NSpace :size="16">
