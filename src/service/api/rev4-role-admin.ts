@@ -131,3 +131,23 @@ export function fetchUpdateRoleHome(data: Api.SystemManage.UpdateRoleHomeReq) {
     data
   });
 }
+
+// ── US4 回收桶（2）＝2 fetcher（contracts P3 #19~#20；★消費 U9 後端 getArchivedPolicies／restorePolicy）──
+
+/** 讀歸檔政策列表（GET getArchivedPolicies；roleCode／dimension 雙濾＋分頁；archived_at desc、restorable 隨列下發） */
+export function fetchGetArchivedPolicies(params?: Api.SystemManage.ArchivedPolicySearchParams) {
+  return request<Api.SystemManage.ArchivedPolicyList>({
+    url: '/systemManage/getArchivedPolicies',
+    method: 'get',
+    params
+  });
+}
+
+/** 復原歸檔政策（POST restorePolicy；null Applied→reload｜0000 已 live NoOp、歸檔列仍消費｜2222 notRestorable） */
+export function fetchRestorePolicy(id: number) {
+  return request<null>({
+    url: '/systemManage/restorePolicy',
+    method: 'post',
+    data: { id }
+  });
+}

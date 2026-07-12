@@ -49,5 +49,40 @@ declare namespace Api {
       roleId: number;
       home: string;
     };
+
+    /** 歸檔政策維度（menu／button／endpoint；後端由 v2 推導、隨列下發；contracts P3） */
+    type ArchivedPolicyDimension = 'menu' | 'button' | 'endpoint';
+
+    /**
+     * 歸檔政策列（回收桶單列；contracts P3 #19）
+     *
+     * restorable＝可復原旗標（FR-028；後端七步鎖序判定隨列下發、restorable=false 前端呈停用態）；
+     * roleId 可為 NULL（歷史列未知→不可復原、誠實退化）。v0＝來源角色 code、v1＝授權標的；
+     * ptype／v2..v5＝casbin 原始欄承載（varchar、空位以空字串下發）。
+     */
+    type ArchivedPolicy = {
+      id: number;
+      ptype: string;
+      v0: string;
+      v1: string;
+      v2: string;
+      v3: string;
+      v4: string;
+      v5: string;
+      archiveReason: string;
+      archivedAt: string;
+      archivedBy: string;
+      roleId: number | null;
+      restorable: boolean;
+      dimension: ArchivedPolicyDimension;
+    };
+
+    /** 回收桶查詢參數（roleCode／dimension 雙濾＋分頁；contracts P3 #19） */
+    type ArchivedPolicySearchParams = CommonType.RecordNullable<
+      { roleCode: string; dimension: ArchivedPolicyDimension } & CommonSearchParams
+    >;
+
+    /** 回收桶列表（archived_at desc、restorable 隨列下發；contracts P3 #19） */
+    type ArchivedPolicyList = Common.PaginatingQueryRecord<ArchivedPolicy>;
   }
 }

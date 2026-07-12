@@ -302,6 +302,8 @@ const local: App.I18n.Schema = {
     manage_menu: '菜单管理',
     // [rev4-inline MODAL-WIRING(e) 004-system-settings] gen-route 產出 manage_system-settings route → route locale 型閘門要求補鍵
     'manage_system-settings': '系统设置',
+    // [rev4-inline MODAL-WIRING(e) 009-role-admin] gen-route 產出 manage_policy-archive route → route locale 型閘門要求補鍵（B-061 三清一）
+    'manage_policy-archive': '授权回收站',
     'multi-menu': '多级菜单',
     'multi-menu_first': '菜单一',
     'multi-menu_first_child': '菜单一子菜单',
@@ -606,6 +608,29 @@ const local: App.I18n.Schema = {
         addRole: '新增角色',
         editRole: '编辑角色'
       },
+      // [rev4-inline MODAL-WIRING(e) 009-role-admin START] 授權回收桶頁字串（憲法 §III.2 (e) 明文授權新頁 i18n；B-061 三清一）
+      policyArchive: {
+        title: '授权回收站',
+        sourceRole: '来源角色',
+        dimension: '授权维度',
+        target: '授权标的',
+        archiveReason: '归档原因',
+        archivedAt: '归档时间',
+        archivedBy: '归档者',
+        restore: '复原',
+        confirmRestore: '确定复原此授权？',
+        restoreSuccess: '复原成功',
+        form: {
+          sourceRole: '请输入来源角色编码',
+          dimension: '请选择授权维度'
+        },
+        dimensionLabel: {
+          menu: '菜单',
+          button: '按钮',
+          endpoint: '端点'
+        }
+      },
+      // [rev4-inline MODAL-WIRING(e) 009-role-admin END]
       user: {
         title: '用户列表',
         userName: '用户名',

@@ -784,6 +784,29 @@ declare namespace App {
             // [rev4-inline MODAL-WIRING(c) 009-role-admin] endpoint-auth-modal net-new key 型（逐鍵鏡像 locale）
             endpointAuth: string;
           };
+          // [rev4-inline MODAL-WIRING(e) 009-role-admin START] 授權回收桶頁字串型（逐鍵鏡像 locale）
+          policyArchive: {
+            title: string;
+            sourceRole: string;
+            dimension: string;
+            target: string;
+            archiveReason: string;
+            archivedAt: string;
+            archivedBy: string;
+            restore: string;
+            confirmRestore: string;
+            restoreSuccess: string;
+            form: {
+              sourceRole: string;
+              dimension: string;
+            };
+            dimensionLabel: {
+              menu: string;
+              button: string;
+              endpoint: string;
+            };
+          };
+          // [rev4-inline MODAL-WIRING(e) 009-role-admin END]
           user: {
             title: string;
             userName: string;

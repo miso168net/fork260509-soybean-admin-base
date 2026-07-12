@@ -306,6 +306,8 @@ const local: App.I18n.Schema = {
     manage_menu: 'Menu Manage',
     // [rev4-inline MODAL-WIRING(e) 004-system-settings] gen-route 產出 manage_system-settings route → route locale 型閘門要求補鍵
     'manage_system-settings': 'System Settings',
+    // [rev4-inline MODAL-WIRING(e) 009-role-admin] gen-route 產出 manage_policy-archive route → route locale 型閘門要求補鍵（B-061 三清一）
+    'manage_policy-archive': 'Policy Recycle Bin',
     'multi-menu': 'Multi Menu',
     'multi-menu_first': 'Menu One',
     'multi-menu_first_child': 'Menu One Child',
@@ -610,6 +612,29 @@ const local: App.I18n.Schema = {
         addRole: 'Add Role',
         editRole: 'Edit Role'
       },
+      // [rev4-inline MODAL-WIRING(e) 009-role-admin START] 授權回收桶頁字串（憲法 §III.2 (e) 明文授權新頁 i18n；B-061 三清一）
+      policyArchive: {
+        title: 'Policy Recycle Bin',
+        sourceRole: 'Source Role',
+        dimension: 'Dimension',
+        target: 'Target',
+        archiveReason: 'Archive Reason',
+        archivedAt: 'Archived At',
+        archivedBy: 'Archived By',
+        restore: 'Restore',
+        confirmRestore: 'Confirm to restore this policy?',
+        restoreSuccess: 'Restore success',
+        form: {
+          sourceRole: 'Please enter source role code',
+          dimension: 'Please select dimension'
+        },
+        dimensionLabel: {
+          menu: 'Menu',
+          button: 'Button',
+          endpoint: 'Endpoint'
+        }
+      },
+      // [rev4-inline MODAL-WIRING(e) 009-role-admin END]
       user: {
         title: 'User List',
         userName: 'User Name',

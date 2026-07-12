@@ -297,6 +297,7 @@ const local: App.I18n.Schema = {
     manage_role: '角色管理',
     manage_menu: '選單管理',
     'manage_system-settings': '系統設定',
+    'manage_policy-archive': '授權回收桶',
     'multi-menu': '多級選單',
     'multi-menu_first': '選單一',
     'multi-menu_first_child': '選單一子選單',
@@ -598,6 +599,27 @@ const local: App.I18n.Schema = {
         },
         addRole: '新增角色',
         editRole: '編輯角色'
+      },
+      policyArchive: {
+        title: '授權回收桶',
+        sourceRole: '來源角色',
+        dimension: '授權維度',
+        target: '授權標的',
+        archiveReason: '歸檔原因',
+        archivedAt: '歸檔時間',
+        archivedBy: '歸檔者',
+        restore: '復原',
+        confirmRestore: '確定復原此授權？',
+        restoreSuccess: '復原成功',
+        form: {
+          sourceRole: '請輸入來源角色編碼',
+          dimension: '請選擇授權維度'
+        },
+        dimensionLabel: {
+          menu: '選單',
+          button: '按鈕',
+          endpoint: '端點'
+        }
       },
       user: {
         title: '使用者列表',

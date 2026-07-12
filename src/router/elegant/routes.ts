@@ -264,6 +264,18 @@ export const generatedRoutes: GeneratedRoute[] = [
         }
       },
       {
+        name: 'manage_policy-archive',
+        path: '/manage/policy-archive',
+        component: 'view.manage_policy-archive',
+        meta: {
+          title: 'manage_policy-archive',
+          i18nKey: 'route.manage_policy-archive',
+          icon: 'carbon:trash-can',
+          order: 5,
+          roles: ['R_SUPER']
+        }
+      },
+      {
         name: 'manage_role',
         path: '/manage/role',
         component: 'view.manage_role',
