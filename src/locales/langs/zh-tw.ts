@@ -38,6 +38,19 @@ const local: App.I18n.Schema = {
         notFound: '角色不存在',
         protectedRevoke: '存在受保護的授權，無法撤銷'
       },
+      // [rev4-inline I18N-WIRING(ii) 010-menu-admin] biz.menu 治理拒因十鍵（一因一鍵、皆 scalar 無插值；data 明細走呼叫端渲染；R9／ADR 0050）
+      menu: {
+        protectedMenu: '系統內建選單，不可刪除',
+        hasChildren: '選單下尚有子項，請先處理子項',
+        routeNameImmutable: '路由名稱建立後不可修改',
+        menuTypeImmutable: '選單類型建立後不可修改',
+        routeNameExists: '路由名稱已存在',
+        routeNameInvalid: '路由名稱格式不正確（僅允許字母、數字、底線、連字號，最長 100 位）',
+        parentNotFound: '父層選單不存在',
+        parentDeleted: '父層選單已刪除，請先復原父層',
+        cycleDetected: '不可將選單移至自身或其子孫之下',
+        notFound: '選單不存在'
+      },
       policy: {
         notRestorable: '該歸檔授權不可復原'
       }

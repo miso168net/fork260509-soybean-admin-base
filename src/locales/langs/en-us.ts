@@ -41,6 +41,19 @@ const local: App.I18n.Schema = {
         notFound: 'Role not found',
         protectedRevoke: 'Some protected grants exist and cannot be revoked'
       },
+      // [rev4-inline I18N-WIRING(ii) 010-menu-admin] biz.menu 治理拒因十鍵（一因一鍵、皆 scalar 無插值；data 明細走呼叫端渲染；R9／ADR 0050）
+      menu: {
+        protectedMenu: 'System built-in menu cannot be deleted',
+        hasChildren: 'This menu still has child items; please handle the child items first',
+        routeNameImmutable: 'Route name cannot be changed after creation',
+        menuTypeImmutable: 'Menu type cannot be changed after creation',
+        routeNameExists: 'Route name already exists',
+        routeNameInvalid: 'Invalid route name (letters, digits, underscore and hyphen only, up to 100 characters)',
+        parentNotFound: 'Parent menu not found',
+        parentDeleted: 'Parent menu has been deleted; please restore the parent first',
+        cycleDetected: 'A menu cannot be moved under itself or its descendants',
+        notFound: 'Menu not found'
+      },
       policy: {
         notRestorable: 'This archived grant cannot be restored'
       }

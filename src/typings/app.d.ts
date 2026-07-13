@@ -354,6 +354,19 @@ declare namespace App {
             notFound: string;
             protectedRevoke: string;
           };
+          // [rev4-inline I18N-WIRING(iii) 010-menu-admin] biz.menu 拒因型十鍵（逐鍵鏡像 locale；皆 scalar；R9／ADR 0050）
+          menu: {
+            protectedMenu: string;
+            hasChildren: string;
+            routeNameImmutable: string;
+            menuTypeImmutable: string;
+            routeNameExists: string;
+            routeNameInvalid: string;
+            parentNotFound: string;
+            parentDeleted: string;
+            cycleDetected: string;
+            notFound: string;
+          };
           policy: {
             notRestorable: string;
           };
