@@ -735,6 +735,9 @@ const local: App.I18n.Schema = {
         addMenu: 'Add Menu',
         editMenu: 'Edit Menu',
         addChildMenu: 'Add Child Menu',
+        // [rev4-inline (d) 010-menu-admin] 顯示已刪除 toggle＋復原確認（憲法 §III.2(d) 錨點；restore/restoreSuccess 復用 policyArchive entity-neutral）
+        showDeleted: 'Show Deleted',
+        confirmRestore: 'Confirm to restore this menu?',
         type: {
           directory: 'Directory',
           menu: 'Menu'

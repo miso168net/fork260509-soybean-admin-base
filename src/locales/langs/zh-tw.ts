@@ -721,6 +721,9 @@ const local: App.I18n.Schema = {
         addMenu: '新增選單',
         editMenu: '編輯選單',
         addChildMenu: '新增子選單',
+        // [rev4-inline (d) 010-menu-admin] 顯示已刪除 toggle＋復原確認（憲法 §III.2(d) 錨點；restore/restoreSuccess 復用 policyArchive entity-neutral）
+        showDeleted: '顯示已刪除',
+        confirmRestore: '確定復原此選單？',
         type: {
           directory: '目錄',
           menu: '選單'

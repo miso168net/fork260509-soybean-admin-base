@@ -1,5 +1,6 @@
 <script setup lang="tsx">
-import { ref } from 'vue';
+// [rev4-inline (d) 010-menu-admin] 原行: import { ref } from 'vue';
+import { ref, watch } from 'vue';
 import type { Ref } from 'vue';
 import { NButton, NPopconfirm, NTag } from 'naive-ui';
 import { useBoolean } from '@sa/hooks';
@@ -7,7 +8,7 @@ import { yesOrNoRecord } from '@/constants/common';
 import { enableStatusRecord, menuTypeRecord } from '@/constants/business';
 import { fetchGetAllPages, fetchGetMenuList } from '@/service/api';
 // [rev4-inline MODAL-WIRING(a) 010-menu-admin] delete/batchDelete 接線 WRAPPER（★直接路徑、不經 barrel、避 vite stale-export）
-import { fetchBatchDeleteMenu, fetchDeleteMenu } from '@/service/api/rev4-menu-admin';
+import { fetchBatchDeleteMenu, fetchDeleteMenu, fetchGetDeletedMenus, fetchRestoreMenu } from '@/service/api/rev4-menu-admin';
 // [rev4-inline MODAL-WIRING(b) 010-menu-admin] hasAuth gating 取用（menu:add/edit/delete 按鈕顯隱）
 import { useAuth } from '@/hooks/business/auth';
 import { useAppStore } from '@/store/modules/app';
@@ -25,8 +26,18 @@ const { bool: visible, setTrue: openModal } = useBoolean();
 
 const wrapperRef = ref<HTMLElement | null>(null);
 
+// [rev4-inline (d) 010-menu-admin] 顯示已刪除 toggle 狀態＋回收桶分頁參（憲法 §III.2(d)；切換資料源 fetchGetMenuList⇄fetchGetDeletedMenus）
+const showDeleted = ref(false);
+const deletedSearchParams = ref<Api.SystemManage.GetDeletedMenusParams>({ current: 1, size: 10 });
+
 const { columns, columnChecks, data, loading, pagination, getData, getDataByPage } = useNaivePaginatedTable({
-  api: () => fetchGetMenuList(),
+  // [rev4-inline (d) 010-menu-admin] 原行: api: () => fetchGetMenuList(),
+  api: () => (showDeleted.value ? fetchGetDeletedMenus(deletedSearchParams.value) : fetchGetMenuList()),
+  // [rev4-inline (d) 010-menu-admin] 回收桶分頁同步（鏡像 policy-archive onPaginationParamsChange；僅已刪模式消費 deletedSearchParams）
+  onPaginationParamsChange: params => {
+    deletedSearchParams.value.current = params.page ?? 1;
+    deletedSearchParams.value.size = params.pageSize ?? 10;
+  },
   transform: response => defaultTransform(response),
   columns: () => [
     {
@@ -155,7 +166,22 @@ const { columns, columnChecks, data, loading, pagination, getData, getDataByPage
       // [rev4-inline MODAL-WIRING(b) 010-menu-admin] 列操作鈕 hasAuth gating：addChild→menu:add（疊 menuType==='1'）、edit→menu:edit、delete→menu:delete 顯隱
       // [rev4-inline MODAL-WIRING(b) 010-menu-admin] 原行: {row.menuType === '1' && (
       render: row => (
-        <div class="flex-center justify-end gap-8px">
+        // [rev4-inline (d) 010-menu-admin] 已刪模式操作欄換逐列 restore 鈕、隱 addChild/edit/delete（憲法 §III.2(d)；鏡像 policy-archive restore 鈕）
+        showDeleted.value ? (
+          <div class="flex-center justify-end gap-8px">
+            <NPopconfirm onPositiveClick={() => handleRestore(row.id)}>
+              {{
+                default: () => $t('page.manage.menu.confirmRestore'),
+                trigger: () => (
+                  <NButton type="primary" ghost size="small">
+                    {$t('page.manage.policyArchive.restore')}
+                  </NButton>
+                )
+              }}
+            </NPopconfirm>
+          </div>
+        ) : (
+          <div class="flex-center justify-end gap-8px">
           {row.menuType === '1' && hasAuth('menu:add') && (
             <NButton type="primary" ghost size="small" onClick={() => handleAddChildMenu(row)}>
               {$t('page.manage.menu.addChildMenu')}
@@ -179,12 +205,18 @@ const { columns, columnChecks, data, loading, pagination, getData, getDataByPage
             </NPopconfirm>
           )}
         </div>
+        )
       )
     }
   ]
 });
 
 const { checkedRowKeys, onBatchDeleted, onDeleted } = useTableOperate(data, 'id', getData);
+
+// [rev4-inline (d) 010-menu-admin] 切換顯示已刪除 → 回第一頁重取（憲法 §III.2(d)）
+watch(showDeleted, () => {
+  getDataByPage(1);
+});
 
 const operateType = ref<OperateType>('add');
 
@@ -214,6 +246,19 @@ async function handleDelete(id: number) {
 
   // onDeleted 內部復用凍結 fetchGetMenuList（getData）刷新列表
   onDeleted();
+}
+
+// [rev4-inline (d) 010-menu-admin] 復原已刪選單（憲法 §III.2(d)；鏡像 policy-archive handleRestore：error 才 return→success toast→getData 刷新）
+async function handleRestore(id: number) {
+  const { error } = await fetchRestoreMenu(id);
+  if (error) {
+    // notFound／parent 未活 等業務碼由共用攔截器 onError 彈訊息（明細通道）
+    return;
+  }
+
+  window.$message?.success($t('page.manage.policyArchive.restoreSuccess'));
+
+  await getData();
 }
 
 /** the edit menu data or the parent menu data when adding a child menu */
@@ -261,15 +306,23 @@ init();
           @delete="handleBatchDelete"
           @refresh="getData"
         >
+          <!-- [rev4-inline (d) 010-menu-admin START] 顯示已刪除 toggle（憲法 §III.2(d) 錨點；prefix slot 常駐、切換資料源＋操作欄；仿 system-settings NSwitch、prefix 為 upstream 擴充點不動共用元件） -->
+          <template #prefix>
+            <div class="flex-center gap-8px">
+              <span class="text-14px">{{ $t('page.manage.menu.showDeleted') }}</span>
+              <NSwitch v-model:value="showDeleted" />
+            </div>
+          </template>
+          <!-- [rev4-inline (d) 010-menu-admin END] -->
           <!-- [rev4-inline MODAL-WIRING(b) 010-menu-admin START] 覆寫 default slot、以 menu:add/menu:delete 顯隱 add/batchDelete 鈕（憲法 §III MODAL-WIRING (b)；不動共用 table-header-operation.vue、gating 全落 index.vue） -->
           <template #default>
-            <NButton v-if="hasAuth('menu:add')" size="small" ghost type="primary" @click="handleAdd">
+            <NButton v-if="!showDeleted && hasAuth('menu:add')" size="small" ghost type="primary" @click="handleAdd">
               <template #icon>
                 <icon-ic-round-plus class="text-icon" />
               </template>
               {{ $t('common.add') }}
             </NButton>
-            <NPopconfirm v-if="hasAuth('menu:delete')" @positive-click="handleBatchDelete">
+            <NPopconfirm v-if="!showDeleted && hasAuth('menu:delete')" @positive-click="handleBatchDelete">
               <template #trigger>
                 <NButton size="small" ghost type="error" :disabled="checkedRowKeys.length === 0">
                   <template #icon>

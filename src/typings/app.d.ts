@@ -907,6 +907,9 @@ declare namespace App {
             addMenu: string;
             editMenu: string;
             addChildMenu: string;
+            // [rev4-inline (d) 010-menu-admin] 顯示已刪除 toggle＋復原確認 label（憲法 §III.2(d) 錨點；restore/restoreSuccess 復用 policyArchive、無需入 menu schema）
+            showDeleted: string;
+            confirmRestore: string;
             type: {
               directory: string;
               menu: string;
