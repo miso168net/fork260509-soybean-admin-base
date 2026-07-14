@@ -315,6 +315,8 @@ declare namespace App {
       // [rev4-inline I18N-WIRING(iii) 004-system-settings START] top-level backend 命名空間型（映射 wire msg → 在地化）
       backend: {
         common: {
+          // [rev4-inline I18N-WIRING(iii) 011-user-admin] 明細清單在地化分隔符型（passwordPolicy violations join 用；T024）
+          listSeparator: string;
           success: string;
         };
         // [rev4-inline I18N-WIRING(iii) 005-auth-login] auth 命名空間型（逐鍵鏡像 locale）
@@ -366,6 +368,38 @@ declare namespace App {
             parentDeleted: string;
             cycleDetected: string;
             notFound: string;
+          };
+          // [rev4-inline I18N-WIRING(iii) 011-user-admin] biz.user 拒因 15 鍵＋passwordViolation 逐碼子鍵＋biz.unlock 2 鍵型（逐鍵鏡像 locale；ADR 0050/0054）
+          user: {
+            seededProtected: string;
+            cannotDeleteSelf: string;
+            cannotDisableSelf: string;
+            cannotKickSelf: string;
+            cannotChangeSelfRoles: string;
+            superCannotDisable: string;
+            superRoleProtected: string;
+            userNameExists: string;
+            userNameImmutable: string;
+            userNameInvalid: string;
+            passwordPolicy: string;
+            passwordViolation: {
+              minLength: string;
+              maxLength: string;
+              maxBytes: string;
+              requireDigit: string;
+              requireLowercase: string;
+              requireUppercase: string;
+              requireSpecial: string;
+              forbidUsername: string;
+            };
+            roleNotFound: string;
+            userNotFound: string;
+            notRestorable: string;
+            sessionPolicyInvalid: string;
+          };
+          unlock: {
+            invalidTarget: string;
+            invalidDimension: string;
           };
           policy: {
             notRestorable: string;
@@ -845,7 +879,41 @@ declare namespace App {
             userEmail: string;
             userStatus: string;
             userRole: string;
+            // [rev4-inline I18N-WIRING(iii) 011-user-admin] user 頁維運動作＋回收桶＋drawer 控件＋解鎖 modal key 型（逐鍵鏡像 locale；T023）
+            password: string;
+            sessionPolicy: string;
+            sessionPolicyOption: {
+              inherit: string;
+              single: string;
+              multi: string;
+            };
+            kick: string;
+            confirmKick: string;
+            kickSuccess: string;
+            resetPwd: string;
+            resetPwdSuccess: string;
+            resetPwdUnlockHint: string;
+            confirmRestore: string;
+            deletedAt: string;
+            unlock: {
+              title: string;
+              dimension: string;
+              target: string;
+              dimensionLabel: {
+                user: string;
+                ip: string;
+              };
+              success: string;
+              form: {
+                dimension: string;
+                userName: string;
+                target: string;
+              };
+            };
             form: {
+              // [rev4-inline I18N-WIRING(iii) 011-user-admin] drawer add 密碼欄＋edit 會話策略 placeholder 型（T023）
+              password: string;
+              sessionPolicy: string;
               userName: string;
               userGender: string;
               nickName: string;

@@ -1,6 +1,8 @@
 const local: App.I18n.Schema = {
   backend: {
     common: {
+      // [rev4-inline I18N-WIRING(ii) 011-user-admin] 明細清單在地化分隔符（passwordPolicy violations join 用；T024）
+      listSeparator: '、',
       success: '操作成功'
     },
     auth: {
@@ -50,6 +52,38 @@ const local: App.I18n.Schema = {
         parentDeleted: '父層選單已刪除，請先復原父層',
         cycleDetected: '不可將選單移至自身或其子孫之下',
         notFound: '選單不存在'
+      },
+      // [rev4-inline I18N-WIRING(ii) 011-user-admin] biz.user 拒因 15 鍵（一因一鍵；passwordPolicy 攜 {violations} scalar 插值——陣列在攔截層逐碼經 passwordViolation 子鍵譯後 join；ADR 0050/0054）＋biz.unlock 2 鍵（007 欠帳）
+      user: {
+        seededProtected: '系統內建帳號，不可刪除',
+        cannotDeleteSelf: '不能刪除目前登入使用者',
+        cannotDisableSelf: '不能停用目前登入使用者',
+        cannotKickSelf: '不能踢除目前登入使用者',
+        cannotChangeSelfRoles: '不能變更目前登入使用者的角色指派',
+        superCannotDisable: '超級管理員帳號不可停用',
+        superRoleProtected: '不可解除超級管理員帳號的超管角色指派',
+        userNameExists: '使用者名稱已存在',
+        userNameImmutable: '使用者名稱建立後不可修改',
+        userNameInvalid: '使用者名稱格式不正確（僅允許字母、數字、底線、連字號，最長 64 位）',
+        passwordPolicy: '密碼不符合密碼政策：{violations}',
+        passwordViolation: {
+          minLength: '長度未達政策下限',
+          maxLength: '長度超過政策上限',
+          maxBytes: '位元組數超過上限',
+          requireDigit: '須包含數字',
+          requireLowercase: '須包含小寫字母',
+          requireUppercase: '須包含大寫字母',
+          requireSpecial: '須包含特殊符號',
+          forbidUsername: '不可與使用者名稱相同'
+        },
+        roleNotFound: '所選角色不存在或已刪除',
+        userNotFound: '使用者不存在',
+        notRestorable: '該使用者不可復原',
+        sessionPolicyInvalid: '會話策略值無效（僅允許 inherit、single、multi）'
+      },
+      unlock: {
+        invalidTarget: '解鎖標的無效（帳號維需帳號名稱、IP 源維需有效 IP 位址）',
+        invalidDimension: '解鎖維度無效（僅支援帳號維與 IP 源維）'
       },
       policy: {
         notRestorable: '該歸檔授權不可復原'
@@ -659,7 +693,41 @@ const local: App.I18n.Schema = {
         userEmail: '電子郵件',
         userStatus: '使用者狀態',
         userRole: '使用者角色',
+        // [rev4-inline I18N-WIRING(ii) 011-user-admin] user 頁維運動作＋回收桶＋drawer 控件＋解鎖 modal 字串（T023；showDeleted／restore／restoreSuccess 複用既有 entity-neutral 鍵不重建）
+        password: '密碼',
+        sessionPolicy: '會話策略',
+        sessionPolicyOption: {
+          inherit: '跟隨全站設定',
+          single: '單一在線',
+          multi: '允許多處在線'
+        },
+        kick: '踢除下線',
+        confirmKick: '確定踢除該使用者的所有工作階段？',
+        kickSuccess: '踢除成功',
+        resetPwd: '重設密碼',
+        resetPwdSuccess: '密碼重設成功',
+        resetPwdUnlockHint: '若該帳號登入鎖定中需另行解鎖',
+        confirmRestore: '確定復原此使用者？',
+        deletedAt: '刪除時間',
+        unlock: {
+          title: '解鎖登入',
+          dimension: '鎖定維度',
+          target: '解鎖標的',
+          dimensionLabel: {
+            user: '帳號',
+            ip: 'IP 源'
+          },
+          success: '解鎖成功',
+          form: {
+            dimension: '請選擇鎖定維度',
+            userName: '請輸入要解鎖的帳號名稱',
+            target: '請輸入要解鎖的 IP 位址'
+          }
+        },
         form: {
+          // [rev4-inline I18N-WIRING(ii) 011-user-admin] drawer add 密碼欄＋edit 會話策略 placeholder（T023）
+          password: '請輸入密碼',
+          sessionPolicy: '請選擇會話策略',
           userName: '請輸入使用者名稱',
           userGender: '請選擇性別',
           nickName: '請輸入暱稱',

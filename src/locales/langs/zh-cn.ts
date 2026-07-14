@@ -2,6 +2,8 @@ const local: App.I18n.Schema = {
   // [rev4-inline I18N-WIRING(ii) 004-system-settings START] backend 命名空間（映射 wire msg → 在地化顯示）
   backend: {
     common: {
+      // [rev4-inline I18N-WIRING(ii) 011-user-admin] 明細清單在地化分隔符（passwordPolicy violations join 用；T024）
+      listSeparator: '、',
       success: '操作成功'
     },
     // [rev4-inline I18N-WIRING(ii) 005-auth-login] auth 命名空間（登入失敗／token 逾期／session 重登在地化）
@@ -53,6 +55,38 @@ const local: App.I18n.Schema = {
         parentDeleted: '父级菜单已删除，请先复原父级',
         cycleDetected: '不可将菜单移至自身或其子孙之下',
         notFound: '菜单不存在'
+      },
+      // [rev4-inline I18N-WIRING(ii) 011-user-admin] biz.user 拒因 15 鍵（一因一鍵；passwordPolicy 攜 {violations} scalar 插值——陣列在攔截層逐碼經 passwordViolation 子鍵譯後 join；ADR 0050/0054）＋biz.unlock 2 鍵（007 欠帳）
+      user: {
+        seededProtected: '系统内置账号，不可删除',
+        cannotDeleteSelf: '不能删除当前登录用户',
+        cannotDisableSelf: '不能停用当前登录用户',
+        cannotKickSelf: '不能踢除当前登录用户',
+        cannotChangeSelfRoles: '不能变更当前登录用户的角色指派',
+        superCannotDisable: '超级管理员账号不可停用',
+        superRoleProtected: '不可解除超级管理员账号的超管角色指派',
+        userNameExists: '用户名已存在',
+        userNameImmutable: '用户名创建后不可修改',
+        userNameInvalid: '用户名格式不正确（仅允许字母、数字、下划线、连字符，最长 64 位）',
+        passwordPolicy: '密码不符合密码策略：{violations}',
+        passwordViolation: {
+          minLength: '长度未达策略下限',
+          maxLength: '长度超过策略上限',
+          maxBytes: '字节数超过上限',
+          requireDigit: '须包含数字',
+          requireLowercase: '须包含小写字母',
+          requireUppercase: '须包含大写字母',
+          requireSpecial: '须包含特殊符号',
+          forbidUsername: '不可与用户名相同'
+        },
+        roleNotFound: '所选角色不存在或已删除',
+        userNotFound: '用户不存在',
+        notRestorable: '该用户不可复原',
+        sessionPolicyInvalid: '会话策略值无效（仅允许 inherit、single、multi）'
+      },
+      unlock: {
+        invalidTarget: '解锁目标无效（账号维需账号名称、IP 源维需有效 IP 地址）',
+        invalidDimension: '解锁维度无效（仅支持账号维与 IP 源维）'
       },
       policy: {
         notRestorable: '该归档授权不可复原'
@@ -669,7 +703,41 @@ const local: App.I18n.Schema = {
         userEmail: '邮箱',
         userStatus: '用户状态',
         userRole: '用户角色',
+        // [rev4-inline I18N-WIRING(ii) 011-user-admin] user 頁維運動作＋回收桶＋drawer 控件＋解鎖 modal 字串（T023；showDeleted／restore／restoreSuccess 複用既有 entity-neutral 鍵不重建）
+        password: '密码',
+        sessionPolicy: '会话策略',
+        sessionPolicyOption: {
+          inherit: '跟随全站设置',
+          single: '单一在线',
+          multi: '允许多处在线'
+        },
+        kick: '踢除下线',
+        confirmKick: '确定踢除该用户的所有会话？',
+        kickSuccess: '踢除成功',
+        resetPwd: '重置密码',
+        resetPwdSuccess: '密码重置成功',
+        resetPwdUnlockHint: '若该账号登录锁定中需另行解锁',
+        confirmRestore: '确定复原此用户？',
+        deletedAt: '删除时间',
+        unlock: {
+          title: '解锁登录',
+          dimension: '锁定维度',
+          target: '解锁目标',
+          dimensionLabel: {
+            user: '账号',
+            ip: 'IP 源'
+          },
+          success: '解锁成功',
+          form: {
+            dimension: '请选择锁定维度',
+            userName: '请输入要解锁的账号名称',
+            target: '请输入要解锁的 IP 地址'
+          }
+        },
         form: {
+          // [rev4-inline I18N-WIRING(ii) 011-user-admin] drawer add 密碼欄＋edit 會話策略 placeholder（T023）
+          password: '请输入密码',
+          sessionPolicy: '请选择会话策略',
           userName: '请输入用户名',
           userGender: '请选择性别',
           nickName: '请输入昵称',

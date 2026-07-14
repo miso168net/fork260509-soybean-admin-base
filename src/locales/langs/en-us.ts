@@ -2,6 +2,8 @@ const local: App.I18n.Schema = {
   // [rev4-inline I18N-WIRING(ii) 004-system-settings START] backend 命名空間（映射 wire msg → 在地化顯示）
   backend: {
     common: {
+      // [rev4-inline I18N-WIRING(ii) 011-user-admin] 明細清單在地化分隔符（passwordPolicy violations join 用；T024）
+      listSeparator: ', ',
       success: 'Operation successful'
     },
     // [rev4-inline I18N-WIRING(ii) 005-auth-login] auth 命名空間（登入失敗／token 逾期／session 重登在地化）
@@ -53,6 +55,38 @@ const local: App.I18n.Schema = {
         parentDeleted: 'Parent menu has been deleted; please restore the parent first',
         cycleDetected: 'A menu cannot be moved under itself or its descendants',
         notFound: 'Menu not found'
+      },
+      // [rev4-inline I18N-WIRING(ii) 011-user-admin] biz.user 拒因 15 鍵（一因一鍵；passwordPolicy 攜 {violations} scalar 插值——陣列在攔截層逐碼經 passwordViolation 子鍵譯後 join；ADR 0050/0054）＋biz.unlock 2 鍵（007 欠帳）
+      user: {
+        seededProtected: 'System built-in account cannot be deleted',
+        cannotDeleteSelf: 'Cannot delete the currently logged-in user',
+        cannotDisableSelf: 'Cannot disable the currently logged-in user',
+        cannotKickSelf: 'Cannot kick the currently logged-in user',
+        cannotChangeSelfRoles: 'Cannot change the role assignment of the currently logged-in user',
+        superCannotDisable: 'The super administrator account cannot be disabled',
+        superRoleProtected: 'Cannot remove the super administrator role assignment from the super administrator account',
+        userNameExists: 'User name already exists',
+        userNameImmutable: 'User name cannot be changed after creation',
+        userNameInvalid: 'Invalid user name (letters, digits, underscore and hyphen only, up to 64 characters)',
+        passwordPolicy: 'Password does not meet the password policy: {violations}',
+        passwordViolation: {
+          minLength: 'length below the policy minimum',
+          maxLength: 'length exceeds the policy maximum',
+          maxBytes: 'byte length exceeds the limit',
+          requireDigit: 'must contain a digit',
+          requireLowercase: 'must contain a lowercase letter',
+          requireUppercase: 'must contain an uppercase letter',
+          requireSpecial: 'must contain a special character',
+          forbidUsername: 'must not be identical to the user name'
+        },
+        roleNotFound: 'The selected role does not exist or has been deleted',
+        userNotFound: 'User not found',
+        notRestorable: 'This user cannot be restored',
+        sessionPolicyInvalid: 'Invalid session policy value (inherit, single or multi only)'
+      },
+      unlock: {
+        invalidTarget: 'Invalid unlock target (user dimension requires a user name; IP dimension requires a valid IP address)',
+        invalidDimension: 'Invalid unlock dimension (only the user and IP dimensions are supported)'
       },
       policy: {
         notRestorable: 'This archived grant cannot be restored'
@@ -673,7 +707,41 @@ const local: App.I18n.Schema = {
         userEmail: 'Email',
         userStatus: 'User Status',
         userRole: 'User Role',
+        // [rev4-inline I18N-WIRING(ii) 011-user-admin] user 頁維運動作＋回收桶＋drawer 控件＋解鎖 modal 字串（T023；showDeleted／restore／restoreSuccess 複用既有 entity-neutral 鍵不重建）
+        password: 'Password',
+        sessionPolicy: 'Session Policy',
+        sessionPolicyOption: {
+          inherit: 'Follow Global Setting',
+          single: 'Single Session',
+          multi: 'Multiple Sessions'
+        },
+        kick: 'Kick Offline',
+        confirmKick: 'Confirm to kick all sessions of this user?',
+        kickSuccess: 'Kick success',
+        resetPwd: 'Reset Password',
+        resetPwdSuccess: 'Password reset success',
+        resetPwdUnlockHint: 'If this account is locked out of login, unlock it separately',
+        confirmRestore: 'Confirm to restore this user?',
+        deletedAt: 'Deleted At',
+        unlock: {
+          title: 'Unlock Login',
+          dimension: 'Lock Dimension',
+          target: 'Unlock Target',
+          dimensionLabel: {
+            user: 'User',
+            ip: 'IP Source'
+          },
+          success: 'Unlock success',
+          form: {
+            dimension: 'Please select lock dimension',
+            userName: 'Please enter the user name to unlock',
+            target: 'Please enter the IP address to unlock'
+          }
+        },
         form: {
+          // [rev4-inline I18N-WIRING(ii) 011-user-admin] drawer add 密碼欄＋edit 會話策略 placeholder（T023）
+          password: 'Please enter password',
+          sessionPolicy: 'Please select session policy',
           userName: 'Please enter user name',
           userGender: 'Please select gender',
           nickName: 'Please enter nick name',
