@@ -31,11 +31,16 @@ const model: FormModel = reactive({
 
 const rules = computed<Record<keyof FormModel, App.Global.FormRule[]>>(() => {
   // inside computed to make locale reactive, if not apply i18n, you can define it without computed
-  const { formRules } = useFormRules();
+  // [rev4-inline ★BASE-WEB-LOGIN-CAPTCHA-WIRING(ii) 011-user-admin] 原行: const { formRules } = useFormRules();
+  // 表單規則降 required-only：REG_USER_NAME/REG_PWD 硬正則放寬（後端政策為唯一權威守門、ADR 0053——
+  // 消滅「政策合法密碼/帳號名被前端硬正則擋死＝設得進登不進」）；嚴格限規則放寬、不改表單結構（憲法 §III.2 (ii)）。
+  const { createRequiredRule } = useFormRules();
 
   return {
-    userName: formRules.userName,
-    password: formRules.pwd
+    // [rev4-inline ★BASE-WEB-LOGIN-CAPTCHA-WIRING(ii) 011-user-admin] 原行: userName: formRules.userName,
+    userName: [createRequiredRule($t('form.userName.required'))],
+    // [rev4-inline ★BASE-WEB-LOGIN-CAPTCHA-WIRING(ii) 011-user-admin] 原行: password: formRules.pwd
+    password: [createRequiredRule($t('form.pwd.required'))]
   };
 });
 
