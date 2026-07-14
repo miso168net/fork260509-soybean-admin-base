@@ -10,16 +10,37 @@ import type { RequestInstanceState } from './type';
 const isHttpProxy = import.meta.env.DEV && import.meta.env.VITE_HTTP_PROXY === 'Y';
 const { baseURL, otherBaseURL } = getServiceBaseURL(import.meta.env, isHttpProxy);
 
-// [rev4-inline I18N-WIRING(i) 009-role-admin START] 拒因結構化明細插值 helper（ADR 0050／R4 第 1 層）：
+// [rev4-inline I18N-WIRING(i) 009-role-admin 011-user-admin START] 拒因結構化明細插值 helper（ADR 0050／R4 第 1 層）：
 // 信封 data 為 plain object（如 {userCount}）→ 走 $t(key, detail, msg) named 三參插值供 scalar 佔位；
 // 否則維持現行 $t(key, msg) 2 參 fallback（既有無明細錯誤路徑行為不變）。物件/陣列類明細（blocked[]）
 // 不進 $t、走呼叫端結構化渲染（T032）——key 形紀律見 ADR 0050。
+// 011-user-admin（T024）：passwordPolicy 攜 {violations:[違規碼…]}（wire 形 BizData、ADR 0054）——
+// 「已註冊」陣列值先逐碼經譯文子鍵映為人話、以在地化分隔符 join 成 scalar 才進 $t（守 ADR 0050
+// 「message 僅 scalar 佔位」紀律；渲染後無 raw code 字面、SC-014）；未註冊 key 之明細值一律原樣
+// 通過（含 blocked[] 陣列——既有明細路徑零行為改動、FR-039）。後續攜陣列明細的新 key 須同步：
+// ①建逐碼譯文子鍵 ②登記於 DETAIL_LIST_ITEM_KEY。
+const DETAIL_LIST_ITEM_KEY: Record<string, string> = {
+  'biz.user.passwordPolicy': 'backend.biz.user.passwordViolation'
+};
+
+function translateDetailValue(msg: string, value: unknown) {
+  const prefix = DETAIL_LIST_ITEM_KEY[msg];
+  if (!prefix || !Array.isArray(value)) return value;
+  return value
+    .map(item => $t(`${prefix}.${String(item)}` as App.I18n.I18nKey, String(item)))
+    .join($t('backend.common.listSeparator'));
+}
+
 function translateBackendMsg(msg: string, detail: unknown) {
   const key = `backend.${msg}` as App.I18n.I18nKey;
   const isPlainObject = typeof detail === 'object' && detail !== null && !Array.isArray(detail);
-  return isPlainObject ? $t(key, detail as Record<string, unknown>, msg) : $t(key, msg);
+  if (!isPlainObject) return $t(key, msg);
+  const named = Object.fromEntries(
+    Object.entries(detail as Record<string, unknown>).map(([k, v]) => [k, translateDetailValue(msg, v)])
+  );
+  return $t(key, named, msg);
 }
-// [rev4-inline I18N-WIRING(i) 009-role-admin END]
+// [rev4-inline I18N-WIRING(i) 009-role-admin 011-user-admin END]
 
 export const request = createFlatRequest(
   {
