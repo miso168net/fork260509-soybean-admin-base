@@ -85,6 +85,11 @@ const local: App.I18n.Schema = {
         invalidTarget: '解鎖標的無效（帳號維需帳號名稱、IP 源維需有效 IP 位址）',
         invalidDimension: '解鎖維度無效（僅支援帳號維與 IP 源維）'
       },
+      // [rev4-inline I18N-WIRING(ii) 012-audit-admin] biz.audit 清理拒因 2 鍵（invalidTable scalar；purgeBelowFloor 攜 {minDays} named-object 插值——translateBackendMsg 原生支援；ADR 0050）
+      audit: {
+        invalidTable: '清理標的不在允許清單內',
+        purgeBelowFloor: '清理保留天數不可低於 {minDays} 天'
+      },
       policy: {
         notRestorable: '該歸檔授權不可復原'
       }
@@ -361,6 +366,8 @@ const local: App.I18n.Schema = {
     manage_menu: '選單管理',
     'manage_system-settings': '系統設定',
     'manage_policy-archive': '授權回收桶',
+    // [rev4-inline I18N-WIRING(ii) 012-audit-admin] gen-route 產出 manage_audit route → route locale 型閘門要求補鍵（B-061 audit 項）
+    manage_audit: '稽核中心',
     'multi-menu': '多級選單',
     'multi-menu_first': '選單一',
     'multi-menu_first_child': '選單一子選單',
@@ -684,6 +691,85 @@ const local: App.I18n.Schema = {
           endpoint: '端點'
         }
       },
+      // [rev4-inline I18N-WIRING(ii) 012-audit-admin START] 稽核中心頁字串（四分頁標題/欄位/清理對話框/語意說明/操作鈕；purge.success 攜 {count} 前端插值）
+      audit: {
+        title: '稽核中心',
+        tab: {
+          operation: '操作日誌',
+          access: '存取日誌',
+          login: '登入嘗試',
+          session: '會話事件'
+        },
+        common: {
+          createTime: '時間',
+          operator: '操作者',
+          operatorId: '操作者 ID',
+          operatorName: '操作者名稱',
+          realIp: '來源 IP',
+          region: '地域',
+          traceId: '追蹤 ID',
+          timeRange: '時間區間'
+        },
+        operation: {
+          entityTable: '標的資料表',
+          operation: '動作',
+          entityId: '標的 ID',
+          payload: '變更快照',
+          viewPayload: '檢視',
+          emptyPayload: '（無快照）',
+          payloadBefore: '變更前',
+          payloadAfter: '變更後'
+        },
+        access: {
+          httpMethod: '請求方法',
+          httpStatus: '狀態碼',
+          httpPath: '請求路徑'
+        },
+        login: {
+          attemptedUserName: '嘗試帳號',
+          success: '結果',
+          successOption: {
+            true: '成功',
+            false: '失敗'
+          },
+          throttleNote: '因登入節流短路而遭拒的嘗試不會記錄於此表；此處僅呈現實際判定成敗的登入嘗試。'
+        },
+        session: {
+          userId: '使用者 ID',
+          userName: '使用者',
+          sid: '工作階段 ID',
+          eventType: '事件類型',
+          reason: '原因',
+          sourceIp: '來源 IP'
+        },
+        form: {
+          entityTable: '請輸入標的資料表',
+          operation: '請輸入動作（如 UPDATE、KICK）',
+          operatorId: '請輸入操作者 ID',
+          operatorName: '請輸入操作者名稱',
+          httpMethod: '請輸入請求方法（如 GET）',
+          httpStatus: '請輸入狀態碼',
+          httpPath: '請輸入請求路徑（模糊比對）',
+          attemptedUserName: '請輸入帳號名稱（模糊比對）',
+          success: '請選擇結果',
+          realIp: '請輸入來源 IP（精確比對）',
+          userId: '請輸入使用者 ID',
+          userName: '請輸入使用者名稱',
+          eventType: '請輸入事件類型（如 kicked、idle）',
+          reason: '請輸入原因',
+          timeRange: '請選擇時間區間'
+        },
+        purge: {
+          title: '清理日誌',
+          entry: '清理',
+          beforeDays: '保留天數',
+          beforeDaysHint: '將刪除早於指定天數的紀錄；下限為 30 天。',
+          warning: '此操作會永久刪除早於保留天數的紀錄且無法復原；清理動作本身將記入操作日誌。',
+          confirm: '確定執行清理？此操作無法復原。',
+          success: '清理完成，共刪除 {count} 筆紀錄'
+        }
+      },
+      // [rev4-inline I18N-WIRING(ii) 012-audit-admin END]
       user: {
         title: '使用者列表',
         userName: '使用者名稱',

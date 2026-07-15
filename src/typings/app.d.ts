@@ -401,6 +401,11 @@ declare namespace App {
             invalidTarget: string;
             invalidDimension: string;
           };
+          // [rev4-inline I18N-WIRING(iii) 012-audit-admin] biz.audit 清理拒因型 2 鍵（逐鍵鏡像 locale；purgeBelowFloor 攜 {minDays}；ADR 0050）
+          audit: {
+            invalidTable: string;
+            purgeBelowFloor: string;
+          };
           policy: {
             notRestorable: string;
           };
@@ -870,6 +875,85 @@ declare namespace App {
             };
           };
           // [rev4-inline MODAL-WIRING(e) 009-role-admin END]
+          // [rev4-inline I18N-WIRING(iii) 012-audit-admin START] 稽核中心頁字串型（逐鍵鏡像 locale；四分頁＋清理對話框＋語意說明）
+          audit: {
+            title: string;
+            tab: {
+              operation: string;
+              access: string;
+              login: string;
+              session: string;
+            };
+            common: {
+              createTime: string;
+              operator: string;
+              operatorId: string;
+              operatorName: string;
+              realIp: string;
+              region: string;
+              traceId: string;
+              timeRange: string;
+            };
+            operation: {
+              entityTable: string;
+              operation: string;
+              entityId: string;
+              payload: string;
+              viewPayload: string;
+              emptyPayload: string;
+              payloadBefore: string;
+              payloadAfter: string;
+            };
+            access: {
+              httpMethod: string;
+              httpStatus: string;
+              httpPath: string;
+            };
+            login: {
+              attemptedUserName: string;
+              success: string;
+              successOption: {
+                true: string;
+                false: string;
+              };
+              throttleNote: string;
+            };
+            session: {
+              userId: string;
+              userName: string;
+              sid: string;
+              eventType: string;
+              reason: string;
+              sourceIp: string;
+            };
+            form: {
+              entityTable: string;
+              operation: string;
+              operatorId: string;
+              operatorName: string;
+              httpMethod: string;
+              httpStatus: string;
+              httpPath: string;
+              attemptedUserName: string;
+              success: string;
+              realIp: string;
+              userId: string;
+              userName: string;
+              eventType: string;
+              reason: string;
+              timeRange: string;
+            };
+            purge: {
+              title: string;
+              entry: string;
+              beforeDays: string;
+              beforeDaysHint: string;
+              warning: string;
+              confirm: string;
+              success: string;
+            };
+          };
+          // [rev4-inline I18N-WIRING(iii) 012-audit-admin END]
           user: {
             title: string;
             userName: string;

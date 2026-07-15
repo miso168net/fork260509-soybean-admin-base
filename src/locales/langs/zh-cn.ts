@@ -88,6 +88,11 @@ const local: App.I18n.Schema = {
         invalidTarget: '解锁目标无效（账号维需账号名称、IP 源维需有效 IP 地址）',
         invalidDimension: '解锁维度无效（仅支持账号维与 IP 源维）'
       },
+      // [rev4-inline I18N-WIRING(ii) 012-audit-admin] biz.audit 清理拒因 2 鍵（invalidTable scalar；purgeBelowFloor 攜 {minDays} named-object 插值——translateBackendMsg 原生支援；ADR 0050）
+      audit: {
+        invalidTable: '清理目标不在允许清单内',
+        purgeBelowFloor: '清理保留天数不可低于 {minDays} 天'
+      },
       policy: {
         notRestorable: '该归档授权不可复原'
       }
@@ -367,6 +372,8 @@ const local: App.I18n.Schema = {
     'manage_system-settings': '系统设置',
     // [rev4-inline MODAL-WIRING(e) 009-role-admin] gen-route 產出 manage_policy-archive route → route locale 型閘門要求補鍵（B-061 三清一）
     'manage_policy-archive': '授权回收站',
+    // [rev4-inline I18N-WIRING(ii) 012-audit-admin] gen-route 產出 manage_audit route → route locale 型閘門要求補鍵（B-061 audit 項）
+    manage_audit: '审计中心',
     'multi-menu': '多级菜单',
     'multi-menu_first': '菜单一',
     'multi-menu_first_child': '菜单一子菜单',
@@ -694,6 +701,85 @@ const local: App.I18n.Schema = {
         }
       },
       // [rev4-inline MODAL-WIRING(e) 009-role-admin END]
+      // [rev4-inline I18N-WIRING(ii) 012-audit-admin START] 稽核中心頁字串（四分頁標題/欄位/清理對話框/語意說明/操作鈕；purge.success 攜 {count} 前端插值）
+      audit: {
+        title: '审计中心',
+        tab: {
+          operation: '操作日志',
+          access: '访问日志',
+          login: '登录尝试',
+          session: '会话事件'
+        },
+        common: {
+          createTime: '时间',
+          operator: '操作者',
+          operatorId: '操作者 ID',
+          operatorName: '操作者名称',
+          realIp: '来源 IP',
+          region: '地域',
+          traceId: '追踪 ID',
+          timeRange: '时间区间'
+        },
+        operation: {
+          entityTable: '目标数据表',
+          operation: '动作',
+          entityId: '目标 ID',
+          payload: '变更快照',
+          viewPayload: '查看',
+          emptyPayload: '（无快照）',
+          payloadBefore: '变更前',
+          payloadAfter: '变更后'
+        },
+        access: {
+          httpMethod: '请求方法',
+          httpStatus: '状态码',
+          httpPath: '请求路径'
+        },
+        login: {
+          attemptedUserName: '尝试账号',
+          success: '结果',
+          successOption: {
+            true: '成功',
+            false: '失败'
+          },
+          throttleNote: '因登录节流短路而被拒的尝试不会记录于此表；此处仅呈现实际判定成败的登录尝试。'
+        },
+        session: {
+          userId: '用户 ID',
+          userName: '用户',
+          sid: '会话 ID',
+          eventType: '事件类型',
+          reason: '原因',
+          sourceIp: '来源 IP'
+        },
+        form: {
+          entityTable: '请输入目标数据表',
+          operation: '请输入动作（如 UPDATE、KICK）',
+          operatorId: '请输入操作者 ID',
+          operatorName: '请输入操作者名称',
+          httpMethod: '请输入请求方法（如 GET）',
+          httpStatus: '请输入状态码',
+          httpPath: '请输入请求路径（模糊匹配）',
+          attemptedUserName: '请输入账号名称（模糊匹配）',
+          success: '请选择结果',
+          realIp: '请输入来源 IP（精确匹配）',
+          userId: '请输入用户 ID',
+          userName: '请输入用户名称',
+          eventType: '请输入事件类型（如 kicked、idle）',
+          reason: '请输入原因',
+          timeRange: '请选择时间区间'
+        },
+        purge: {
+          title: '清理日志',
+          entry: '清理',
+          beforeDays: '保留天数',
+          beforeDaysHint: '将删除早于指定天数的记录；下限为 30 天。',
+          warning: '此操作会永久删除早于保留天数的记录且无法恢复；清理动作本身将记入操作日志。',
+          confirm: '确定执行清理？此操作无法恢复。',
+          success: '清理完成，共删除 {count} 条记录'
+        }
+      },
+      // [rev4-inline I18N-WIRING(ii) 012-audit-admin END]
       user: {
         title: '用户列表',
         userName: '用户名',

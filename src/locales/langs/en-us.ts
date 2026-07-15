@@ -88,6 +88,11 @@ const local: App.I18n.Schema = {
         invalidTarget: 'Invalid unlock target (user dimension requires a user name; IP dimension requires a valid IP address)',
         invalidDimension: 'Invalid unlock dimension (only the user and IP dimensions are supported)'
       },
+      // [rev4-inline I18N-WIRING(ii) 012-audit-admin] biz.audit 清理拒因 2 鍵（invalidTable scalar；purgeBelowFloor 攜 {minDays} named-object 插值——translateBackendMsg 原生支援；ADR 0050）
+      audit: {
+        invalidTable: 'The purge target is not in the allowed list',
+        purgeBelowFloor: 'Retention days cannot be below {minDays} days'
+      },
       policy: {
         notRestorable: 'This archived grant cannot be restored'
       }
@@ -371,6 +376,8 @@ const local: App.I18n.Schema = {
     'manage_system-settings': 'System Settings',
     // [rev4-inline MODAL-WIRING(e) 009-role-admin] gen-route 產出 manage_policy-archive route → route locale 型閘門要求補鍵（B-061 三清一）
     'manage_policy-archive': 'Policy Recycle Bin',
+    // [rev4-inline I18N-WIRING(ii) 012-audit-admin] gen-route 產出 manage_audit route → route locale 型閘門要求補鍵（B-061 audit 項）
+    manage_audit: 'Audit Center',
     'multi-menu': 'Multi Menu',
     'multi-menu_first': 'Menu One',
     'multi-menu_first_child': 'Menu One Child',
@@ -698,6 +705,87 @@ const local: App.I18n.Schema = {
         }
       },
       // [rev4-inline MODAL-WIRING(e) 009-role-admin END]
+      // [rev4-inline I18N-WIRING(ii) 012-audit-admin START] 稽核中心頁字串（四分頁標題/欄位/清理對話框/語意說明/操作鈕；purge.success 攜 {count} 前端插值）
+      audit: {
+        title: 'Audit Center',
+        tab: {
+          operation: 'Operation Log',
+          access: 'Access Log',
+          login: 'Login Attempts',
+          session: 'Session Events'
+        },
+        common: {
+          createTime: 'Time',
+          operator: 'Operator',
+          operatorId: 'Operator ID',
+          operatorName: 'Operator Name',
+          realIp: 'Source IP',
+          region: 'Region',
+          traceId: 'Trace ID',
+          timeRange: 'Time Range'
+        },
+        operation: {
+          entityTable: 'Entity Table',
+          operation: 'Action',
+          entityId: 'Entity ID',
+          payload: 'Snapshot',
+          viewPayload: 'View',
+          emptyPayload: '(no snapshot)',
+          payloadBefore: 'Before',
+          payloadAfter: 'After'
+        },
+        access: {
+          httpMethod: 'Method',
+          httpStatus: 'Status',
+          httpPath: 'Path'
+        },
+        login: {
+          attemptedUserName: 'Attempted Account',
+          success: 'Result',
+          successOption: {
+            true: 'Success',
+            false: 'Failure'
+          },
+          throttleNote:
+            'Login attempts rejected by throttle short-circuit are not recorded in this table; only attempts with an actual success/failure verdict are shown here.'
+        },
+        session: {
+          userId: 'User ID',
+          userName: 'User',
+          sid: 'Session ID',
+          eventType: 'Event Type',
+          reason: 'Reason',
+          sourceIp: 'Source IP'
+        },
+        form: {
+          entityTable: 'Enter entity table',
+          operation: 'Enter action (e.g. UPDATE, KICK)',
+          operatorId: 'Enter operator ID',
+          operatorName: 'Enter operator name',
+          httpMethod: 'Enter method (e.g. GET)',
+          httpStatus: 'Enter status code',
+          httpPath: 'Enter path (fuzzy match)',
+          attemptedUserName: 'Enter account name (fuzzy match)',
+          success: 'Select result',
+          realIp: 'Enter source IP (exact match)',
+          userId: 'Enter user ID',
+          userName: 'Enter user name',
+          eventType: 'Enter event type (e.g. kicked, idle)',
+          reason: 'Enter reason',
+          timeRange: 'Select time range'
+        },
+        purge: {
+          title: 'Purge Logs',
+          entry: 'Purge',
+          beforeDays: 'Retention Days',
+          beforeDaysHint: 'Records older than the given number of days will be deleted; minimum 30 days.',
+          warning:
+            'This permanently deletes records older than the retention days and cannot be undone; the purge action itself is recorded in the operation log.',
+          confirm: 'Confirm purge? This action cannot be undone.',
+          success: 'Purge complete, {count} records deleted'
+        }
+      },
+      // [rev4-inline I18N-WIRING(ii) 012-audit-admin END]
       user: {
         title: 'User List',
         userName: 'User Name',
