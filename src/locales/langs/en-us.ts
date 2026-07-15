@@ -81,7 +81,6 @@ const local: App.I18n.Schema = {
         },
         roleNotFound: 'The selected role does not exist or has been deleted',
         userNotFound: 'User not found',
-        notRestorable: 'This user cannot be restored',
         sessionPolicyInvalid: 'Invalid session policy value (inherit, single or multi only)'
       },
       unlock: {

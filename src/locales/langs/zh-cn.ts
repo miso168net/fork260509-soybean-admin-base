@@ -81,7 +81,6 @@ const local: App.I18n.Schema = {
         },
         roleNotFound: '所选角色不存在或已删除',
         userNotFound: '用户不存在',
-        notRestorable: '该用户不可复原',
         sessionPolicyInvalid: '会话策略值无效（仅允许 inherit、single、multi）'
       },
       unlock: {

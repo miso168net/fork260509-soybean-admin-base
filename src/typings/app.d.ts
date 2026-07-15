@@ -394,7 +394,6 @@ declare namespace App {
             };
             roleNotFound: string;
             userNotFound: string;
-            notRestorable: string;
             sessionPolicyInvalid: string;
           };
           unlock: {
