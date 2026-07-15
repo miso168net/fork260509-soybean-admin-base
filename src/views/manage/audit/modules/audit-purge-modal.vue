@@ -33,7 +33,7 @@ const visible = defineModel<boolean>('visible', {
   default: false
 });
 
-const beforeDays = ref<number>(MIN_DAYS);
+const beforeDays = ref<number | null>(MIN_DAYS);
 const submitting = ref(false);
 
 function closeModal() {
