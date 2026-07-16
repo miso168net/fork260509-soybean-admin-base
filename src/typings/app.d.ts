@@ -408,6 +408,14 @@ declare namespace App {
           policy: {
             notRestorable: string;
           };
+          // [rev4-inline I18N-WIRING(iii) 013-ip-rule-admin] biz.ipRule 拒因型 5 鍵（逐鍵鏡像 locale；皆 scalar；data-model §6）
+          ipRule: {
+            selfLock: string;
+            conflict: string;
+            invalidCidr: string;
+            invalidRuleType: string;
+            notFound: string;
+          };
         };
         system: {
           forbidden: string;

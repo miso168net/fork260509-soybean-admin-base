@@ -94,6 +94,14 @@ const local: App.I18n.Schema = {
       },
       policy: {
         notRestorable: 'This archived grant cannot be restored'
+      },
+      // [rev4-inline I18N-WIRING(ii) 013-ip-rule-admin] biz.ipRule 拒因 5 鍵（皆 scalar 無插值；data-model §6；★invalidRuleType 兼收 wbipType 與 deleted 參數值域拒因、措辭不綁死類型欄）
+      ipRule: {
+        selfLock: 'This change would block your current source address; operation rejected',
+        conflict: 'An active rule with the same CIDR and type already exists',
+        invalidCidr: 'Invalid CIDR format (IPv4/IPv6)',
+        invalidRuleType: 'Invalid rule type or parameter value',
+        notFound: 'IP rule does not exist or has been deleted'
       }
     },
     system: {

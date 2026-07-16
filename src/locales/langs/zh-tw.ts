@@ -91,6 +91,14 @@ const local: App.I18n.Schema = {
       },
       policy: {
         notRestorable: '該歸檔授權不可復原'
+      },
+      // [rev4-inline I18N-WIRING(ii) 013-ip-rule-admin] biz.ipRule 拒因 5 鍵（皆 scalar 無插值；data-model §6；★invalidRuleType 兼收 wbipType 與 deleted 參數值域拒因、措辭不綁死類型欄）
+      ipRule: {
+        selfLock: '此寫入會封鎖您目前的來源位址，操作已拒絕',
+        conflict: '相同網段與類型的現役規則已存在',
+        invalidCidr: '網段格式不正確（IPv4／IPv6 CIDR）',
+        invalidRuleType: '規則類型或參數值無效',
+        notFound: 'IP 規則不存在或已刪除'
       }
     },
     system: {
