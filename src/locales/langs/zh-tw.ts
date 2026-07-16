@@ -652,6 +652,24 @@ const local: App.I18n.Schema = {
           loginThrottleMaxFails: '帳號登入失敗-計數最大值（次）',
           loginThrottleWindowMinutes: '帳號登入失敗-計數窗口（分鐘）',
           loginThrottleCaptchaAfter: '帳號登入失敗-觸發驗證碼（次）'
+        },
+        // B-059 tooltip 三語化：per-key help 說明（IconTooltip 用；未鍵化 fallback item.description）
+        help: {
+          passwordMinLength: '密碼最小長度',
+          passwordMaxLength: '密碼最大長度',
+          passwordRequireLowercase: '需含小寫字母',
+          passwordRequireUppercase: '需含大寫字母',
+          passwordRequireDigit: '需含數字',
+          passwordRequireSpecial: '需含特殊符號',
+          passwordForbidUsername: '禁止密碼與帳號相同',
+          singleSessionDefault: '全站單一-session 預設',
+          sessionIdleTimeout: '工作階段閒置逾時（分鐘）',
+          ipMaxFails: '來源節流：來源桶滑動窗內失敗達此數即硬鎖',
+          ipWindowMinutes: '來源節流：來源維滑動窗長（分鐘）',
+          ipCaptchaAfter: '來源節流：來源桶滑動窗內失敗達此數即進驗證碼軟區',
+          loginThrottleMaxFails: '登入節流：滑動窗內失敗達此數即鎖定',
+          loginThrottleWindowMinutes: '登入節流：滑動窗長（分鐘）＝鎖定的最長存續',
+          loginThrottleCaptchaAfter: '登入節流：滑動窗內失敗達此數即進驗證碼軟區'
         }
       },
       common: {

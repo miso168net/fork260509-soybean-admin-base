@@ -832,6 +832,24 @@ declare namespace App {
               ipCaptchaAfter: string;
               sessionIdleTimeout: string;
             };
+            // B-059 tooltip 三語化：per-key help 說明型（與 locale help 逐鍵鏡像）
+            help: {
+              passwordMinLength: string;
+              passwordMaxLength: string;
+              passwordRequireLowercase: string;
+              passwordRequireUppercase: string;
+              passwordRequireDigit: string;
+              passwordRequireSpecial: string;
+              passwordForbidUsername: string;
+              singleSessionDefault: string;
+              sessionIdleTimeout: string;
+              ipMaxFails: string;
+              ipWindowMinutes: string;
+              ipCaptchaAfter: string;
+              loginThrottleMaxFails: string;
+              loginThrottleWindowMinutes: string;
+              loginThrottleCaptchaAfter: string;
+            };
           };
           // [rev4-inline I18N-WIRING(iii) 004-system-settings END]
           common: {

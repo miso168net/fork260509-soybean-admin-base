@@ -663,6 +663,24 @@ const local: App.I18n.Schema = {
           loginThrottleMaxFails: 'Account login failure - max count (times)',
           loginThrottleWindowMinutes: 'Account login failure - counting window (min)',
           loginThrottleCaptchaAfter: 'Account login failure - trigger captcha (times)'
+        },
+        // B-059 tooltip 三語化：per-key help 說明（IconTooltip 用；未鍵化 fallback item.description）
+        help: {
+          passwordMinLength: 'Minimum password length',
+          passwordMaxLength: 'Maximum password length',
+          passwordRequireLowercase: 'Must contain a lowercase letter',
+          passwordRequireUppercase: 'Must contain an uppercase letter',
+          passwordRequireDigit: 'Must contain a digit',
+          passwordRequireSpecial: 'Must contain a special character',
+          passwordForbidUsername: 'Forbid password identical to username',
+          singleSessionDefault: 'Site-wide single-session default',
+          sessionIdleTimeout: 'Session idle timeout (minutes)',
+          ipMaxFails: 'Source throttle: hard lock once failures in the source-bucket sliding window reach this count',
+          ipWindowMinutes: 'Source throttle: source-dimension sliding window length (minutes)',
+          ipCaptchaAfter: 'Source throttle: enter the captcha soft zone once failures in the source-bucket sliding window reach this count',
+          loginThrottleMaxFails: 'Login throttle: lockout once failures in the sliding window reach this count',
+          loginThrottleWindowMinutes: 'Login throttle: sliding window length (minutes) = maximum lockout duration',
+          loginThrottleCaptchaAfter: 'Login throttle: enter the captcha soft zone once failures in the sliding window reach this count'
         }
       },
       // [rev4-inline I18N-WIRING(ii) 004-system-settings END]

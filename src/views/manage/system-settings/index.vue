@@ -61,6 +61,31 @@ function labelOf(item: Api.SystemManage.SystemSetting) {
   return key ? $t(key) : item.description || item.settingKey;
 }
 
+/** settingKey → i18n help 鍵（tooltip 說明三語化；typed literal、typecheck 驗每鍵存在；B-059）。 */
+const helpKeyMap: Record<string, App.I18n.I18nKey> = {
+  password_min_length: 'page.manage.systemSettings.help.passwordMinLength',
+  password_max_length: 'page.manage.systemSettings.help.passwordMaxLength',
+  password_require_lowercase: 'page.manage.systemSettings.help.passwordRequireLowercase',
+  password_require_uppercase: 'page.manage.systemSettings.help.passwordRequireUppercase',
+  password_require_digit: 'page.manage.systemSettings.help.passwordRequireDigit',
+  password_require_special: 'page.manage.systemSettings.help.passwordRequireSpecial',
+  password_forbid_username: 'page.manage.systemSettings.help.passwordForbidUsername',
+  single_session_default: 'page.manage.systemSettings.help.singleSessionDefault',
+  session_idle_timeout: 'page.manage.systemSettings.help.sessionIdleTimeout',
+  ip_max_fails: 'page.manage.systemSettings.help.ipMaxFails',
+  ip_window_minutes: 'page.manage.systemSettings.help.ipWindowMinutes',
+  ip_captcha_after: 'page.manage.systemSettings.help.ipCaptchaAfter',
+  login_throttle_max_fails: 'page.manage.systemSettings.help.loginThrottleMaxFails',
+  login_throttle_window_minutes: 'page.manage.systemSettings.help.loginThrottleWindowMinutes',
+  login_throttle_captcha_after: 'page.manage.systemSettings.help.loginThrottleCaptchaAfter'
+};
+
+/** tooltip 文案：有映射走 $t、未映射 fallback item.description（未來新鍵未鍵化時 tooltip 不消失）、兩者皆無回空字串。 */
+function helpOf(item: Api.SystemManage.SystemSetting) {
+  const key = helpKeyMap[item.settingKey];
+  return key ? $t(key) : item.description || '';
+}
+
 /** 依固定順序穩定排序：未列鍵 rank＝order.length、排最後並保 server 相對序（Array.sort ES2019 起穩定）。不 mutate 入參。 */
 function sortByFixedOrder(items: Api.SystemManage.SystemSetting[], order: string[]) {
   const rankOf = (key: string) => {
@@ -167,7 +192,8 @@ onMounted(getSettings);
               <div class="flex items-center justify-between gap-12px">
                 <div class="flex items-center gap-4px">
                   <span class="text-14px">{{ labelOf(item) }}</span>
-                  <IconTooltip v-if="item.description" :desc="item.description" />
+                  <!-- B-059 tooltip 三語化：改綁 helpOf（i18n 鍵優先、fallback description） -->
+                  <IconTooltip v-if="helpOf(item)" :desc="helpOf(item)" />
                 </div>
                 <template v-if="parseEnumValues(item.settingType)">
                   <NSwitch

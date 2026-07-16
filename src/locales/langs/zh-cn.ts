@@ -659,6 +659,24 @@ const local: App.I18n.Schema = {
           loginThrottleMaxFails: '账号登录失败-计数最大值（次）',
           loginThrottleWindowMinutes: '账号登录失败-计数窗口（分钟）',
           loginThrottleCaptchaAfter: '账号登录失败-触发验证码（次）'
+        },
+        // B-059 tooltip 三語化：per-key help 說明（IconTooltip 用；未鍵化 fallback item.description）
+        help: {
+          passwordMinLength: '密码最小长度',
+          passwordMaxLength: '密码最大长度',
+          passwordRequireLowercase: '需含小写字母',
+          passwordRequireUppercase: '需含大写字母',
+          passwordRequireDigit: '需含数字',
+          passwordRequireSpecial: '需含特殊符号',
+          passwordForbidUsername: '禁止密码与账号相同',
+          singleSessionDefault: '全站单一-session 默认',
+          sessionIdleTimeout: '会话闲置超时（分钟）',
+          ipMaxFails: '来源节流：来源桶滑动窗内失败达此数即硬锁',
+          ipWindowMinutes: '来源节流：来源维滑动窗长（分钟）',
+          ipCaptchaAfter: '来源节流：来源桶滑动窗内失败达此数即进验证码软区',
+          loginThrottleMaxFails: '登录节流：滑动窗内失败达此数即锁定',
+          loginThrottleWindowMinutes: '登录节流：滑动窗长（分钟）＝锁定的最长存续',
+          loginThrottleCaptchaAfter: '登录节流：滑动窗内失败达此数即进验证码软区'
         }
       },
       // [rev4-inline I18N-WIRING(ii) 004-system-settings END]
