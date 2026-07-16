@@ -787,6 +787,33 @@ const local: App.I18n.Schema = {
         }
       },
       // [rev4-inline I18N-WIRING(ii) 012-audit-admin END]
+      // [rev4-inline I18N-WIRING(ii) 013-ip-rule-admin START] IP 規則頁清單面字串（T015；欄名／狀態三態／類型標籤／搜尋卡 placeholder／空值降級「—」；★order 一律「排序值」語彙、不得暗示優先序＝島 F F1 any-match）
+      ipRule: {
+        title: 'IP Rule List',
+        wbipCidr: 'CIDR',
+        wbipType: 'Rule Type',
+        wbipMemo: 'Memo',
+        order: 'Display Order',
+        status: 'Status',
+        createdAt: 'Created At',
+        updatedAt: 'Updated At',
+        createdBy: 'Created By',
+        updatedBy: 'Updated By',
+        statusActive: 'Active',
+        statusDeleted: 'Deleted',
+        statusAll: 'All',
+        ruleTypeMap: {
+          allow: 'Allow',
+          deny: 'Deny'
+        },
+        form: {
+          wbipCidr: 'Enter CIDR fragment (fuzzy match)',
+          wbipType: 'Select rule type',
+          status: 'Select status'
+        },
+        empty: '—'
+      },
+      // [rev4-inline I18N-WIRING(ii) 013-ip-rule-admin END]
       user: {
         title: 'User List',
         userName: 'User Name',

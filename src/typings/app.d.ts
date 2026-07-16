@@ -953,6 +953,33 @@ declare namespace App {
             };
           };
           // [rev4-inline I18N-WIRING(iii) 012-audit-admin END]
+          // [rev4-inline I18N-WIRING(iii) 013-ip-rule-admin START] IP 規則頁清單面字串型（逐鍵鏡像 locale；T015）
+          ipRule: {
+            title: string;
+            wbipCidr: string;
+            wbipType: string;
+            wbipMemo: string;
+            order: string;
+            status: string;
+            createdAt: string;
+            updatedAt: string;
+            createdBy: string;
+            updatedBy: string;
+            statusActive: string;
+            statusDeleted: string;
+            statusAll: string;
+            ruleTypeMap: {
+              allow: string;
+              deny: string;
+            };
+            form: {
+              wbipCidr: string;
+              wbipType: string;
+              status: string;
+            };
+            empty: string;
+          };
+          // [rev4-inline I18N-WIRING(iii) 013-ip-rule-admin END]
           user: {
             title: string;
             userName: string;

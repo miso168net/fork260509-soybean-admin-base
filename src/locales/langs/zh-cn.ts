@@ -781,6 +781,33 @@ const local: App.I18n.Schema = {
         }
       },
       // [rev4-inline I18N-WIRING(ii) 012-audit-admin END]
+      // [rev4-inline I18N-WIRING(ii) 013-ip-rule-admin START] IP 規則頁清單面字串（T015；欄名／狀態三態／類型標籤／搜尋卡 placeholder／空值降級「—」；★order 一律「排序值」語彙、不得暗示優先序＝島 F F1 any-match）
+      ipRule: {
+        title: 'IP 规则列表',
+        wbipCidr: '网段',
+        wbipType: '规则类型',
+        wbipMemo: '备注',
+        order: '排序值',
+        status: '状态',
+        createdAt: '创建时间',
+        updatedAt: '更新时间',
+        createdBy: '创建者',
+        updatedBy: '更新者',
+        statusActive: '现役',
+        statusDeleted: '已删除',
+        statusAll: '全部',
+        ruleTypeMap: {
+          allow: '放行',
+          deny: '阻挡'
+        },
+        form: {
+          wbipCidr: '请输入网段片段（模糊匹配）',
+          wbipType: '请选择规则类型',
+          status: '请选择状态'
+        },
+        empty: '—'
+      },
+      // [rev4-inline I18N-WIRING(ii) 013-ip-rule-admin END]
       user: {
         title: '用户列表',
         userName: '用户名',
