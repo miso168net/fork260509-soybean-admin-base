@@ -781,7 +781,8 @@ const local: App.I18n.Schema = {
         }
       },
       // [rev4-inline I18N-WIRING(ii) 012-audit-admin END]
-      // [rev4-inline I18N-WIRING(ii) 013-ip-rule-admin START] IP 規則頁清單面字串（T015；欄名／狀態三態／類型標籤／搜尋卡 placeholder／空值降級「—」；★order 一律「排序值」語彙、不得暗示優先序＝島 F F1 any-match）
+      // [rev4-inline I18N-WIRING(ii) 013-ip-rule-admin START] IP 規則頁清單面字串（T015；欄名／狀態三態／類型標籤／搜尋卡 placeholder／空值降級「—」）
+      // ＋寫端面字串（T019；drawer 標題／復原鈕＋確認＋成功 toast／drawer 表單 placeholder）；★order 一律「排序值」語彙、不得暗示優先序＝島 F F1 any-match
       ipRule: {
         title: 'IP 规则列表',
         wbipCidr: '网段',
@@ -796,6 +797,11 @@ const local: App.I18n.Schema = {
         statusActive: '现役',
         statusDeleted: '已删除',
         statusAll: '全部',
+        addIpRule: '新增 IP 规则',
+        editIpRule: '编辑 IP 规则',
+        restore: '恢复',
+        confirmRestore: '确定恢复此规则？',
+        restoreSuccess: '恢复成功',
         ruleTypeMap: {
           allow: '放行',
           deny: '阻挡'
@@ -803,7 +809,11 @@ const local: App.I18n.Schema = {
         form: {
           wbipCidr: '请输入网段片段（模糊匹配）',
           wbipType: '请选择规则类型',
-          status: '请选择状态'
+          status: '请选择状态',
+          cidr: '请输入网段（IPv4／IPv6，如 192.168.1.0/24）',
+          type: '请选择规则类型',
+          memo: '请输入备注（选填）',
+          order: '请输入排序值（选填）'
         },
         empty: '—'
       },

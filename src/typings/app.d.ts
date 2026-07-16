@@ -953,7 +953,7 @@ declare namespace App {
             };
           };
           // [rev4-inline I18N-WIRING(iii) 012-audit-admin END]
-          // [rev4-inline I18N-WIRING(iii) 013-ip-rule-admin START] IP 規則頁清單面字串型（逐鍵鏡像 locale；T015）
+          // [rev4-inline I18N-WIRING(iii) 013-ip-rule-admin START] IP 規則頁清單面（T015）＋寫端面（T019）字串型（逐鍵鏡像 locale）
           ipRule: {
             title: string;
             wbipCidr: string;
@@ -968,6 +968,11 @@ declare namespace App {
             statusActive: string;
             statusDeleted: string;
             statusAll: string;
+            addIpRule: string;
+            editIpRule: string;
+            restore: string;
+            confirmRestore: string;
+            restoreSuccess: string;
             ruleTypeMap: {
               allow: string;
               deny: string;
@@ -976,6 +981,10 @@ declare namespace App {
               wbipCidr: string;
               wbipType: string;
               status: string;
+              cidr: string;
+              type: string;
+              memo: string;
+              order: string;
             };
             empty: string;
           };
