@@ -260,6 +260,15 @@ export const generatedRoutes: GeneratedRoute[] = [
         }
       },
       {
+        name: 'manage_ip-rule',
+        path: '/manage/ip-rule',
+        component: 'view.manage_ip-rule',
+        meta: {
+          title: 'manage_ip-rule',
+          i18nKey: 'route.manage_ip-rule'
+        }
+      },
+      {
         name: 'manage_menu',
         path: '/manage/menu',
         component: 'view.manage_menu',

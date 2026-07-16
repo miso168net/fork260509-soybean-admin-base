@@ -377,6 +377,8 @@ const local: App.I18n.Schema = {
     'manage_policy-archive': 'Policy Recycle Bin',
     // [rev4-inline I18N-WIRING(ii) 012-audit-admin] gen-route 產出 manage_audit route → route locale 型閘門要求補鍵（B-061 audit 項）
     manage_audit: 'Audit Center',
+    // [rev4-inline I18N-WIRING(ii) 013-ip-rule-admin] gen-route 產出 manage_ip-rule route → route locale 型閘門要求補鍵（B-061 ip-rule 項）
+    'manage_ip-rule': 'IP Rule Manage',
     'multi-menu': 'Multi Menu',
     'multi-menu_first': 'Menu One',
     'multi-menu_first_child': 'Menu One Child',

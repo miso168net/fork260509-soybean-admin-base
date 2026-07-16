@@ -373,6 +373,8 @@ const local: App.I18n.Schema = {
     'manage_policy-archive': '授权回收站',
     // [rev4-inline I18N-WIRING(ii) 012-audit-admin] gen-route 產出 manage_audit route → route locale 型閘門要求補鍵（B-061 audit 項）
     manage_audit: '审计中心',
+    // [rev4-inline I18N-WIRING(ii) 013-ip-rule-admin] gen-route 產出 manage_ip-rule route → route locale 型閘門要求補鍵（B-061 ip-rule 項）
+    'manage_ip-rule': 'IP 规则',
     'multi-menu': '多级菜单',
     'multi-menu_first': '菜单一',
     'multi-menu_first_child': '菜单一子菜单',
