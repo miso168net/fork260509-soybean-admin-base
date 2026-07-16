@@ -10,6 +10,8 @@ import { ref } from 'vue';
 import { NButton, NPopconfirm, NTag } from 'naive-ui';
 // WRAPPER fetcher（★直接路徑、不經 barrel、避 vite stale-export；delete＝DELETE 動詞＋data 載 id、契約 §6）
 import { fetchDeleteIpRule, fetchGetIpRuleList, fetchRestoreIpRule } from '@/service/api/rev4-ip-rule';
+// U6 T024 MODAL-WIRING(b)：hasAuth gating 取用（ipRule:add/edit/delete/restore 按鈕顯隱；照 user/index.vue 房式）
+import { useAuth } from '@/hooks/business/auth';
 import { useAppStore } from '@/store/modules/app';
 import { defaultTransform, useNaivePaginatedTable, useTableOperate } from '@/hooks/common/table';
 import { $t } from '@/locales';
@@ -17,6 +19,10 @@ import IpRuleOperateDrawer from './modules/ip-rule-operate-drawer.vue';
 import IpRuleSearch from './modules/ip-rule-search.vue';
 
 const appStore = useAppStore();
+
+// U6 T024 MODAL-WIRING(b)：操作鈕以 ipRule 域按鈕碼 gating（m010 seed；★僅前端可見性、
+// 後端 require_policy 為唯一安全邊界＝FR-011；本刀不下放給非 R_SUPER＝FR-014）
+const { hasAuth } = useAuth();
 
 // 三維搜尋參數（契約 §2：wbipCidr 模糊／wbipType 等值／deleted 三態；★deleted 預設 'all'＝D1 混排全景不改預設行為）
 const searchParams = ref<Api.SystemManage.IpRuleListQuery>({
@@ -134,36 +140,43 @@ const { columns, columnChecks, data, getData, getDataByPage, loading, mobilePagi
       width: 160,
       // 依 deleted 切換：現役列＝編輯＋刪除、已刪列＝僅復原（憲法 §III.2(d) 逐列 restore 鈕）；
       // U4 T017 接線：編輯→開 drawer（帶列資料）、刪除／復原→NPopconfirm 二次確認（FR-007）；
-      // restore 標籤改用 ipRule.restore 專屬鍵（T019 兌現、取代 U3 暫借之 policyArchive.restore）
+      // restore 標籤改用 ipRule.restore 專屬鍵（T019 兌現、取代 U3 暫借之 policyArchive.restore）；
+      // U6 T024 MODAL-WIRING(b)：edit→ipRule:edit、delete→ipRule:delete、restore→ipRule:restore 顯隱 gating
       render: row =>
         row.deleted ? (
           <div class="flex-center gap-8px">
-            <NPopconfirm onPositiveClick={() => handleRestore(row.id)}>
-              {{
-                default: () => $t('page.manage.ipRule.confirmRestore'),
-                trigger: () => (
-                  <NButton type="primary" ghost size="small">
-                    {$t('page.manage.ipRule.restore')}
-                  </NButton>
-                )
-              }}
-            </NPopconfirm>
+            {hasAuth('ipRule:restore') && (
+              <NPopconfirm onPositiveClick={() => handleRestore(row.id)}>
+                {{
+                  default: () => $t('page.manage.ipRule.confirmRestore'),
+                  trigger: () => (
+                    <NButton type="primary" ghost size="small">
+                      {$t('page.manage.ipRule.restore')}
+                    </NButton>
+                  )
+                }}
+              </NPopconfirm>
+            )}
           </div>
         ) : (
           <div class="flex-center gap-8px">
-            <NButton type="primary" ghost size="small" onClick={() => handleEdit(row.id)}>
-              {$t('common.edit')}
-            </NButton>
-            <NPopconfirm onPositiveClick={() => handleDelete(row.id)}>
-              {{
-                default: () => $t('common.confirmDelete'),
-                trigger: () => (
-                  <NButton type="error" ghost size="small">
-                    {$t('common.delete')}
-                  </NButton>
-                )
-              }}
-            </NPopconfirm>
+            {hasAuth('ipRule:edit') && (
+              <NButton type="primary" ghost size="small" onClick={() => handleEdit(row.id)}>
+                {$t('common.edit')}
+              </NButton>
+            )}
+            {hasAuth('ipRule:delete') && (
+              <NPopconfirm onPositiveClick={() => handleDelete(row.id)}>
+                {{
+                  default: () => $t('common.confirmDelete'),
+                  trigger: () => (
+                    <NButton type="error" ghost size="small">
+                      {$t('common.delete')}
+                    </NButton>
+                  )
+                }}
+              </NPopconfirm>
+            )}
           </div>
         )
     }
@@ -213,9 +226,9 @@ async function handleRestore(id: number) {
     >
       <template #header-extra>
         <TableHeaderOperation v-model:columns="columnChecks" :loading="loading" @refresh="getData">
-          <!-- 覆寫 default slot：本頁無批次刪除、只渲染新增鈕（開 drawer add 分流） -->
+          <!-- 覆寫 default slot：本頁無批次刪除、只渲染新增鈕（開 drawer add 分流）；U6 T024：ipRule:add 顯隱 gating -->
           <template #default>
-            <NButton size="small" ghost type="primary" @click="handleAdd">
+            <NButton v-if="hasAuth('ipRule:add')" size="small" ghost type="primary" @click="handleAdd">
               <template #icon>
                 <icon-ic-round-plus class="text-icon" />
               </template>
