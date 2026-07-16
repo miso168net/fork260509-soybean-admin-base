@@ -5,6 +5,9 @@
 // 　　／order（NInputNumber nullable clearable；★label 與 placeholder 一律「排序值」語彙、零優先序暗示＝島 F F1 any-match）；
 // ★寫成功後端自動 reload＋PUBLISH（FR-007）——本抽屜零追加生效呼叫、僅 emit submitted 讓清單刷新；
 // 拒因（invalidCidr／invalidRuleType／conflict／selfLock／notFound）一律共用攔截層 onError toast（E2）、頁內零拒因專屬 UI；
+// ＋U10（2026-07-16 user 拍板）：表單欄序改「排序值→網段→規則類型→備註」（純 form-item 重排、驗證與 model 零改動）；
+// 　編輯模式於備註後、送出鈕前顯示審計四項唯讀（建立時間／建立者／更新時間／更新者；純文字、絕不進 form model、
+// 　label 復用清單欄名 i18n 鍵、null 照清單慣例降級「—」）；新增模式整段隱藏（記錄尚未存在）；
 // example 基線無此檔、零原行。
 import { computed, ref, watch } from 'vue';
 // WRAPPER fetcher（★直接路徑、不經 barrel、避 vite stale-export）
@@ -82,6 +85,11 @@ const rules: Record<RuleKey, App.Global.FormRule> = {
   wbipType: defaultRequiredRule
 };
 
+// 審計四項 null 降級（U10；照 index.vue renderNullable 語意：值缺→「—」＝page.manage.ipRule.empty）
+function displayNullable(value: string | null | undefined) {
+  return value ?? $t('page.manage.ipRule.empty');
+}
+
 // 類型二值選項（標籤走既有 ruleTypeMap i18n；computed 使語系切換即時生效——照 ip-rule-search 先例）
 const ruleTypeOptions = computed<CommonType.Option<Api.SystemManage.IpRuleType>[]>(() => [
   { label: $t('page.manage.ipRule.ruleTypeMap.allow'), value: 'allow' },
@@ -149,6 +157,15 @@ watch(visible, () => {
   <NDrawer v-model:show="visible" display-directive="show" :width="360">
     <NDrawerContent :title="title" :native-scrollbar="false" closable>
       <NForm ref="formRef" :model="model" :rules="rules">
+        <!-- ★order＝「排序值」純顯示排序語意（島 F F1 any-match、零優先序暗示）；U10 欄序：排序值居首（user 拍板 2026-07-16） -->
+        <NFormItem :label="$t('page.manage.ipRule.order')" path="order">
+          <NInputNumber
+            v-model:value="model.order"
+            clearable
+            class="w-full"
+            :placeholder="$t('page.manage.ipRule.form.order')"
+          />
+        </NFormItem>
         <NFormItem :label="$t('page.manage.ipRule.wbipCidr')" path="wbipCidr">
           <NInput v-model:value="model.wbipCidr" :placeholder="$t('page.manage.ipRule.form.cidr')" />
         </NFormItem>
@@ -162,15 +179,22 @@ watch(visible, () => {
         <NFormItem :label="$t('page.manage.ipRule.wbipMemo')" path="wbipMemo">
           <NInput v-model:value="model.wbipMemo" type="textarea" :placeholder="$t('page.manage.ipRule.form.memo')" />
         </NFormItem>
-        <!-- ★order＝「排序值」純顯示排序語意（島 F F1 any-match、零優先序暗示） -->
-        <NFormItem :label="$t('page.manage.ipRule.order')" path="order">
-          <NInputNumber
-            v-model:value="model.order"
-            clearable
-            class="w-full"
-            :placeholder="$t('page.manage.ipRule.form.order')"
-          />
-        </NFormItem>
+        <!-- U10 審計四項唯讀（僅編輯模式；user 拍板 2026-07-16）：純文字顯示、無 path 不進 form model、
+             零 input 元件；資料源＝傳入列資料 rowData；null 照清單慣例降級「—」；新增模式整段隱藏（記錄尚未存在） -->
+        <template v-if="operateType === 'edit'">
+          <NFormItem :label="$t('page.manage.ipRule.createdAt')">
+            <span>{{ displayNullable(rowData?.createdAt) }}</span>
+          </NFormItem>
+          <NFormItem :label="$t('page.manage.ipRule.createdBy')">
+            <span>{{ displayNullable(rowData?.createdBy) }}</span>
+          </NFormItem>
+          <NFormItem :label="$t('page.manage.ipRule.updatedAt')">
+            <span>{{ displayNullable(rowData?.updatedAt) }}</span>
+          </NFormItem>
+          <NFormItem :label="$t('page.manage.ipRule.updatedBy')">
+            <span>{{ displayNullable(rowData?.updatedBy) }}</span>
+          </NFormItem>
+        </template>
       </NForm>
       <template #footer>
         <NSpace :size="16">

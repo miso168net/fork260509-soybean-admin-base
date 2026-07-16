@@ -65,6 +65,15 @@ const { columns, columnChecks, data, getData, getDataByPage, loading, mobilePagi
       render: (_, index) => index + 1
     },
     {
+      // ★「排序值」＝純顯示排序語意（島 F F1 any-match、無優先序）
+      // U10（2026-07-16 user 拍板）欄序重排：排序值前移第 2、狀態緊隨規則類型、備註後移、時間與人對出現——純陣列重排、欄定義零改動
+      key: 'order',
+      title: $t('page.manage.ipRule.order'),
+      align: 'center',
+      width: 80,
+      render: row => renderNullable(row.order)
+    },
+    {
       key: 'wbipCidr',
       title: $t('page.manage.ipRule.wbipCidr'),
       align: 'center',
@@ -76,21 +85,6 @@ const { columns, columnChecks, data, getData, getDataByPage, loading, mobilePagi
       align: 'center',
       width: 100,
       render: row => <NTag type={ruleTypeTagMap[row.wbipType]}>{$t(ruleTypeLabelMap[row.wbipType])}</NTag>
-    },
-    {
-      key: 'wbipMemo',
-      title: $t('page.manage.ipRule.wbipMemo'),
-      align: 'center',
-      minWidth: 120,
-      render: row => renderNullable(row.wbipMemo)
-    },
-    {
-      // ★「排序值」＝純顯示排序語意（島 F F1 any-match、無優先序）
-      key: 'order',
-      title: $t('page.manage.ipRule.order'),
-      align: 'center',
-      width: 80,
-      render: row => renderNullable(row.order)
     },
     {
       // 狀態欄＝混排清單辨識錨點（憲法 §III.2(d) v1.11.0；deleted 導出布林）
@@ -105,18 +99,18 @@ const { columns, columnChecks, data, getData, getDataByPage, loading, mobilePagi
       )
     },
     {
+      key: 'wbipMemo',
+      title: $t('page.manage.ipRule.wbipMemo'),
+      align: 'center',
+      minWidth: 120,
+      render: row => renderNullable(row.wbipMemo)
+    },
+    {
       // RFC3339 帶 offset 直渲染（FR-005；照 audit createTime 先例）
       key: 'createdAt',
       title: $t('page.manage.ipRule.createdAt'),
       align: 'center',
       minWidth: 170
-    },
-    {
-      key: 'updatedAt',
-      title: $t('page.manage.ipRule.updatedAt'),
-      align: 'center',
-      minWidth: 170,
-      render: row => renderNullable(row.updatedAt)
     },
     {
       // 帳號名經後端批次 enrich（含已軟刪用戶查得名）；id 查無→null 降級破折號（renderNullable 單一化）
@@ -125,6 +119,13 @@ const { columns, columnChecks, data, getData, getDataByPage, loading, mobilePagi
       align: 'center',
       minWidth: 100,
       render: row => renderNullable(row.createdBy)
+    },
+    {
+      key: 'updatedAt',
+      title: $t('page.manage.ipRule.updatedAt'),
+      align: 'center',
+      minWidth: 170,
+      render: row => renderNullable(row.updatedAt)
     },
     {
       key: 'updatedBy',
