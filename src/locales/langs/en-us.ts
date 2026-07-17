@@ -68,6 +68,10 @@ const local: App.I18n.Schema = {
         userNameExists: 'User name already exists',
         userNameImmutable: 'User name cannot be changed after creation',
         userNameInvalid: 'Invalid user name (letters, digits, underscore and hyphen only, up to 64 characters)',
+        // [rev4-inline I18N-WIRING(ii) 014-user-center] 自助改密拒因 3 鍵（皆 scalar 無插值；序照固定驗證序 data-model §4、置 passwordPolicy 前）
+        passwordMismatch: 'The two new passwords do not match',
+        oldPasswordMismatch: 'Old password is incorrect',
+        passwordSameAsOld: 'New password must not be the same as the old password',
         passwordPolicy: 'Password does not meet the password policy: {violations}',
         passwordViolation: {
           minLength: 'length below the policy minimum',
@@ -980,7 +984,46 @@ const local: App.I18n.Schema = {
           local: 'Local Icon'
         }
       }
+    },
+    // [rev4-inline (g) 014-user-center START] 個人中心 self-service 頁文案（4 卡＋created/updated＋改密＋D3 成功 toast；en 照 rev3 en-us.ts 底本潤飾、砍死鍵 changePwdBtn；v1.12.0 (g) 擴字串射程）
+    userCenter: {
+      title: 'User Center',
+      basicInfoTitle: 'Basic Info',
+      phoneTitle: 'Phone',
+      emailTitle: 'Email',
+      passwordTitle: 'Change Password',
+      userName: 'Account',
+      roles: 'Roles',
+      gender: 'Gender',
+      nickName: 'Nickname',
+      userPhone: 'Phone',
+      userEmail: 'Email',
+      save: 'Save',
+      createdAt: 'Created At',
+      updatedAt: 'Last Modified',
+      notModified: 'Not modified',
+      oldPassword: 'Old Password',
+      newPassword: 'New Password',
+      confirmPassword: 'Confirm New Password',
+      // 改密成功專屬 toast（D3 行為增補、rev3 無此鍵；語意固定＝密碼已更新＋其他裝置已登出）
+      changePwdSuccessRevoked: 'Password updated. Other devices have been logged out',
+      origin: {
+        systemCreated: 'Created by system',
+        adminCreated: 'Created by administrator',
+        systemUpdated: 'Modified by system',
+        adminUpdated: 'Modified by administrator'
+      },
+      verify: {
+        sendCode: 'Send Code',
+        codePlaceholder: 'Verification Code',
+        verify: 'Verify',
+        comingSoon: 'Coming soon',
+        emailCode: 'Email code',
+        phoneCode: 'Phone code',
+        backfillHint: 'fills the input on the left'
+      }
     }
+    // [rev4-inline (g) 014-user-center END]
   },
   form: {
     required: 'Cannot be empty',

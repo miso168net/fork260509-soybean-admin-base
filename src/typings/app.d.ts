@@ -381,6 +381,10 @@ declare namespace App {
             userNameExists: string;
             userNameImmutable: string;
             userNameInvalid: string;
+            // [rev4-inline I18N-WIRING(iii) 014-user-center] 自助改密拒因型 3 鍵（逐鍵鏡像 locale；皆 scalar）
+            passwordMismatch: string;
+            oldPasswordMismatch: string;
+            passwordSameAsOld: string;
             passwordPolicy: string;
             passwordViolation: {
               minLength: string;
@@ -1146,6 +1150,44 @@ declare namespace App {
             };
           };
         };
+        // [rev4-inline (g) 014-user-center START] 個人中心 self-service 頁型（29 承襲鍵＋D3 toast 鍵逐鍵鏡像 locale；v1.12.0 (g) 擴字串射程）
+        userCenter: {
+          title: string;
+          basicInfoTitle: string;
+          phoneTitle: string;
+          emailTitle: string;
+          passwordTitle: string;
+          userName: string;
+          roles: string;
+          gender: string;
+          nickName: string;
+          userPhone: string;
+          userEmail: string;
+          save: string;
+          createdAt: string;
+          updatedAt: string;
+          notModified: string;
+          oldPassword: string;
+          newPassword: string;
+          confirmPassword: string;
+          changePwdSuccessRevoked: string;
+          origin: {
+            systemCreated: string;
+            adminCreated: string;
+            systemUpdated: string;
+            adminUpdated: string;
+          };
+          verify: {
+            sendCode: string;
+            codePlaceholder: string;
+            verify: string;
+            comingSoon: string;
+            emailCode: string;
+            phoneCode: string;
+            backfillHint: string;
+          };
+        };
+        // [rev4-inline (g) 014-user-center END]
       };
       form: {
         required: string;

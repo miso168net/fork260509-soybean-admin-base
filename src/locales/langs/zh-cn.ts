@@ -68,6 +68,10 @@ const local: App.I18n.Schema = {
         userNameExists: '用户名已存在',
         userNameImmutable: '用户名创建后不可修改',
         userNameInvalid: '用户名格式不正确（仅允许字母、数字、下划线、连字符，最长 64 位）',
+        // [rev4-inline I18N-WIRING(ii) 014-user-center] 自助改密拒因 3 鍵（皆 scalar 無插值；序照固定驗證序 data-model §4、置 passwordPolicy 前）
+        passwordMismatch: '两次输入的新密码不一致',
+        oldPasswordMismatch: '旧密码不符',
+        passwordSameAsOld: '新密码不得与旧密码相同',
         passwordPolicy: '密码不符合密码策略：{violations}',
         passwordViolation: {
           minLength: '长度未达策略下限',
@@ -974,7 +978,46 @@ const local: App.I18n.Schema = {
           local: '本地图标'
         }
       }
+    },
+    // [rev4-inline (g) 014-user-center START] 個人中心 self-service 頁文案（4 卡＋created/updated＋改密＋D3 成功 toast；zh-CN 底本＝rev3 zh-cn.ts 逐字承襲、砍死鍵 changePwdBtn；v1.12.0 (g) 擴字串射程）
+    userCenter: {
+      title: '个人中心',
+      basicInfoTitle: '基本资料',
+      phoneTitle: '手机号',
+      emailTitle: '邮箱',
+      passwordTitle: '修改密码',
+      userName: '账号',
+      roles: '角色',
+      gender: '性别',
+      nickName: '昵称',
+      userPhone: '手机号',
+      userEmail: '邮箱',
+      save: '保存',
+      createdAt: '创建时间',
+      updatedAt: '修改时间',
+      notModified: '未修改',
+      oldPassword: '旧密码',
+      newPassword: '新密码',
+      confirmPassword: '确认新密码',
+      // 改密成功專屬 toast（D3 行為增補、rev3 無此鍵；語意固定＝密碼已更新＋其他裝置已登出）
+      changePwdSuccessRevoked: '密码已更新，其他设备已退出登录',
+      origin: {
+        systemCreated: '系统创建',
+        adminCreated: '管理员创建',
+        systemUpdated: '系统修改',
+        adminUpdated: '管理员修改'
+      },
+      verify: {
+        sendCode: '发送验证码',
+        codePlaceholder: '验证码',
+        verify: '验证',
+        comingSoon: '功能建置中',
+        emailCode: '邮箱验证码',
+        phoneCode: '手机验证码',
+        backfillHint: '回填前方输入框'
+      }
     }
+    // [rev4-inline (g) 014-user-center END]
   },
   form: {
     required: '不能为空',

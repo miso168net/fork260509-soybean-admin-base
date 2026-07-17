@@ -65,6 +65,10 @@ const local: App.I18n.Schema = {
         userNameExists: '使用者名稱已存在',
         userNameImmutable: '使用者名稱建立後不可修改',
         userNameInvalid: '使用者名稱格式不正確（僅允許字母、數字、底線、連字號，最長 64 位）',
+        // [rev4-inline I18N-WIRING(ii) 014-user-center] 自助改密拒因 3 鍵（皆 scalar 無插值；序照固定驗證序 data-model §4、置 passwordPolicy 前）
+        passwordMismatch: '兩次輸入的新密碼不一致',
+        oldPasswordMismatch: '舊密碼不符',
+        passwordSameAsOld: '新密碼不得與舊密碼相同',
         passwordPolicy: '密碼不符合密碼政策：{violations}',
         passwordViolation: {
           minLength: '長度未達政策下限',
@@ -964,7 +968,46 @@ const local: App.I18n.Schema = {
           local: '本機圖示'
         }
       }
+    },
+    // [rev4-inline (g) 014-user-center START] 個人中心 self-service 頁文案（4 卡＋created/updated＋改密＋D3 成功 toast；29 承襲鍵段內序照 rev3 底本、砍死鍵 changePwdBtn；v1.12.0 (g) 擴字串射程）
+    userCenter: {
+      title: '個人中心',
+      basicInfoTitle: '基本資料',
+      phoneTitle: '手機號碼',
+      emailTitle: '信箱',
+      passwordTitle: '修改密碼',
+      userName: '帳號',
+      roles: '角色',
+      gender: '性別',
+      nickName: '暱稱',
+      userPhone: '手機號碼',
+      userEmail: '信箱',
+      save: '儲存',
+      createdAt: '建立時間',
+      updatedAt: '修改時間',
+      notModified: '未修改',
+      oldPassword: '舊密碼',
+      newPassword: '新密碼',
+      confirmPassword: '確認新密碼',
+      // 改密成功專屬 toast（D3 行為增補、rev3 無此鍵；語意固定＝密碼已更新＋其他裝置已登出）
+      changePwdSuccessRevoked: '密碼已更新，其他裝置已登出',
+      origin: {
+        systemCreated: '系統建立',
+        adminCreated: '管理員建立',
+        systemUpdated: '系統修改',
+        adminUpdated: '管理員修改'
+      },
+      verify: {
+        sendCode: '傳送驗證碼',
+        codePlaceholder: '驗證碼',
+        verify: '驗證',
+        comingSoon: '功能建置中',
+        emailCode: '信箱驗證碼',
+        phoneCode: '手機驗證碼',
+        backfillHint: '回填前方輸入框'
+      }
     }
+    // [rev4-inline (g) 014-user-center END]
   },
   form: {
     required: '不能為空',
