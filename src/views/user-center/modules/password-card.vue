@@ -5,7 +5,6 @@
 import { computed, onMounted, reactive, ref, toRef, watch } from 'vue';
 // WRAPPER 直接路徑 import、不經 barrel（避 vite stale-export）
 import { fetchChangePassword, fetchGetPasswordPolicy } from '@/service/api/rev4-user-center';
-import { useAuthStore } from '@/store/modules/auth';
 import { useFormRules, useNaiveForm } from '@/hooks/common/form';
 import { $t } from '@/locales';
 
@@ -13,8 +12,10 @@ defineOptions({
   name: 'PasswordCard'
 });
 
-// 本人 userName 來源＝authStore（D4 即時比對用；PasswordCard 完全自持、對外零必要 prop）
-const authStore = useAuthStore();
+// 本人真帳號來源＝父層 canonical model 之 userName prop（D4 即時比對用；任務字面預授權的唯一 prop 例外）。
+// ★不可用 authStore.userInfo.userName——該欄＝sys_user.nick_name 別名（憲法 L45、auth.rs getUserInfo 投影），
+//   以暱稱比對＝D4 對象錯位（U9 CDP 實測抓獲）；真帳號唯 getProfile.userName 承載。
+const props = withDefaults(defineProps<{ userName?: string }>(), { userName: '' });
 const { formRef, validate, restoreValidation } = useNaiveForm();
 const { createRequiredRule, createConfirmPwdRule } = useFormRules();
 
@@ -90,7 +91,7 @@ function buildPolicyRules(settings: Api.UserCenter.PasswordPolicyItem[]): App.Gl
   if (on('password_forbid_username')) {
     rules.push({
       validator: (_rule, value: string) => {
-        const userName = authStore.userInfo.userName;
+        const userName = props.userName;
         return !(value !== '' && userName !== '' && value.toLowerCase() === userName.toLowerCase());
       },
       message: $t('backend.biz.user.passwordViolation.forbidUsername'),
