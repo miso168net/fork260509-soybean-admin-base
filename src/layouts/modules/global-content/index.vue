@@ -35,9 +35,11 @@ function resetScroll() {
 
 <template>
   <RouterView v-slot="{ Component, route }">
+    <!-- [rev4-inline (j) b104] 原行: mode="out-in"
+      Transition 去 out-in 改預設並行模式——上游 BaseTransition isLeaving 卡死 workaround（ADR 0066）。
+    -->
     <Transition
       :name="transitionName"
-      mode="out-in"
       @before-leave="appStore.setContentXScrollable(true)"
       @after-leave="resetScroll"
       @after-enter="appStore.setContentXScrollable(false)"

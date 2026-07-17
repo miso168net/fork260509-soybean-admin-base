@@ -9,7 +9,27 @@
 }
 
 /* fade-slide */
-.fade-slide-leave-active,
+/* [rev4-inline (j) b104] 並行模式下 leave 側自共用規則拆出、加 position:absolute 使舊頁淡出期間脫離文檔流（ADR 0066）。
+   幾何錨定：以 :has 令 main 在 leave 期間成為 containing block；abspos 錨的是 main 的 padding box，
+   而 in-flow 子元素住 content box（main 僅有 left-gap 的 padding-left、無其他 padding）——故 top:0 對齊縱向、
+   left 依 left-gap 變體補回 sider 寬（CSS modules 雜湊類名保留原始局部名、以 [class*=] 比對；--soy-* 變數自 layout 根繼承）、
+   無 left-gap（mobile／fullContent／sider 隱藏）時 left:0；left＋right 同時指定且 width auto→寬度解算＝content box 寬、height auto 隨內容。 原行: .fade-slide-leave-active, */
+main:has(> .fade-slide-leave-active) {
+  position: relative;
+}
+.fade-slide-leave-active {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  transition: all 0.3s;
+}
+main[class*='left-gap'] > .fade-slide-leave-active {
+  left: var(--soy-sider-width);
+}
+main[class*='left-gap_collapsed'] > .fade-slide-leave-active {
+  left: var(--soy-sider-collapsed-width);
+}
 .fade-slide-enter-active {
   transition: all 0.3s;
 }
