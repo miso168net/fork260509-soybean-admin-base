@@ -1007,6 +1007,8 @@ const local: App.I18n.Schema = {
       confirmPassword: 'Confirm New Password',
       // 改密成功專屬 toast（D3 行為增補、rev3 無此鍵；語意固定＝密碼已更新＋其他裝置已登出）
       changePwdSuccessRevoked: 'Password updated. Other devices have been logged out',
+      // 表單內即時驗證統一單句（D2 後半兌現、buildPolicyRules 六政策鍵 rules 共用；字面逐字承襲 rev3 tooWeak；user 親決 2026-07-17）
+      pwdPolicyNotMet: 'New password does not meet the complexity policy',
       origin: {
         systemCreated: 'Created by system',
         adminCreated: 'Created by administrator',

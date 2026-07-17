@@ -1150,7 +1150,7 @@ declare namespace App {
             };
           };
         };
-        // [rev4-inline (g) 014-user-center START] 個人中心 self-service 頁型（29 承襲鍵＋D3 toast 鍵逐鍵鏡像 locale；v1.12.0 (g) 擴字串射程）
+        // [rev4-inline (g) 014-user-center START] 個人中心 self-service 頁型（29 承襲鍵＋D3 toast 鍵＋D2 pwdPolicyNotMet 鍵逐鍵鏡像 locale；v1.12.0 (g) 擴字串射程）
         userCenter: {
           title: string;
           basicInfoTitle: string;
@@ -1171,6 +1171,7 @@ declare namespace App {
           newPassword: string;
           confirmPassword: string;
           changePwdSuccessRevoked: string;
+          pwdPolicyNotMet: string;
           origin: {
             systemCreated: string;
             adminCreated: string;
