@@ -53,7 +53,9 @@ const labelKeyMap: Record<string, App.I18n.I18nKey> = {
   ip_max_fails: 'page.manage.systemSettings.items.ipMaxFails',
   ip_window_minutes: 'page.manage.systemSettings.items.ipWindowMinutes',
   ip_captcha_after: 'page.manage.systemSettings.items.ipCaptchaAfter',
-  session_idle_timeout: 'page.manage.systemSettings.items.sessionIdleTimeout'
+  session_idle_timeout: 'page.manage.systemSettings.items.sessionIdleTimeout',
+  // 015-pwd-custody 設密冷卻鍵（MODAL-WIRING (e) 用途補完、ADR 0041 資料級 label key）
+  password_change_min_interval: 'page.manage.systemSettings.items.passwordChangeMinInterval'
 };
 
 function labelOf(item: Api.SystemManage.SystemSetting) {
@@ -77,7 +79,9 @@ const helpKeyMap: Record<string, App.I18n.I18nKey> = {
   ip_captcha_after: 'page.manage.systemSettings.help.ipCaptchaAfter',
   login_throttle_max_fails: 'page.manage.systemSettings.help.loginThrottleMaxFails',
   login_throttle_window_minutes: 'page.manage.systemSettings.help.loginThrottleWindowMinutes',
-  login_throttle_captcha_after: 'page.manage.systemSettings.help.loginThrottleCaptchaAfter'
+  login_throttle_captcha_after: 'page.manage.systemSettings.help.loginThrottleCaptchaAfter',
+  // 015-pwd-custody 設密冷卻鍵 tooltip（B-059 help 先例同形）
+  password_change_min_interval: 'page.manage.systemSettings.help.passwordChangeMinInterval'
 };
 
 /** tooltip 文案：有映射走 $t、未映射 fallback item.description（未來新鍵未鍵化時 tooltip 不消失）、兩者皆無回空字串。 */

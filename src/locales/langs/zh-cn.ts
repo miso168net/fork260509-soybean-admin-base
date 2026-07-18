@@ -87,7 +87,9 @@ const local: App.I18n.Schema = {
         },
         roleNotFound: '所选角色不存在或已删除',
         userNotFound: '用户不存在',
-        sessionPolicyInvalid: '会话策略值无效（仅允许 inherit、single、multi）'
+        sessionPolicyInvalid: '会话策略值无效（仅允许 inherit、single、multi）',
+        // [rev4-inline I18N-WIRING(ii) 015-pwd-custody] 設密冷卻拒因（2222；contracts C3——攜 {remainingSeconds} named-object 插值、translateBackendMsg 原生支援）
+        pwdSetTooFrequent: '密码设置过于频繁，请于 {remainingSeconds} 秒后再试'
       },
       unlock: {
         invalidTarget: '解锁目标无效（账号维需账号名称、IP 源维需有效 IP 地址）',
@@ -666,7 +668,9 @@ const local: App.I18n.Schema = {
           ipCaptchaAfter: 'IP源登录失败-触发验证码（次）',
           loginThrottleMaxFails: '账号登录失败-计数最大值（次）',
           loginThrottleWindowMinutes: '账号登录失败-计数窗口（分钟）',
-          loginThrottleCaptchaAfter: '账号登录失败-触发验证码（次）'
+          loginThrottleCaptchaAfter: '账号登录失败-触发验证码（次）',
+          // [rev4-inline I18N-WIRING(ii) 015-pwd-custody] 設密冷卻鍵標籤（contracts C4/C5；ADR 0041 資料級 label key）
+          passwordChangeMinInterval: '密码设置冷却间隔（秒）'
         },
         // B-059 tooltip 三語化：per-key help 說明（IconTooltip 用；未鍵化 fallback item.description）
         help: {
@@ -684,7 +688,9 @@ const local: App.I18n.Schema = {
           ipCaptchaAfter: '来源节流：来源桶滑动窗内失败达此数即进验证码软区',
           loginThrottleMaxFails: '登录节流：滑动窗内失败达此数即锁定',
           loginThrottleWindowMinutes: '登录节流：滑动窗长（分钟）＝锁定的最长存续',
-          loginThrottleCaptchaAfter: '登录节流：滑动窗内失败达此数即进验证码软区'
+          loginThrottleCaptchaAfter: '登录节流：滑动窗内失败达此数即进验证码软区',
+          // [rev4-inline I18N-WIRING(ii) 015-pwd-custody] 設密冷卻鍵 tooltip（B-059 help 先例同形）
+          passwordChangeMinInterval: '同一操作者对同一账号连续设置密码的最小间隔（秒）；0＝停用'
         }
       },
       // [rev4-inline I18N-WIRING(ii) 004-system-settings END]

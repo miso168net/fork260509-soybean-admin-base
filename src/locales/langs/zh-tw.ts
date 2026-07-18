@@ -84,7 +84,9 @@ const local: App.I18n.Schema = {
         },
         roleNotFound: '所選角色不存在或已刪除',
         userNotFound: '使用者不存在',
-        sessionPolicyInvalid: '會話策略值無效（僅允許 inherit、single、multi）'
+        sessionPolicyInvalid: '會話策略值無效（僅允許 inherit、single、multi）',
+        // [rev4-inline I18N-WIRING(ii) 015-pwd-custody] 設密冷卻拒因（2222；contracts C3——攜 {remainingSeconds} named-object 插值、translateBackendMsg 原生支援）
+        pwdSetTooFrequent: '密碼設定過於頻繁，請於 {remainingSeconds} 秒後再試'
       },
       unlock: {
         invalidTarget: '解鎖標的無效（帳號維需帳號名稱、IP 源維需有效 IP 位址）',
@@ -659,7 +661,9 @@ const local: App.I18n.Schema = {
           ipCaptchaAfter: 'IP源登入失敗-觸發驗證碼（次）',
           loginThrottleMaxFails: '帳號登入失敗-計數最大值（次）',
           loginThrottleWindowMinutes: '帳號登入失敗-計數窗口（分鐘）',
-          loginThrottleCaptchaAfter: '帳號登入失敗-觸發驗證碼（次）'
+          loginThrottleCaptchaAfter: '帳號登入失敗-觸發驗證碼（次）',
+          // [rev4-inline I18N-WIRING(ii) 015-pwd-custody] 設密冷卻鍵標籤（contracts C4/C5；ADR 0041 資料級 label key）
+          passwordChangeMinInterval: '密碼設定冷卻間隔（秒）'
         },
         // B-059 tooltip 三語化：per-key help 說明（IconTooltip 用；未鍵化 fallback item.description）
         help: {
@@ -677,7 +681,9 @@ const local: App.I18n.Schema = {
           ipCaptchaAfter: '來源節流：來源桶滑動窗內失敗達此數即進驗證碼軟區',
           loginThrottleMaxFails: '登入節流：滑動窗內失敗達此數即鎖定',
           loginThrottleWindowMinutes: '登入節流：滑動窗長（分鐘）＝鎖定的最長存續',
-          loginThrottleCaptchaAfter: '登入節流：滑動窗內失敗達此數即進驗證碼軟區'
+          loginThrottleCaptchaAfter: '登入節流：滑動窗內失敗達此數即進驗證碼軟區',
+          // [rev4-inline I18N-WIRING(ii) 015-pwd-custody] 設密冷卻鍵 tooltip（B-059 help 先例同形）
+          passwordChangeMinInterval: '同一操作者對同一帳號連續設定密碼的最小間隔（秒）；0＝停用'
         }
       },
       common: {
@@ -867,7 +873,7 @@ const local: App.I18n.Schema = {
         resetPwdUnlockHint: '若該帳號登入鎖定中需另行解鎖',
         // [rev4-inline (k) 015-pwd-custody] operate 欄「密碼」動作標籤＋確認句（C5；權限碼沿 user:reset-pwd、標籤為新鍵）
         pwdAction: '密碼',
-        pwdActionConfirm: '確認以浮層產生的隨機密碼重設此使用者的密碼？請先複製保存該密碼。',
+        pwdActionConfirm: '確認以浮層產生的隨機密碼重設此使用者的密碼？請先複製儲存該密碼。',
         confirmRestore: '確定復原此使用者？',
         deletedAt: '刪除時間',
         unlock: {

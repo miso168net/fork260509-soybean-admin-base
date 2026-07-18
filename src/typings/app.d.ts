@@ -401,6 +401,8 @@ declare namespace App {
             roleNotFound: string;
             userNotFound: string;
             sessionPolicyInvalid: string;
+            // [rev4-inline I18N-WIRING(iii) 015-pwd-custody] 設密冷卻拒因型（逐鍵鏡像 locale；攜 {remainingSeconds}）
+            pwdSetTooFrequent: string;
           };
           unlock: {
             invalidTarget: string;
@@ -837,6 +839,8 @@ declare namespace App {
               ipWindowMinutes: string;
               ipCaptchaAfter: string;
               sessionIdleTimeout: string;
+              // [rev4-inline I18N-WIRING(iii) 015-pwd-custody] 設密冷卻鍵標籤型（逐鍵鏡像 locale）
+              passwordChangeMinInterval: string;
             };
             // B-059 tooltip 三語化：per-key help 說明型（與 locale help 逐鍵鏡像）
             help: {
@@ -855,6 +859,8 @@ declare namespace App {
               loginThrottleMaxFails: string;
               loginThrottleWindowMinutes: string;
               loginThrottleCaptchaAfter: string;
+              // [rev4-inline I18N-WIRING(iii) 015-pwd-custody] 設密冷卻鍵 tooltip 型（逐鍵鏡像 locale）
+              passwordChangeMinInterval: string;
             };
           };
           // [rev4-inline I18N-WIRING(iii) 004-system-settings END]

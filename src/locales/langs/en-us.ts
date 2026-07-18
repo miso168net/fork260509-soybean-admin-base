@@ -87,7 +87,9 @@ const local: App.I18n.Schema = {
         },
         roleNotFound: 'The selected role does not exist or has been deleted',
         userNotFound: 'User not found',
-        sessionPolicyInvalid: 'Invalid session policy value (inherit, single or multi only)'
+        sessionPolicyInvalid: 'Invalid session policy value (inherit, single or multi only)',
+        // [rev4-inline I18N-WIRING(ii) 015-pwd-custody] 設密冷卻拒因（2222；contracts C3——攜 {remainingSeconds} named-object 插值、translateBackendMsg 原生支援）
+        pwdSetTooFrequent: 'Password was set too recently, please try again in {remainingSeconds} seconds'
       },
       unlock: {
         invalidTarget: 'Invalid unlock target (user dimension requires a user name; IP dimension requires a valid IP address)',
@@ -670,7 +672,9 @@ const local: App.I18n.Schema = {
           ipCaptchaAfter: 'IP-source login failure - trigger captcha (times)',
           loginThrottleMaxFails: 'Account login failure - max count (times)',
           loginThrottleWindowMinutes: 'Account login failure - counting window (min)',
-          loginThrottleCaptchaAfter: 'Account login failure - trigger captcha (times)'
+          loginThrottleCaptchaAfter: 'Account login failure - trigger captcha (times)',
+          // [rev4-inline I18N-WIRING(ii) 015-pwd-custody] 設密冷卻鍵標籤（contracts C4/C5；ADR 0041 資料級 label key）
+          passwordChangeMinInterval: 'Password set cooldown (seconds)'
         },
         // B-059 tooltip 三語化：per-key help 說明（IconTooltip 用；未鍵化 fallback item.description）
         help: {
@@ -688,7 +692,9 @@ const local: App.I18n.Schema = {
           ipCaptchaAfter: 'Source throttle: enter the captcha soft zone once failures in the source-bucket sliding window reach this count',
           loginThrottleMaxFails: 'Login throttle: lockout once failures in the sliding window reach this count',
           loginThrottleWindowMinutes: 'Login throttle: sliding window length (minutes) = maximum lockout duration',
-          loginThrottleCaptchaAfter: 'Login throttle: enter the captcha soft zone once failures in the sliding window reach this count'
+          loginThrottleCaptchaAfter: 'Login throttle: enter the captcha soft zone once failures in the sliding window reach this count',
+          // [rev4-inline I18N-WIRING(ii) 015-pwd-custody] 設密冷卻鍵 tooltip（B-059 help 先例同形）
+          passwordChangeMinInterval: 'Minimum interval in seconds between password sets by the same operator on the same account; 0 disables'
         }
       },
       // [rev4-inline I18N-WIRING(ii) 004-system-settings END]
