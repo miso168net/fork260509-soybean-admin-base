@@ -26,6 +26,9 @@ import UserOperateDrawer from './modules/user-operate-drawer.vue';
 import UserSearch from './modules/user-search.vue';
 // [rev4-inline MODAL-WIRING(h) 011-user-admin] net-new 解鎖 modal（憲法 §III.2(h)、T029 Amendment 授權）
 import UserUnlockModal from './modules/user-unlock-modal.vue';
+// [rev4-inline MODAL-WIRING(k) 015-pwd-custody] T018 掛載點②：operate 欄「密碼」動作之產密浮層＋auth-only 政策讀端（★直接路徑、不經 barrel）
+import { fetchGetPasswordPolicy } from '@/service/api/rev4-user-center';
+import PwdGenModal from '@/components/custom/pwd-gen-modal.vue';
 
 const appStore = useAppStore();
 
@@ -261,6 +264,8 @@ function getOperateDropdownOptions() {
   }
   if (hasAuth('user:reset-pwd')) {
     options.push({ label: $t('page.manage.user.resetPwd'), key: 'resetPwd' });
+    // [rev4-inline MODAL-WIRING(k) 015-pwd-custody] 「密碼」動作＝隨機專用浮層（FR-009；★可見性沿用既有「重設密碼」按鈕權限碼 user:reset-pwd、兩入口同進退、零新 casbin）
+    options.push({ label: $t('page.manage.user.pwdAction'), key: 'pwdRandom' });
   }
   return options;
 }
@@ -270,6 +275,9 @@ function handleOperateSelect(key: string, row: Api.SystemManage.User) {
     handleKick(row);
   } else if (key === 'resetPwd') {
     handleResetPwd(row);
+    // [rev4-inline MODAL-WIRING(k) 015-pwd-custody] 「密碼」動作分派（隨機專用浮層流）
+  } else if (key === 'pwdRandom') {
+    handlePwdRandom(row);
   }
 }
 
@@ -325,6 +333,51 @@ function handleResetPwd(row: Api.SystemManage.User) {
   });
 }
 // [rev4-inline MODAL-WIRING(h) 011-user-admin END]
+
+// [rev4-inline MODAL-WIRING(k) 015-pwd-custody START] T018 掛載點②：operate 欄「密碼」動作＝隨機專用產密浮層（FR-009）。
+// 浮層唯讀不可手輸（元件本即唯讀 input、僅可產生後帶入）；「帶入」後確認 dialog 送出＝呼既有
+// resetUserPassword（重設該會員密碼並觸發首登換密——後端寫入保證、前端零額外邏輯）；
+// ★既有「重設密碼」手輸 dialog（上方 handleResetPwd）零改動；成功提示與既有重設一致。
+const pwdGenVisible = ref(false);
+const pwdGenTarget = ref<Api.SystemManage.User | null>(null);
+const pwdPolicy = ref<Api.UserCenter.PasswordPolicyItem[]>([]);
+
+async function handlePwdRandom(row: Api.SystemManage.User) {
+  pwdGenTarget.value = row;
+  // 首開 best-effort 讀政策 7 鍵（auth-only getPasswordPolicy）並快取；失敗靜默降級（浮層以預設界生成、後端驗證為權威）
+  if (pwdPolicy.value.length === 0) {
+    const { error, data } = await fetchGetPasswordPolicy();
+    if (!error && data) {
+      pwdPolicy.value = data;
+    }
+  }
+  pwdGenVisible.value = true;
+}
+
+function handlePwdGenApply(password: string) {
+  const target = pwdGenTarget.value;
+  if (!target) {
+    return;
+  }
+  window.$dialog?.warning({
+    title: `${$t('page.manage.user.pwdAction')}：${target.userName}`,
+    content: $t('page.manage.user.pwdActionConfirm'),
+    positiveText: $t('common.confirm'),
+    negativeText: $t('common.cancel'),
+    onPositiveClick: async () => {
+      const { error } = await fetchResetUserPassword({ id: target.id, password });
+      if (error) {
+        // 政策違規／冷卻等拒因由攔截層 toast——留 dialog 供重試（與既有 handleResetPwd 同紀律）
+        return false;
+      }
+      window.$message?.success($t('page.manage.user.resetPwdSuccess'));
+      // ★重設不解登入節流鎖定——附另行解鎖指引（與既有重設一致）
+      window.$message?.info($t('page.manage.user.resetPwdUnlockHint'));
+      return true;
+    }
+  });
+}
+// [rev4-inline MODAL-WIRING(k) 015-pwd-custody END]
 
 function edit(id: number) {
   handleEdit(id);
@@ -402,6 +455,13 @@ function edit(id: number) {
       />
       <!-- [rev4-inline MODAL-WIRING(h) 011-user-admin] net-new 解鎖 modal 掛載（憲法 §III.2(h)、T029 Amendment 授權） -->
       <UserUnlockModal v-model:visible="unlockVisible" />
+      <!-- [rev4-inline MODAL-WIRING(k) 015-pwd-custody] T018：產密浮層掛載（隨機專用；userName＝標的列帳號——forbid_username 比對源） -->
+      <PwdGenModal
+        v-model:show="pwdGenVisible"
+        :policy="pwdPolicy"
+        :user-name="pwdGenTarget?.userName"
+        @apply="handlePwdGenApply"
+      />
     </NCard>
   </div>
 </template>

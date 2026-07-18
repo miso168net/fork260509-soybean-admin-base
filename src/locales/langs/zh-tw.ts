@@ -865,6 +865,9 @@ const local: App.I18n.Schema = {
         resetPwd: '重設密碼',
         resetPwdSuccess: '密碼重設成功',
         resetPwdUnlockHint: '若該帳號登入鎖定中需另行解鎖',
+        // [rev4-inline (k) 015-pwd-custody] operate 欄「密碼」動作標籤＋確認句（C5；權限碼沿 user:reset-pwd、標籤為新鍵）
+        pwdAction: '密碼',
+        pwdActionConfirm: '確認以浮層產生的隨機密碼重設此使用者的密碼？請先複製保存該密碼。',
         confirmRestore: '確定復原此使用者？',
         deletedAt: '刪除時間',
         unlock: {

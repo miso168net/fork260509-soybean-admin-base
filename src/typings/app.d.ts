@@ -1044,6 +1044,9 @@ declare namespace App {
             resetPwd: string;
             resetPwdSuccess: string;
             resetPwdUnlockHint: string;
+            // [rev4-inline (k) 015-pwd-custody] operate 欄「密碼」動作標籤＋確認句（逐鍵鏡像 locale）
+            pwdAction: string;
+            pwdActionConfirm: string;
             confirmRestore: string;
             deletedAt: string;
             unlock: {
