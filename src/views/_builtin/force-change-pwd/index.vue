@@ -4,14 +4,13 @@
   送出走既有 changePassword 自助改密 wrapper（零新端點、FR-007 複用後端固定驗證序）；
   ★userName 走 getProfile 真帳號（絕不用 authStore.userName＝nick_name 別名、014 U9 D4 坑）；
   成功流＝清 store needChangePwd→既有 logout 流→回登入頁（本頁屬 constant、resetStore 不自轉登入、
-  故顯式 toLogin）。★新檔零原行（example 基線無此檔）。 -->
+  故以整頁重載回登入頁——見 doLogout 註解）。★新檔零原行（example 基線無此檔）。 -->
 <script setup lang="ts">
 import { computed, onMounted, reactive, ref, toRef } from 'vue';
 // WRAPPER 直接路徑 import、不經 barrel（避 vite stale-export）
 import { fetchChangePassword, fetchGetPasswordPolicy, fetchGetProfile } from '@/service/api/rev4-user-center';
 import { fetchLogout } from '@/service/api/rev4-session-logout';
 import { useAuthStore } from '@/store/modules/auth';
-import { useRouterPush } from '@/hooks/common/router';
 import { useFormRules, useNaiveForm } from '@/hooks/common/form';
 import { usePwdPolicyRules } from '@/hooks/business/pwd-policy';
 import { localStg } from '@/utils/storage';
@@ -19,7 +18,6 @@ import { $t } from '@/locales';
 import PwdGenModal from '@/components/custom/pwd-gen-modal.vue';
 
 const authStore = useAuthStore();
-const { toLogin } = useRouterPush();
 const { formRef, validate } = useNaiveForm();
 const { createRequiredRule, createConfirmPwdRule } = useFormRules();
 const { buildPolicyRules } = usePwdPolicyRules();
@@ -84,9 +82,12 @@ async function doLogout() {
     // 後端 logout 失敗：仍 resetStore 清本地、完成登出
   }
   await authStore.resetStore();
-  // 本頁 meta.constant＝true → resetStore 內建 toLogin 不觸發；顯式導回登入頁（redirect 給 '/'
-  // ——不回填本頁路徑、避免改密成功後重登被殘留 redirect 送回強制頁）
-  await toLogin('pwd-login', '/');
+  // 本頁屬 constant route：resetStore 內建 toLogin 被跳過（meta.constant），且其未 await 的
+  // routeStore.resetStore() 會先 resetVueRoutes() 移除 login 常數路由、再非同步 initConstantRoute()
+  // 重建——SPA toLogin 會撞上 login 尚未重建的空窗（No match for login、CDP S1 實測）。故登出以
+  // 整頁重載回登入頁：徹底重建 router／store、天然清殘留 SPA 狀態、避開常數路由重建競態
+  // （登出語意本即回到全新未登入態；redirect 不回填本頁、避免改密成功後重登被送回強制頁）。
+  window.location.href = '/login';
 }
 
 async function handleSubmit() {
