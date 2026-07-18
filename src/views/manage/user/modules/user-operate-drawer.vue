@@ -8,6 +8,9 @@ import { fetchAddUser, fetchUpdateUser, fetchUpdateUserSessionPolicy } from '@/s
 import { fetchGetSystemSettings } from '@/service/api/rev4-system-settings';
 import { useFormRules, useNaiveForm } from '@/hooks/common/form';
 import { $t } from '@/locales';
+// [rev4-inline MODAL-WIRING(k) 015-pwd-custody] T017 掛載點①：產密浮層元件＋auth-only 政策讀端（★直接路徑、不經 barrel）
+import { fetchGetPasswordPolicy } from '@/service/api/rev4-user-center';
+import PwdGenModal from '@/components/custom/pwd-gen-modal.vue';
 
 defineOptions({
   name: 'UserOperateDrawer'
@@ -135,6 +138,26 @@ async function getPasswordPolicyHint() {
 }
 // [rev4-inline MODAL-WIRING(a) 011-user-admin END]
 
+// [rev4-inline MODAL-WIRING(k) 015-pwd-custody START] T017 掛載點①：add 模式產密浮層（FR-009）。
+// 政策讀 auth-only getPasswordPolicy（7 鍵投影、任一登入者可讀）——上方 hint 之 getSystemSettings 屬
+// super-only best-effort、非可靠生成資料源，兩讀端各司其職不合併；apply 僅帶入密碼欄、送出仍走既有 addUser。
+const pwdGenVisible = ref(false);
+const pwdPolicy = ref<Api.UserCenter.PasswordPolicyItem[]>([]);
+
+/** best-effort 讀政策 7 鍵（浮層構造性生成資料源）；失敗靜默降級（浮層以預設界生成、後端驗證為權威） */
+async function getPwdPolicy() {
+  const { error, data } = await fetchGetPasswordPolicy();
+  if (!error && data) {
+    pwdPolicy.value = data;
+  }
+}
+
+/** 浮層「帶入」：回填 add 密碼欄（僅產生＋帶入；建帳送出流程零改動、首登強制由後端寫入保證） */
+function handlePwdGenApply(password: string) {
+  model.value.password = password;
+}
+// [rev4-inline MODAL-WIRING(k) 015-pwd-custody END]
+
 /** the enabled role options */
 const roleOptions = ref<CommonType.Option<string>[]>([]);
 
@@ -238,6 +261,8 @@ watch(visible, () => {
     // [rev4-inline MODAL-WIRING(a) 011-user-admin] add 模式取密碼政策動態 hint（best-effort、不 await——失敗靜默降級零 hint）
     if (props.operateType === 'add') {
       getPasswordPolicyHint();
+      // [rev4-inline MODAL-WIRING(k) 015-pwd-custody] add 模式預載政策 7 鍵（best-effort、不 await——開浮層即用）
+      getPwdPolicy();
     }
   }
 });
@@ -260,12 +285,17 @@ watch(visible, () => {
         <!-- [rev4-inline MODAL-WIRING(a) 011-user-admin START] add 模式密碼欄＋004 政策動態 hint（best-effort、失敗靜默零 hint；憲法 §III.2(a) 釐清句授權） -->
         <NFormItem v-if="operateType === 'add'" :label="$t('page.manage.user.password')" path="password">
           <div class="w-full flex-col gap-4px">
-            <NInput
-              v-model:value="model.password"
-              type="password"
-              show-password-on="click"
-              :placeholder="$t('page.manage.user.form.password')"
-            />
+            <!-- [rev4-inline MODAL-WIRING(k) 015-pwd-custody START] T017：密碼欄旁「隨機密碼」鈕（NInputGroup 併排、點開產密浮層；欄本體與送出流程零改動） -->
+            <NInputGroup>
+              <NInput
+                v-model:value="model.password"
+                type="password"
+                show-password-on="click"
+                :placeholder="$t('page.manage.user.form.password')"
+              />
+              <NButton @click="pwdGenVisible = true">{{ $t('pwdGen.title') }}</NButton>
+            </NInputGroup>
+            <!-- [rev4-inline MODAL-WIRING(k) 015-pwd-custody END] -->
             <span v-if="passwordPolicyHint" class="text-12px text-#999">{{ passwordPolicyHint }}</span>
           </div>
         </NFormItem>
@@ -307,6 +337,8 @@ watch(visible, () => {
         </NFormItem>
         <!-- [rev4-inline MODAL-WIRING(a) 011-user-admin END] -->
       </NForm>
+      <!-- [rev4-inline MODAL-WIRING(k) 015-pwd-custody] T017：產密浮層掛載（policy＝auth-only 讀端；userName＝表單 userName 欄即時值——forbid_username 比對源） -->
+      <PwdGenModal v-model:show="pwdGenVisible" :policy="pwdPolicy" :user-name="model.userName" @apply="handlePwdGenApply" />
       <template #footer>
         <NSpace :size="16">
           <NButton @click="closeDrawer">{{ $t('common.cancel') }}</NButton>
