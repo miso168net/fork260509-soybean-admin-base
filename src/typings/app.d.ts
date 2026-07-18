@@ -1244,6 +1244,7 @@ declare namespace App {
         title: string;
         generate: string;
         copy: string;
+        copied: string;
         showPassword: string;
         apply: string;
       };

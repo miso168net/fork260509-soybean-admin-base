@@ -57,9 +57,6 @@ const newPasswordRules = ref<App.Global.FormRule[]>([createRequiredRule($t('form
 // 015 T019：產密浮層開關＋政策原始 7 鍵留存（浮層構造性生成資料源；rules 另經共用 hook 組建）
 const showGen = ref(false);
 const policyItems = ref<Api.UserCenter.PasswordPolicyItem[]>([]);
-// 帶入值明文顯示供抄存（US2 AC4）：帶入後新密＋確認兩欄轉 text；值一經改動（含成功清場）即回 password 遮蔽
-const appliedVisible = ref(false);
-let appliedValue = '';
 
 // 政策 7 鍵→naive rules 組建（含 D2 六鍵統一單句＋D4 forbid_username 第 7 鍵）：
 // 015 T016 抽至共用 hook usePwdPolicyRules（hooks/business/pwd-policy.ts、規則逐字搬移、行為零變更）；
@@ -94,23 +91,12 @@ async function loadPolicyRules() {
   }
 }
 
-// 015 T019：浮層「帶入」＝新密＋確認兩欄同值回填、轉明文供抄存；後續仍走既有自助改密流程
-// （不觸發任何強制、成功撤他裝置照舊 014 語意）。
+// 015 T019：浮層「帶入」＝新密＋確認兩欄同值回填、維持遮蔽（密碼已於浮層帶入時自動複製到剪貼簿供抄存）；
+// 後續仍走既有自助改密流程（不觸發任何強制、成功撤他裝置照舊 014 語意）。
 function handleGenApply(password: string) {
   model.newPassword = password;
   model.confirmPassword = password;
-  appliedValue = password;
-  appliedVisible.value = true;
 }
-
-watch(
-  () => model.newPassword,
-  value => {
-    if (appliedVisible.value && value !== appliedValue) {
-      appliedVisible.value = false;
-    }
-  }
-);
 
 async function handleSave() {
   // 非舊密碼路徑＝驗證碼佔位（FR-012）：toast 功能建置中、零網路請求。
@@ -180,21 +166,13 @@ onMounted(loadPolicyRules);
       <NGrid cols="1 s:2" responsive="screen" :x-gap="24">
         <NGi>
           <NFormItem :label="$t('page.userCenter.newPassword')" path="newPassword">
-            <!-- 015 T019：浮層帶入後轉明文供抄存（AC4）；值一經改動即回遮蔽 -->
-            <NInput
-              v-model:value="model.newPassword"
-              :type="appliedVisible ? 'text' : 'password'"
-              show-password-on="click"
-            />
+            <!-- 015 T019：浮層帶入後維持遮蔽（密碼已於浮層帶入時自動複製到剪貼簿供抄存）；想看可自行點眼睛 -->
+            <NInput v-model:value="model.newPassword" type="password" show-password-on="click" />
           </NFormItem>
         </NGi>
         <NGi>
           <NFormItem :label="$t('page.userCenter.confirmPassword')" path="confirmPassword">
-            <NInput
-              v-model:value="model.confirmPassword"
-              :type="appliedVisible ? 'text' : 'password'"
-              show-password-on="click"
-            />
+            <NInput v-model:value="model.confirmPassword" type="password" show-password-on="click" />
           </NFormItem>
         </NGi>
       </NGrid>

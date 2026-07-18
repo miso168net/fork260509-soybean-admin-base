@@ -888,7 +888,7 @@ const local: App.I18n.Schema = {
         resetPwdSuccess: 'Password reset success',
         resetPwdUnlockHint: 'If this account is locked out of login, unlock it separately',
         // [rev4-inline (k) 015-pwd-custody] operate 欄「密碼」動作標籤＋確認句（C5；權限碼沿 user:reset-pwd、標籤為新鍵）
-        pwdAction: 'Password',
+        pwdAction: 'Random Password',
         pwdActionConfirm: 'Reset this user password to the generated random password? Copy and save it first.',
         confirmRestore: 'Confirm to restore this user?',
         deletedAt: 'Deleted At',
@@ -1109,6 +1109,7 @@ const local: App.I18n.Schema = {
     title: 'Random Password',
     generate: 'Generate',
     copy: 'Copy',
+    copied: 'Random password copied',
     showPassword: 'Show Password',
     apply: 'Apply'
   }

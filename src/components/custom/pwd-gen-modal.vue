@@ -1,8 +1,8 @@
 <!-- BASE-WEB-MODAL-WIRING(k) (015-pwd-custody)：net-new 產密浮層共用元件（T016、contracts C6；
   憲法 §III.2(k) 顯式授權 src/components/ 檔位）。對外契約：props policy（getPasswordPolicy 結果形）
   ＋userName（forbid_username 大小寫不敏感比對源）；「產生」＝本地 CSPRNG（crypto.getRandomValues、
-  絕非 Math.random）構造性滿足政策全部規則、零網路請求；唯讀 input＋顯示密碼切換＋一鍵複製＋
-  「帶入」emit apply(password)；密碼值恆不入 log/console。★新檔零原行（example 基線無此檔）。 -->
+  絕非 Math.random）構造性滿足政策全部規則、零網路請求；唯讀 input＋顯示密碼切換＋一鍵複製（成功 toast）＋
+  「帶入」emit apply(password)（帶入時一併複製到剪貼簿＋toast）；密碼值恆不入 log/console。★新檔零原行（example 基線無此檔）。 -->
 <script setup lang="ts">
 import { ref, watch } from 'vue';
 import { useClipboard } from '@vueuse/core';
@@ -115,13 +115,17 @@ function generate() {
 function handleCopy() {
   if (generated.value !== '') {
     copy(generated.value);
+    window.$message?.success($t('pwdGen.copied'));
   }
 }
 
+// 帶入＝一併複製到剪貼簿＋toast（順序：先 copy——須在使用者點擊手勢內、剪貼簿才寫得成）
 function handleApply() {
   if (generated.value === '') {
     return;
   }
+  copy(generated.value);
+  window.$message?.success($t('pwdGen.copied'));
   emit('apply', generated.value);
   show.value = false;
 }
