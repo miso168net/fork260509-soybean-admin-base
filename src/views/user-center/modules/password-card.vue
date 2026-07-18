@@ -6,6 +6,8 @@ import { computed, onMounted, reactive, ref, toRef, watch } from 'vue';
 // WRAPPER 直接路徑 import、不經 barrel（避 vite stale-export）
 import { fetchChangePassword, fetchGetPasswordPolicy } from '@/service/api/rev4-user-center';
 import { useFormRules, useNaiveForm } from '@/hooks/common/form';
+// 015 T016：政策 rules 組建抽至共用 hook（供本卡＋force-change-pwd 強制改密頁共用；行為零變更）
+import { usePwdPolicyRules } from '@/hooks/business/pwd-policy';
 import { $t } from '@/locales';
 
 defineOptions({
@@ -50,56 +52,10 @@ const credentialLabel = computed(() => {
 /** 新密碼政策 rules：起手僅 required；onMounted 讀當前政策後以 buildPolicyRules 動態擴充 */
 const newPasswordRules = ref<App.Global.FormRule[]>([createRequiredRule($t('form.pwd.required'))]);
 
-// 依政策 7 鍵組 naive rule：KV Map 化、number 鍵 parseInt 且 NaN 略過、bool 鍵值 'on' 才出規則、
-// trigger＝input＋blur；六政策鍵 rules 訊息統一單句取 page.userCenter.pwdPolicyNotMet（D2 後半兌現、
-// rev3 藍本同構；user 親決 2026-07-17）——儲存時 BizData violations 明細 toast 另管線、後端單一驗證點
-// 為權威、前端提示為輔。
-// ★D4 行為增補：補第 7 鍵 forbid_username（rev3 僅消費 6/7＝其自認遺留）——與本人帳號
-//   case-insensitive 相等即紅字（鏡像後端 VIOLATION_FORBID_USERNAME 語意：相等、非子串）；
-//   即時訊息維持 forbidUsername 明細譯文（rev4 新增行為、不在 rev3 六鍵統一單句射程內）。
-function buildPolicyRules(settings: Api.UserCenter.PasswordPolicyItem[]): App.Global.FormRule[] {
-  const map = new Map(settings.map(item => [item.settingKey, item.settingValue]));
-  const num = (key: string) => {
-    const parsed = Number.parseInt(map.get(key) ?? '', 10);
-    return Number.isNaN(parsed) ? null : parsed;
-  };
-  const on = (key: string) => map.get(key) === 'on';
-  const message = $t('page.userCenter.pwdPolicyNotMet');
-  const trigger = ['input', 'blur'];
-
-  const rules: App.Global.FormRule[] = [createRequiredRule($t('form.pwd.required'))];
-  const min = num('password_min_length');
-  if (min !== null) {
-    rules.push({ type: 'string', min, message, trigger });
-  }
-  const max = num('password_max_length');
-  if (max !== null) {
-    rules.push({ type: 'string', max, message, trigger });
-  }
-  if (on('password_require_uppercase')) {
-    rules.push({ pattern: /[A-Z]/, message, trigger });
-  }
-  if (on('password_require_lowercase')) {
-    rules.push({ pattern: /[a-z]/, message, trigger });
-  }
-  if (on('password_require_digit')) {
-    rules.push({ pattern: /[0-9]/, message, trigger });
-  }
-  if (on('password_require_special')) {
-    rules.push({ pattern: /[^A-Za-z0-9]/, message, trigger });
-  }
-  if (on('password_forbid_username')) {
-    rules.push({
-      validator: (_rule, value: string) => {
-        const userName = props.userName;
-        return !(value !== '' && userName !== '' && value.toLowerCase() === userName.toLowerCase());
-      },
-      message: $t('backend.biz.user.passwordViolation.forbidUsername'),
-      trigger
-    });
-  }
-  return rules;
-}
+// 政策 7 鍵→naive rules 組建（含 D2 六鍵統一單句＋D4 forbid_username 第 7 鍵）：
+// 015 T016 抽至共用 hook usePwdPolicyRules（hooks/business/pwd-policy.ts、規則逐字搬移、行為零變更）；
+// userName 傳 getter——validator 執行時動態讀當下 props.userName（原即時比對語意不變）。
+const { buildPolicyRules } = usePwdPolicyRules();
 
 // 動態 rules：新密碼＝政策 rules＋新≠舊即時 rule；credential 不掛 required（後端 verify 把關）。
 // ★confirm rule 必傳 toRef（非值快照）：validator 執行時 toValue 動態讀當下 newPassword，
@@ -123,7 +79,7 @@ async function loadPolicyRules() {
   // 失敗（網路/異常）維持 required 起手 rule 靜默降級——後端驗證為權威。
   const { data, error } = await fetchGetPasswordPolicy();
   if (!error && data) {
-    newPasswordRules.value = buildPolicyRules(data);
+    newPasswordRules.value = buildPolicyRules(data, () => props.userName);
   }
 }
 
