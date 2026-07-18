@@ -85,6 +85,17 @@ export const generatedRoutes: GeneratedRoute[] = [
     ]
   },
   {
+    name: 'force-change-pwd',
+    path: '/force-change-pwd',
+    component: 'layout.blank$view.force-change-pwd',
+    meta: {
+      title: 'force-change-pwd',
+      i18nKey: 'route.force-change-pwd',
+      constant: true,
+      hideInMenu: true
+    }
+  },
+  {
     name: 'function',
     path: '/function',
     component: 'layout.base',

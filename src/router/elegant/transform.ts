@@ -185,6 +185,7 @@ const routeMap: RouteMap = {
   "alova": "/alova",
   "alova_request": "/alova/request",
   "alova_scenes": "/alova/scenes",
+  "force-change-pwd": "/force-change-pwd",
   "function": "/function",
   "function_hide-child": "/function/hide-child",
   "function_hide-child_one": "/function/hide-child/one",

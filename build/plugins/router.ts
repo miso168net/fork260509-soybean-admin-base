@@ -41,7 +41,10 @@ export function setupElegantRouter() {
     onRouteMetaGen(routeName) {
       const key = routeName as RouteKey;
 
-      const constantRoutes: RouteKey[] = ['login', '403', '404', '500'];
+      // [rev4-inline MODAL-WIRING(k) 015-pwd-custody] 原行: const constantRoutes: RouteKey[] = ['login', '403', '404', '500'];
+      // constantRoutes 名單觸點（憲法 §I.2 釋義：constant route 集合可經 §III.2 授權新增）：
+      // 強制改密頁 force-change-pwd 入 constant（免後端曝光鏈、免選單、任何角色可達——FR-004）
+      const constantRoutes: RouteKey[] = ['login', '403', '404', '500', 'force-change-pwd'];
 
       const meta: Partial<RouteMeta> = {
         title: key,

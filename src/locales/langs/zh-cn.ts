@@ -28,7 +28,9 @@ const local: App.I18n.Schema = {
       },
       // [rev4-inline I18N-WIRING(ii) 005-auth-login] biz.auth（stub 端點未開放提示）
       auth: {
-        notSupported: '该功能暂未开放'
+        notSupported: '该功能暂未开放',
+        // [rev4-inline I18N-WIRING(ii) 015-pwd-custody] pwd_gate_mw 硬閘拒因（2222；contracts C2——強制換密狀態下打非白名單 API）
+        mustChangePassword: '请先变更密码后再继续操作'
       },
       // [rev4-inline I18N-WIRING(ii) 009-role-admin] biz.role/policy 治理拒因（distinct key；inUse 攜 {userCount} 插值、protectedRevoke 泛化訊息＋blocked 明細走呼叫端；ADR 0050）
       role: {
@@ -387,6 +389,8 @@ const local: App.I18n.Schema = {
     manage_audit: '审计中心',
     // [rev4-inline I18N-WIRING(ii) 013-ip-rule-admin] gen-route 產出 manage_ip-rule route → route locale 型閘門要求補鍵（B-061 ip-rule 項）
     'manage_ip-rule': 'IP 规则',
+    // [rev4-inline I18N-WIRING(ii) 015-pwd-custody] gen-route 產出 force-change-pwd constant route → route locale 型閘門要求補鍵
+    'force-change-pwd': '变更密码',
     'multi-menu': '多级菜单',
     'multi-menu_first': '菜单一',
     'multi-menu_first_child': '菜单一子菜单',
@@ -1018,8 +1022,16 @@ const local: App.I18n.Schema = {
         phoneCode: '手机验证码',
         backfillHint: '回填前方输入框'
       }
-    }
+    },
     // [rev4-inline (g) 014-user-center END]
+    // [rev4-inline (k) 015-pwd-custody START] 強制改密頁文案（T014；desc 含「先複製保存再送出」提醒——G6 鎖出風險收斂）
+    forceChangePwd: {
+      title: '请变更您的密码',
+      desc: '您的密码由管理员设定，须变更为只有您知道的新密码后才能继续使用。可点击「随机密码」生成强密码；请先复制并妥善保存新密码再提交——提交后将自动退出登录，需使用新密码重新登录。',
+      success: '密码已更新，请使用新密码重新登录',
+      logout: '退出登录'
+    }
+    // [rev4-inline (k) 015-pwd-custody END]
   },
   form: {
     required: '不能为空',
@@ -1076,7 +1088,16 @@ const local: App.I18n.Schema = {
       right: '右固定',
       unFixed: '取消固定'
     }
+  },
+  // [rev4-inline (k) 015-pwd-custody START] 產密浮層共用元件文案（T016；contracts C5 浮層 5 鍵）
+  pwdGen: {
+    title: '随机密码',
+    generate: '生成',
+    copy: '复制',
+    showPassword: '显示密码',
+    apply: '填入'
   }
+  // [rev4-inline (k) 015-pwd-custody END]
 };
 
 export default local;

@@ -342,6 +342,8 @@ declare namespace App {
           // [rev4-inline I18N-WIRING(iii) 005-auth-login] biz.auth 型（逐鍵鏡像 locale）
           auth: {
             notSupported: string;
+            // [rev4-inline I18N-WIRING(iii) 015-pwd-custody] pwd_gate_mw 硬閘拒因型（逐鍵鏡像 locale；scalar）
+            mustChangePassword: string;
           };
           // [rev4-inline I18N-WIRING(iii) 009-role-admin] biz.role/policy 拒因型（逐鍵鏡像 locale；ADR 0050）
           role: {
@@ -1189,6 +1191,14 @@ declare namespace App {
           };
         };
         // [rev4-inline (g) 014-user-center END]
+        // [rev4-inline (k) 015-pwd-custody START] 強制改密頁型（逐鍵鏡像 locale）
+        forceChangePwd: {
+          title: string;
+          desc: string;
+          success: string;
+          logout: string;
+        };
+        // [rev4-inline (k) 015-pwd-custody END]
       };
       form: {
         required: string;
@@ -1220,6 +1230,15 @@ declare namespace App {
           unFixed: string;
         };
       };
+      // [rev4-inline (k) 015-pwd-custody START] 產密浮層共用元件型（逐鍵鏡像 locale；contracts C5 浮層 5 鍵）
+      pwdGen: {
+        title: string;
+        generate: string;
+        copy: string;
+        showPassword: string;
+        apply: string;
+      };
+      // [rev4-inline (k) 015-pwd-custody END]
     };
 
     type GetI18nKey<T extends Record<string, unknown>, K extends keyof T = keyof T> = K extends string

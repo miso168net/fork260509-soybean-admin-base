@@ -127,6 +127,19 @@ async function initRoute(to: RouteLocationNormalized): Promise<RouteLocationRaw 
     }
   }
 
+  // [rev4-inline MODAL-WIRING(k) 015-pwd-custody START] 首登強制換密全域攔截（T015、FR-004／data-model §5；
+  // 憲法 §III.2(k) 授權）：isLogin（此處結構上已成立——上方 !isLogin 分支已 return）＋needChangePwd
+  // ＋目的地非強制頁→改寫導向強制改密頁。★置於下方路由存在性解析（getIsAuthRouteExist）之先——
+  // 深連結不存在頁被 not-found 捕獲後先攔、不炸錯、最終落強制頁；非強制態（needChangePwd falsy）
+  // 此塊零行為變更。判定源＝getUserInfo 投影（上方 initAuthRoute→initUserInfo 已保 userInfo 就緒）。
+  const pwdAuthStore = useAuthStore();
+  const forceChangePwdRoute: RouteKey = 'force-change-pwd';
+
+  if (pwdAuthStore.userInfo.needChangePwd && to.name !== forceChangePwdRoute) {
+    return { name: forceChangePwdRoute, replace: true };
+  }
+  // [rev4-inline MODAL-WIRING(k) 015-pwd-custody END]
+
   routeStore.onRouteSwitchWhenLoggedIn();
 
   // the auth route is initialized

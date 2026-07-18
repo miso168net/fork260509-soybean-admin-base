@@ -39,6 +39,7 @@ declare module "@elegant-router/types" {
     "alova": "/alova";
     "alova_request": "/alova/request";
     "alova_scenes": "/alova/scenes";
+    "force-change-pwd": "/force-change-pwd";
     "function": "/function";
     "function_hide-child": "/function/hide-child";
     "function_hide-child_one": "/function/hide-child/one";
@@ -151,6 +152,7 @@ declare module "@elegant-router/types" {
     | "500"
     | "about"
     | "alova"
+    | "force-change-pwd"
     | "function"
     | "home"
     | "iframe-page"
@@ -181,6 +183,7 @@ declare module "@elegant-router/types" {
     | "403"
     | "404"
     | "500"
+    | "force-change-pwd"
     | "iframe-page"
     | "login"
     | "about"

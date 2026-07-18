@@ -28,7 +28,9 @@ const local: App.I18n.Schema = {
       },
       // [rev4-inline I18N-WIRING(ii) 005-auth-login] biz.auth（stub 端點未開放提示）
       auth: {
-        notSupported: 'This feature is not yet available'
+        notSupported: 'This feature is not yet available',
+        // [rev4-inline I18N-WIRING(ii) 015-pwd-custody] pwd_gate_mw 硬閘拒因（2222；contracts C2——強制換密狀態下打非白名單 API）
+        mustChangePassword: 'Please change your password before continuing'
       },
       // [rev4-inline I18N-WIRING(ii) 009-role-admin] biz.role/policy 治理拒因（distinct key；inUse 攜 {userCount} 插值、protectedRevoke 泛化訊息＋blocked 明細走呼叫端；ADR 0050）
       role: {
@@ -391,6 +393,8 @@ const local: App.I18n.Schema = {
     manage_audit: 'Audit Center',
     // [rev4-inline I18N-WIRING(ii) 013-ip-rule-admin] gen-route 產出 manage_ip-rule route → route locale 型閘門要求補鍵（B-061 ip-rule 項）
     'manage_ip-rule': 'IP Rule Manage',
+    // [rev4-inline I18N-WIRING(ii) 015-pwd-custody] gen-route 產出 force-change-pwd constant route → route locale 型閘門要求補鍵
+    'force-change-pwd': 'Change Password',
     'multi-menu': 'Multi Menu',
     'multi-menu_first': 'Menu One',
     'multi-menu_first_child': 'Menu One Child',
@@ -1024,8 +1028,16 @@ const local: App.I18n.Schema = {
         phoneCode: 'Phone code',
         backfillHint: 'fills the input on the left'
       }
-    }
+    },
     // [rev4-inline (g) 014-user-center END]
+    // [rev4-inline (k) 015-pwd-custody START] 強制改密頁文案（T014；desc 含「先複製保存再送出」提醒——G6 鎖出風險收斂）
+    forceChangePwd: {
+      title: 'Please Change Your Password',
+      desc: 'Your password was set by an administrator. You must change it to a new password known only to you before continuing. You can use "Random Password" to generate a strong one. Copy and save the new password before submitting - you will be logged out and must sign in again with the new password.',
+      success: 'Password updated. Please sign in again with your new password.',
+      logout: 'Logout'
+    }
+    // [rev4-inline (k) 015-pwd-custody END]
   },
   form: {
     required: 'Cannot be empty',
@@ -1082,7 +1094,16 @@ const local: App.I18n.Schema = {
       right: 'Right Fixed',
       unFixed: 'Unfixed'
     }
+  },
+  // [rev4-inline (k) 015-pwd-custody START] 產密浮層共用元件文案（T016；contracts C5 浮層 5 鍵）
+  pwdGen: {
+    title: 'Random Password',
+    generate: 'Generate',
+    copy: 'Copy',
+    showPassword: 'Show Password',
+    apply: 'Apply'
   }
+  // [rev4-inline (k) 015-pwd-custody END]
 };
 
 export default local;
