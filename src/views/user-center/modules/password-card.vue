@@ -9,6 +9,8 @@ import { useFormRules, useNaiveForm } from '@/hooks/common/form';
 // 015 T016：政策 rules 組建抽至共用 hook（供本卡＋force-change-pwd 強制改密頁共用；行為零變更）
 import { usePwdPolicyRules } from '@/hooks/business/pwd-policy';
 import { $t } from '@/locales';
+// 015 T019：產密浮層（儲存前「隨機密碼」鈕；憲法 §III.2(k) 授權、(g) 本人自助射程確認）
+import PwdGenModal from '@/components/custom/pwd-gen-modal.vue';
 
 defineOptions({
   name: 'PasswordCard'
@@ -52,6 +54,13 @@ const credentialLabel = computed(() => {
 /** 新密碼政策 rules：起手僅 required；onMounted 讀當前政策後以 buildPolicyRules 動態擴充 */
 const newPasswordRules = ref<App.Global.FormRule[]>([createRequiredRule($t('form.pwd.required'))]);
 
+// 015 T019：產密浮層開關＋政策原始 7 鍵留存（浮層構造性生成資料源；rules 另經共用 hook 組建）
+const showGen = ref(false);
+const policyItems = ref<Api.UserCenter.PasswordPolicyItem[]>([]);
+// 帶入值明文顯示供抄存（US2 AC4）：帶入後新密＋確認兩欄轉 text；值一經改動（含成功清場）即回 password 遮蔽
+const appliedVisible = ref(false);
+let appliedValue = '';
+
 // 政策 7 鍵→naive rules 組建（含 D2 六鍵統一單句＋D4 forbid_username 第 7 鍵）：
 // 015 T016 抽至共用 hook usePwdPolicyRules（hooks/business/pwd-policy.ts、規則逐字搬移、行為零變更）；
 // userName 傳 getter——validator 執行時動態讀當下 props.userName（原即時比對語意不變）。
@@ -79,9 +88,29 @@ async function loadPolicyRules() {
   // 失敗（網路/異常）維持 required 起手 rule 靜默降級——後端驗證為權威。
   const { data, error } = await fetchGetPasswordPolicy();
   if (!error && data) {
+    // 015 T019：留存政策原始 7 鍵供產密浮層構造性生成（卡片已讀政策、零重複請求）
+    policyItems.value = data;
     newPasswordRules.value = buildPolicyRules(data, () => props.userName);
   }
 }
+
+// 015 T019：浮層「帶入」＝新密＋確認兩欄同值回填、轉明文供抄存；後續仍走既有自助改密流程
+// （不觸發任何強制、成功撤他裝置照舊 014 語意）。
+function handleGenApply(password: string) {
+  model.newPassword = password;
+  model.confirmPassword = password;
+  appliedValue = password;
+  appliedVisible.value = true;
+}
+
+watch(
+  () => model.newPassword,
+  value => {
+    if (appliedVisible.value && value !== appliedValue) {
+      appliedVisible.value = false;
+    }
+  }
+);
 
 async function handleSave() {
   // 非舊密碼路徑＝驗證碼佔位（FR-012）：toast 功能建置中、零網路請求。
@@ -112,7 +141,11 @@ onMounted(loadPolicyRules);
 <template>
   <NCard :title="$t('page.userCenter.passwordTitle')" :bordered="false" size="small" segmented class="card-wrapper">
     <template #header-extra>
-      <NButton type="primary" size="small" @click="handleSave">{{ $t('page.userCenter.save') }}</NButton>
+      <!-- 015 T019：儲存前「隨機密碼」鈕（開產密浮層；(g) 本人自助射程） -->
+      <NSpace :size="8">
+        <NButton size="small" @click="showGen = true">{{ $t('pwdGen.title') }}</NButton>
+        <NButton type="primary" size="small" @click="handleSave">{{ $t('page.userCenter.save') }}</NButton>
+      </NSpace>
     </template>
     <!-- 改密卡 label-width 刻意 100（其餘卡 76）——rev3 藍本刻意差異、照抄勿統一 -->
     <NForm ref="formRef" :model="model" :rules="rules" label-placement="left" :label-width="100">
@@ -147,16 +180,27 @@ onMounted(loadPolicyRules);
       <NGrid cols="1 s:2" responsive="screen" :x-gap="24">
         <NGi>
           <NFormItem :label="$t('page.userCenter.newPassword')" path="newPassword">
-            <NInput v-model:value="model.newPassword" type="password" show-password-on="click" />
+            <!-- 015 T019：浮層帶入後轉明文供抄存（AC4）；值一經改動即回遮蔽 -->
+            <NInput
+              v-model:value="model.newPassword"
+              :type="appliedVisible ? 'text' : 'password'"
+              show-password-on="click"
+            />
           </NFormItem>
         </NGi>
         <NGi>
           <NFormItem :label="$t('page.userCenter.confirmPassword')" path="confirmPassword">
-            <NInput v-model:value="model.confirmPassword" type="password" show-password-on="click" />
+            <NInput
+              v-model:value="model.confirmPassword"
+              :type="appliedVisible ? 'text' : 'password'"
+              show-password-on="click"
+            />
           </NFormItem>
         </NGi>
       </NGrid>
     </NForm>
+    <!-- 015 T019：產密浮層掛載（policy＝卡片已讀政策；userName＝本人真帳號 prop〔getProfile 源、非暱稱別名〕） -->
+    <PwdGenModal v-model:show="showGen" :policy="policyItems" :user-name="userName" @apply="handleGenApply" />
   </NCard>
 </template>
 
