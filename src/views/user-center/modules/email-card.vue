@@ -35,11 +35,12 @@ interface Emits {
 const emit = defineEmits<Emits>();
 
 const { formRef, validate } = useNaiveForm();
-const { formRules } = useFormRules();
+const { formRules, defaultRequiredRule } = useFormRules();
 
 // 發碼標的＝本地輸入值（非直綁 model.userEmail——驗證成功前庫值不動、成功後由 saved 重拉刷新）；
 // 載入／重拉後同步現值進輸入框（US2 AC1：admin 預填之未驗證現值可直接發碼補驗）。
-const form = reactive({ newEmail: '' });
+// captchaAnswer 入表單走 required 規則——空答案送出僅白耗一次往返與換題、前端先擋（U4 review 修繕）。
+const form = reactive({ newEmail: '', captchaAnswer: '' });
 
 watch(
   () => props.model.userEmail,
@@ -51,7 +52,8 @@ watch(
 
 // 發碼必填＋格式規則（required＋pattern；後端 emailFormatInvalid 為終判、前端先擋空值與明顯壞形）
 const rules = {
-  newEmail: formRules.email
+  newEmail: formRules.email,
+  captchaAnswer: defaultRequiredRule
 };
 
 /** RFC3339（帶 offset）→ 顯示形 `YYYY-MM-DD HH:mm:ss`（同目錄 basic-info-card 先例形、零 dayjs） */
@@ -62,9 +64,8 @@ function formatDateTime(value: string | null) {
   return value.replace('T', ' ').slice(0, 19);
 }
 
-// captcha 狀態三件（C1；沿 pwd-login 慣例、實作獨立於 login 軌道）
+// captcha 狀態（C1；沿 pwd-login 慣例、實作獨立於 login 軌道；answer 住 form 走 required 規則）
 const captchaId = ref('');
-const captchaAnswer = ref('');
 const captchaImg = ref('');
 
 /** 取（換）題：challenge 提交即消耗——點圖換題＋每次發碼後一律換新題；換題即清空舊輸入（舊題已失效） */
@@ -73,7 +74,7 @@ async function refreshCaptcha() {
   if (data) {
     captchaId.value = data.captchaId;
     captchaImg.value = data.captchaImg;
-    captchaAnswer.value = '';
+    form.captchaAnswer = '';
   }
 }
 
@@ -91,9 +92,22 @@ const sendBtnLabel = computed(() =>
     : $t('page.userCenter.verify.sendCode')
 );
 
-// 回填態（C10）：verifyToken 非空＝已發碼、顯示碼輸入＋驗證鈕
+// 回填態（C10）：verifyToken 非空＝已發碼、顯示碼輸入＋驗證鈕；
+// sentEmail＝發碼當下標的（憑據烤定該位址）——輸入改動或解綁致分岔即清回填態（U4 review 修繕：
+// 防「畫面位址與憑據綁定位址分岔」燒嘗試額度或誤導顯示）。
 const verifyToken = ref('');
 const code = ref('');
+const sentEmail = ref('');
+
+watch(
+  () => form.newEmail,
+  val => {
+    if (verifyToken.value && val !== sentEmail.value) {
+      verifyToken.value = '';
+      code.value = '';
+    }
+  }
+);
 
 async function handleSendCode() {
   await validate();
@@ -104,12 +118,13 @@ async function handleSendCode() {
   const { data, error } = await fetchSendEmailCode({
     newEmail: form.newEmail,
     captchaId: captchaId.value,
-    captchaAnswer: captchaAnswer.value
+    captchaAnswer: form.captchaAnswer
   });
   if (!error && data) {
-    // 成功才啟動倒數（hooks/business/captcha.ts 先例）；進回填態＋清舊碼
+    // 成功才啟動倒數（hooks/business/captcha.ts 先例）；進回填態＋清舊碼＋記發碼標的
     verifyToken.value = data.verifyToken;
     code.value = '';
+    sentEmail.value = form.newEmail;
     window.$message?.success($t('page.userCenter.verify.sendSuccess'));
     start();
   } else if (error) {
@@ -136,6 +151,12 @@ async function handleVerify() {
   if (verifying.value) {
     return;
   }
+  // 六位碼前端形制守衛（U4 review 修繕）：空值／壞形不打後端——verify 第三步即 INCR 嘗試計數、
+  // 上限僅 3 次，空按三下就把額度燒光而重發又受冷卻與日上限管制。
+  if (!/^\d{6}$/.test(code.value)) {
+    window.$message?.warning($t('page.userCenter.verify.codePlaceholder'));
+    return;
+  }
   verifying.value = true;
   const { error } = await fetchVerifyEmailCode({
     verifyToken: verifyToken.value,
@@ -152,13 +173,22 @@ async function handleVerify() {
   verifying.value = false;
 }
 
+const unbinding = ref(false);
+
 async function handleUnbind() {
+  // in-flight 防重（U4 review 修繕）：與同檔 sending／verifying 同形——重複點擊二次解綁
+  // 會在鎖內重讀撞 emailNotBound、成功 toast 後緊接錯誤 toast。
+  if (unbinding.value) {
+    return;
+  }
+  unbinding.value = true;
   const { error } = await fetchUnbindEmail();
   if (!error) {
     // 解綁成功：沿 common.updateSuccess（C8 無專屬解綁成功鍵）；清空顯示由父層重拉承接
     window.$message?.success($t('common.updateSuccess'));
     emit('saved');
   }
+  unbinding.value = false;
 }
 </script>
 
@@ -180,7 +210,7 @@ async function handleUnbind() {
               <NInput v-model:value="form.newEmail" />
               <NPopconfirm v-if="model.userEmail" @positive-click="handleUnbind">
                 <template #trigger>
-                  <NButton size="small">{{ $t('page.userCenter.verify.unbind') }}</NButton>
+                  <NButton size="small" :loading="unbinding">{{ $t('page.userCenter.verify.unbind') }}</NButton>
                 </template>
                 {{ $t('page.userCenter.verify.unbindConfirm') }}
               </NPopconfirm>
@@ -188,8 +218,8 @@ async function handleUnbind() {
           </NFormItem>
         </NGi>
         <NGi>
-          <!-- captcha 組（C1）：圖（點擊換題、220×120 沿 pwd-login 尺寸）＋答案輸入＋發送鈕（冷卻中禁用顯倒數） -->
-          <NFormItem>
+          <!-- captcha 組（C1）：圖（點擊換題、220×120 沿 pwd-login 尺寸）＋答案輸入（required 規則）＋發送鈕（冷卻中禁用顯倒數） -->
+          <NFormItem path="captchaAnswer">
             <div class="w-full flex-col items-start gap-10px">
               <img
                 v-if="captchaImg"
@@ -199,7 +229,7 @@ async function handleUnbind() {
                 @click="refreshCaptcha"
               />
               <NInputGroup>
-                <NInput v-model:value="captchaAnswer" :placeholder="$t('page.userCenter.verify.captchaPlaceholder')" />
+                <NInput v-model:value="form.captchaAnswer" :placeholder="$t('page.userCenter.verify.captchaPlaceholder')" />
                 <NButton type="primary" :disabled="isCounting" :loading="sending" @click="handleSendCode">
                   {{ sendBtnLabel }}
                 </NButton>
