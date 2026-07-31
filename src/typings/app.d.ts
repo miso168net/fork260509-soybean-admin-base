@@ -1197,7 +1197,7 @@ declare namespace App {
             emailCode: string;
             phoneCode: string;
             backfillHint: string;
-            // [rev4-inline I18N-WIRING(iii) 020-email-verify-smtp] 信箱驗證流 UI 鍵型（逐鍵鏡像 locale；verified 帶 {time}、cooldown 帶 {seconds} 插值）
+            // [rev4-inline (g) 020-email-verify-smtp] 信箱驗證流 UI 鍵型（逐鍵鏡像 locale；verified 帶 {time}、cooldown 帶 {seconds} 插值）
             verified: string;
             notVerified: string;
             unbind: string;

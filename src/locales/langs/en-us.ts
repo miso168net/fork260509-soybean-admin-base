@@ -1036,7 +1036,7 @@ const local: App.I18n.Schema = {
         emailCode: 'Email code',
         phoneCode: 'Phone code',
         backfillHint: 'fills the input on the left',
-        // [rev4-inline I18N-WIRING(ii) 020-email-verify-smtp] 信箱驗證流 UI 鍵（C8：徽章帶 {time}／解綁與確認／captcha 佔位／冷卻帶 {seconds}／發送與驗證成功 toast）
+        // [rev4-inline (g) 020-email-verify-smtp] 信箱驗證流 UI 鍵（C8：徽章帶 {time}／解綁與確認／captcha 佔位／冷卻帶 {seconds}／發送與驗證成功 toast）
         verified: 'Verified at {time}',
         notVerified: 'Not verified',
         unbind: 'Unbind',
