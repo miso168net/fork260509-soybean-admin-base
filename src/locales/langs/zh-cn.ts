@@ -1029,7 +1029,16 @@ const local: App.I18n.Schema = {
         comingSoon: '功能建置中',
         emailCode: '邮箱验证码',
         phoneCode: '手机验证码',
-        backfillHint: '回填前方输入框'
+        backfillHint: '回填前方输入框',
+        // [rev4-inline I18N-WIRING(ii) 020-email-verify-smtp] 信箱驗證流 UI 鍵（C8：徽章帶 {time}／解綁與確認／captcha 佔位／冷卻帶 {seconds}／發送與驗證成功 toast）
+        verified: '已验证于 {time}',
+        notVerified: '未验证',
+        unbind: '解除绑定',
+        unbindConfirm: '确定要解除邮箱绑定吗？',
+        captchaPlaceholder: '请输入图形验证码',
+        cooldown: '{seconds} 秒后可重发',
+        sendSuccess: '验证邮件已发出，请查收邮箱',
+        verifySuccess: '邮箱验证成功'
       }
     },
     // [rev4-inline (g) 014-user-center END]

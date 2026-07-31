@@ -1019,7 +1019,16 @@ const local: App.I18n.Schema = {
         comingSoon: '功能建置中',
         emailCode: '信箱驗證碼',
         phoneCode: '手機驗證碼',
-        backfillHint: '回填前方輸入框'
+        backfillHint: '回填前方輸入框',
+        // [rev4-inline I18N-WIRING(ii) 020-email-verify-smtp] 信箱驗證流 UI 鍵（C8：徽章帶 {time}／解綁與確認／captcha 佔位／冷卻帶 {seconds}／發送與驗證成功 toast）
+        verified: '已驗證於 {time}',
+        notVerified: '未驗證',
+        unbind: '解除綁定',
+        unbindConfirm: '確定要解除信箱綁定嗎？',
+        captchaPlaceholder: '請輸入圖形驗證碼',
+        cooldown: '{seconds} 秒後可重發',
+        sendSuccess: '驗證信已寄出，請至信箱查收',
+        verifySuccess: '信箱驗證成功'
       }
     },
     // [rev4-inline (g) 014-user-center END]

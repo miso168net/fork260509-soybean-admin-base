@@ -26,7 +26,9 @@ const model = reactive<Api.UserCenter.ProfileRes>({
   createdAt: null,
   updatedAt: null,
   createdByType: null,
-  updatedByType: null
+  updatedByType: null,
+  // [rev4-inline (g) 020-email-verify-smtp] C6 加欄初值：驗證時刻 null＝未驗證（載入前徽章顯灰標）
+  emailVerifiedAt: null
 });
 
 // 載入本人 profile（onMounted 起手＋各卡 @saved 後重拉；卡內已自呼 fetchUpdateProfile 存妥、
@@ -46,6 +48,8 @@ async function getProfile() {
     model.updatedAt = data.updatedAt;
     model.createdByType = data.createdByType;
     model.updatedByType = data.updatedByType;
+    // [rev4-inline (g) 020-email-verify-smtp] C6 加欄逐欄賦值（漏補則徽章恆顯未驗證）；null 語意直傳、不 coalesce
+    model.emailVerifiedAt = data.emailVerifiedAt;
   }
 }
 
