@@ -122,7 +122,7 @@ const local: App.I18n.Schema = {
         emailCooldown: '发送过于频繁，请于 {remainingSeconds} 秒后再试',
         emailDailyLimit: '今日发送次数已达上限，请明日再试',
         emailSendFailed: '验证邮件发送失败，请稍后再试',
-        emailThrottleUnavailable: '限流服务暂时不可用，请稍后再试',
+        emailThrottleUnavailable: '系统暂时无法处理，请稍后再试',
         emailTokenInvalid: '验证凭据无效，请重新发送验证码',
         emailCodeExpired: '验证码已过期，请重新发送',
         emailCodeAttemptsExceeded: '验证码错误次数过多，请重新发送',

@@ -89,7 +89,7 @@ const local: App.I18n.Schema = {
         userNotFound: 'User not found',
         sessionPolicyInvalid: 'Invalid session policy value (inherit, single or multi only)',
         // [rev4-inline I18N-WIRING(ii) 020-email-verify-smtp] admin 端信箱拒因 2 鍵（皆 scalar 無插值；contracts C7——admin addUser/updateUser 守門、面向管理員指向目標使用者信箱）
-        emailFormatInvalid: "Invalid format for this user's email address",
+        emailFormatInvalid: 'Invalid email address format for this user',
         emailTaken: 'This email address is already in use by another user',
         // [rev4-inline I18N-WIRING(ii) 015-pwd-custody] 設密冷卻拒因（2222；contracts C3——攜 {remainingSeconds} named-object 插值、translateBackendMsg 原生支援）
         pwdSetTooFrequent: 'Password was set too recently, please try again in {remainingSeconds} seconds'
@@ -119,15 +119,15 @@ const local: App.I18n.Schema = {
         emailCaptchaInvalid: 'Captcha is invalid or has expired, please try again',
         emailFormatInvalid: 'Invalid email address format',
         emailTaken: 'This email address is already in use by another account',
-        emailCooldown: 'Requests are too frequent, please try again in {remainingSeconds} seconds',
+        emailCooldown: 'Too many requests. Please try again in {remainingSeconds} seconds',
         emailDailyLimit: 'Daily send limit reached, please try again tomorrow',
         emailSendFailed: 'Failed to send the verification email, please try again later',
-        emailThrottleUnavailable: 'Throttling service is temporarily unavailable, please try again later',
+        emailThrottleUnavailable: 'The system is temporarily unable to process this request. Please try again later',
         emailTokenInvalid: 'Invalid verification credential, please request a new code',
-        emailCodeExpired: 'Verification code has expired, please request a new one',
+        emailCodeExpired: 'The verification code has expired. Please request a new one',
         emailCodeAttemptsExceeded: 'Too many incorrect attempts, please request a new code',
         emailCodeInvalid: 'Incorrect verification code, please try again',
-        emailNotBound: 'No email address is bound'
+        emailNotBound: 'No email address is bound to this account'
       }
       // [rev4-inline I18N-WIRING(ii) 020-email-verify-smtp END]
     },
