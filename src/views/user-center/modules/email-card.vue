@@ -1,11 +1,11 @@
 <!-- BASE-WEB-MODAL-WIRING(g) (014-user-center、020-email-verify-smtp 接真)：net-new 信箱卡——020 信箱驗證流
-  （contracts C10 動線：驗證態徽章含時刻＋captcha 取題點圖換題與發碼後自動換題＋發碼冷卻倒數〔純前端 60s、
+  （contracts C10 動線：驗證態徽章含時刻＋captcha 取題點圖換題與發碼失敗原地換題＋發碼冷卻倒數〔純前端 60s、
   誤按由 emailCooldown 拒因 remainingSeconds 重建〕＋回填驗證→saved 重拉＋解綁 NPopconfirm 二次確認〔未綁定
   不顯示〕；獨立儲存鈕退場、信箱不再走 updateProfile——C5）。憲法 §III.2(g) 擴字串 v1.15.0 信箱驗證流授權。
   U9 佈局改造（user 2026-08-01 拍板）：卡面右欄改 Phone 同構三件式（Send Code 開浮窗＋碼輸入常駐＋Verify）、
   captcha 圖與答案輸入整組移入 Send Code Layer 浮窗（NModal、沿 pwd-gen-modal 先例形）——C10 行為保留
   （點圖換題／倒數 remainingSeconds 重建／回填態清理等），兩點有意變化（U10 勘註誠實化）：①取題時機
-  改開層時（頁載零取題）②冷卻中 captcha 圖不可見（於浮窗內、卡面倒數承載狀態）。
+  改開層時（頁載零取題）②冷卻中卡面無 captcha 圖（圖僅存在於浮窗內；卡面倒數承載狀態）。
   ★新檔零原行（example 基線無此檔）。 -->
 <script setup lang="ts">
 import { computed, reactive, ref, watch } from 'vue';
@@ -75,7 +75,11 @@ const captchaId = ref('');
 const captchaImg = ref('');
 const captchaAnswer = ref('');
 
-/** 取（換）題：challenge 提交即消耗——點圖換題＋發碼失敗原地換題（U10：成功不再換題、下次開層自取新題）；換題即清空舊輸入（舊題已失效） */
+/**
+ * 取（換）題：challenge 提交即消耗——點圖換題＋發碼失敗原地換題（U10：成功不再換題、
+ * 下次開層自取新題）；換題即清空舊輸入（舊題已失效）。回傳取題成敗供開層守衛判定
+ * （U10 review 修：去 captchaImg 副作用判定）。
+ */
 async function refreshCaptcha() {
   const { data } = await fetchEmailCaptcha();
   if (data) {
@@ -83,6 +87,7 @@ async function refreshCaptcha() {
     captchaImg.value = data.captchaImg;
     captchaAnswer.value = '';
   }
+  return Boolean(data);
 }
 
 // U9：Send Code Layer 浮窗開關（沿 pwd-gen-modal v-model:show 先例形、本卡內聯毋需獨立元件）。
@@ -94,16 +99,26 @@ const showSend = ref(false);
  * try/catch 捕捉即 return）→清舊 captcha 態（重開浮窗零舊圖閃現）→await 取題成功才開層
  * （取題失敗不開層：失敗 toast 由攔截層統一顯示、亦順帶消除空圖層）。
  */
+// 開層取題 in-flight 防重（U10 review 修：連點零重複取題請求；與同檔 sending/verifying/unbinding 同形）
+const opening = ref(false);
+
 async function handleOpenSend() {
+  if (opening.value) {
+    return;
+  }
   try {
     await validate();
   } catch {
     return;
   }
+  opening.value = true;
+  // 清舊 captcha 三態（id/圖/答案對稱清理——重開浮窗零舊圖閃現、零殘留舊題憑據）
+  captchaId.value = '';
   captchaImg.value = '';
   captchaAnswer.value = '';
-  await refreshCaptcha();
-  if (!captchaImg.value) {
+  const fetched = await refreshCaptcha();
+  opening.value = false;
+  if (!fetched) {
     return;
   }
   showSend.value = true;
@@ -265,7 +280,7 @@ async function handleUnbind() {
             碼輸入（常駐非 v-if）＋Verify（primary）；captcha 整組移入下方浮窗 -->
           <NFormItem>
             <NInputGroup>
-              <NButton :disabled="isCounting" @click="handleOpenSend">{{ sendBtnLabel }}</NButton>
+              <NButton :disabled="isCounting" :loading="opening" @click="handleOpenSend">{{ sendBtnLabel }}</NButton>
               <NInput v-model:value="code" :placeholder="$t('page.userCenter.verify.codePlaceholder')" />
               <NButton type="primary" :loading="verifying" @click="handleVerify">
                 {{ $t('page.userCenter.verify.verify') }}
