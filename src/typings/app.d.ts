@@ -401,6 +401,9 @@ declare namespace App {
             roleNotFound: string;
             userNotFound: string;
             sessionPolicyInvalid: string;
+            // [rev4-inline I18N-WIRING(iii) 020-email-verify-smtp] admin 端信箱拒因型 2 鍵（逐鍵鏡像 locale；皆 scalar）
+            emailFormatInvalid: string;
+            emailTaken: string;
             // [rev4-inline I18N-WIRING(iii) 015-pwd-custody] 設密冷卻拒因型（逐鍵鏡像 locale；攜 {remainingSeconds}）
             pwdSetTooFrequent: string;
           };
@@ -424,6 +427,22 @@ declare namespace App {
             invalidRuleType: string;
             notFound: string;
           };
+          // [rev4-inline I18N-WIRING(iii) 020-email-verify-smtp START] biz.userCenter 信箱驗證拒因型 12 鍵（逐鍵鏡像 locale；emailCooldown 攜 {remainingSeconds}）
+          userCenter: {
+            emailCaptchaInvalid: string;
+            emailFormatInvalid: string;
+            emailTaken: string;
+            emailCooldown: string;
+            emailDailyLimit: string;
+            emailSendFailed: string;
+            emailThrottleUnavailable: string;
+            emailTokenInvalid: string;
+            emailCodeExpired: string;
+            emailCodeAttemptsExceeded: string;
+            emailCodeInvalid: string;
+            emailNotBound: string;
+          };
+          // [rev4-inline I18N-WIRING(iii) 020-email-verify-smtp END]
         };
         system: {
           forbidden: string;

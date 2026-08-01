@@ -85,6 +85,9 @@ const local: App.I18n.Schema = {
         roleNotFound: '所選角色不存在或已刪除',
         userNotFound: '使用者不存在',
         sessionPolicyInvalid: '會話策略值無效（僅允許 inherit、single、multi）',
+        // [rev4-inline I18N-WIRING(ii) 020-email-verify-smtp] admin 端信箱拒因 2 鍵（皆 scalar 無插值；contracts C7——admin addUser/updateUser 守門、面向管理員指向目標使用者信箱）
+        emailFormatInvalid: '該使用者的信箱格式不正確',
+        emailTaken: '該信箱已被其他使用者使用',
         // [rev4-inline I18N-WIRING(ii) 015-pwd-custody] 設密冷卻拒因（2222；contracts C3——攜 {remainingSeconds} named-object 插值、translateBackendMsg 原生支援）
         pwdSetTooFrequent: '密碼設定過於頻繁，請於 {remainingSeconds} 秒後再試'
       },
@@ -107,7 +110,23 @@ const local: App.I18n.Schema = {
         invalidCidr: '網段格式不正確（IPv4／IPv6 CIDR）',
         invalidRuleType: '規則類型或參數值無效',
         notFound: 'IP 規則不存在或已刪除'
+      },
+      // [rev4-inline I18N-WIRING(ii) 020-email-verify-smtp START] biz.userCenter 信箱驗證拒因 12 鍵（一因一鍵；emailCooldown 攜 {remainingSeconds} named-object 插值——translateBackendMsg 原生支援；contracts C8）
+      userCenter: {
+        emailCaptchaInvalid: '圖形驗證碼錯誤或已過期，請重新驗證',
+        emailFormatInvalid: '信箱格式不正確',
+        emailTaken: '此信箱已被其他帳號使用',
+        emailCooldown: '發送過於頻繁，請於 {remainingSeconds} 秒後再試',
+        emailDailyLimit: '今日發送次數已達上限，請明日再試',
+        emailSendFailed: '驗證信寄送失敗，請稍後再試',
+        emailThrottleUnavailable: '節流服務暫時不可用，請稍後再試',
+        emailTokenInvalid: '驗證憑據無效，請重新發送驗證碼',
+        emailCodeExpired: '驗證碼已過期，請重新發送',
+        emailCodeAttemptsExceeded: '驗證碼錯誤次數過多，請重新發送',
+        emailCodeInvalid: '驗證碼錯誤，請重新輸入',
+        emailNotBound: '尚未綁定信箱'
       }
+      // [rev4-inline I18N-WIRING(ii) 020-email-verify-smtp END]
     },
     system: {
       forbidden: '沒有權限執行此操作'
