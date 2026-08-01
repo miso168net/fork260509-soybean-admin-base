@@ -3,8 +3,10 @@
   誤按由 emailCooldown 拒因 remainingSeconds 重建〕＋回填驗證→saved 重拉＋解綁 NPopconfirm 二次確認〔未綁定
   不顯示〕；獨立儲存鈕退場、信箱不再走 updateProfile——C5）。憲法 §III.2(g) 擴字串 v1.15.0 信箱驗證流授權。
   U9 佈局改造（user 2026-08-01 拍板）：卡面右欄改 Phone 同構三件式（Send Code 開浮窗＋碼輸入常駐＋Verify）、
-  captcha 圖與答案輸入整組移入 Send Code Layer 浮窗（NModal、沿 pwd-gen-modal 先例形）——C10 動線行為不變、
-  僅佈局載體變。★新檔零原行（example 基線無此檔）。 -->
+  captcha 圖與答案輸入整組移入 Send Code Layer 浮窗（NModal、沿 pwd-gen-modal 先例形）——C10 行為保留
+  （點圖換題／倒數 remainingSeconds 重建／回填態清理等），兩點有意變化（U10 勘註誠實化）：①取題時機
+  改開層時（頁載零取題）②冷卻中 captcha 圖不可見（於浮窗內、卡面倒數承載狀態）。
+  ★新檔零原行（example 基線無此檔）。 -->
 <script setup lang="ts">
 import { computed, reactive, ref, watch } from 'vue';
 import { useCountDown } from '@sa/hooks';
@@ -43,7 +45,8 @@ const { formRules } = useFormRules();
 // 載入／重拉後同步現值進輸入框（US2 AC1：admin 預填之未驗證現值可直接發碼補驗）。
 // U9：captchaAnswer 輸入移入浮窗後不在 NForm 樹內、rules 不生效——改浮窗內手動守衛（空值 warning 不送）、
 // 卡面 rules 只留 newEmail（原 U4 required 規則等價替代）。
-const form = reactive({ newEmail: '', captchaAnswer: '' });
+// U10：captchaAnswer 遷出 form reactive 改獨立 ref（見下 captcha 狀態組）——form 與 NForm rules 樹一致。
+const form = reactive({ newEmail: '' });
 
 watch(
   () => props.model.userEmail,
@@ -66,17 +69,19 @@ function formatDateTime(value: string | null) {
   return value.replace('T', ' ').slice(0, 19);
 }
 
-// captcha 狀態（C1；沿 pwd-login 慣例、實作獨立於 login 軌道；answer 走浮窗內手動守衛——U9）
+// captcha 狀態（C1；沿 pwd-login 慣例、實作獨立於 login 軌道；answer 走浮窗內手動守衛——U9、
+// U10 起獨立 ref 不入 form reactive）
 const captchaId = ref('');
 const captchaImg = ref('');
+const captchaAnswer = ref('');
 
-/** 取（換）題：challenge 提交即消耗——點圖換題＋每次發碼後一律換新題；換題即清空舊輸入（舊題已失效） */
+/** 取（換）題：challenge 提交即消耗——點圖換題＋發碼失敗原地換題（U10：成功不再換題、下次開層自取新題）；換題即清空舊輸入（舊題已失效） */
 async function refreshCaptcha() {
   const { data } = await fetchEmailCaptcha();
   if (data) {
     captchaId.value = data.captchaId;
     captchaImg.value = data.captchaImg;
-    form.captchaAnswer = '';
+    captchaAnswer.value = '';
   }
 }
 
@@ -84,11 +89,24 @@ async function refreshCaptcha() {
 // 取題時機＝開層時（原 onMounted 取題退場——卡面不再顯圖、頁載零取題請求）。
 const showSend = ref(false);
 
-/** 開層守衛（U9）：newEmail 先過 validate（空/壞形不開層）；開層即自動換新題（兼清舊答案輸入） */
+/**
+ * 開層守衛（U9/U10）：validate 過（空/壞形不開層——naive validate 失敗以 promise rejection 拋、
+ * try/catch 捕捉即 return）→清舊 captcha 態（重開浮窗零舊圖閃現）→await 取題成功才開層
+ * （取題失敗不開層：失敗 toast 由攔截層統一顯示、亦順帶消除空圖層）。
+ */
 async function handleOpenSend() {
-  await validate();
-  showSend.value = true;
+  try {
+    await validate();
+  } catch {
+    return;
+  }
+  captchaImg.value = '';
+  captchaAnswer.value = '';
   await refreshCaptcha();
+  if (!captchaImg.value) {
+    return;
+  }
+  showSend.value = true;
 }
 
 // 冷卻倒數（C10：純前端 60s、重整即消失；誤按由 emailCooldown 拒因 remainingSeconds 重建——clarify Q4）
@@ -129,7 +147,7 @@ watch(
 async function handleSendCode() {
   // U9：captcha 空答手動守衛（原 required 規則等價替代——浮窗內輸入不在 NForm 樹、rules 不生效；
   // 空答案送出僅白耗一次往返與換題、前端先擋）
-  if (!form.captchaAnswer) {
+  if (!captchaAnswer.value) {
     window.$message?.warning($t('page.userCenter.verify.captchaPlaceholder'));
     return;
   }
@@ -140,7 +158,7 @@ async function handleSendCode() {
   const { data, error } = await fetchSendEmailCode({
     newEmail: form.newEmail,
     captchaId: captchaId.value,
-    captchaAnswer: form.captchaAnswer
+    captchaAnswer: captchaAnswer.value
   });
   if (!error && data) {
     // 成功才啟動倒數（hooks/business/captcha.ts 先例）；進回填態＋清舊碼＋記發碼標的＋關浮窗（U9）
@@ -162,10 +180,10 @@ async function handleSendCode() {
         start(remaining);
       }
     }
+    // challenge 單次消耗：失敗且層仍開著→原地換新題（答錯／其他拒因該題皆已耗）；
+    // U10：成功分支不再換題——層已關、下次開層自取新題（刪冗餘取題請求）
+    await refreshCaptcha();
   }
-  // challenge 單次消耗：答錯（emailCaptchaInvalid）自動換題（U9：浮窗開著時即原地換圖）；
-  // 其餘成敗該題皆已耗→一律換新題
-  await refreshCaptcha();
   sending.value = false;
 }
 
@@ -257,10 +275,10 @@ async function handleUnbind() {
         </NGi>
       </NGrid>
     </NForm>
-    <!-- U9 Send Code Layer（NModal preset card、沿 pwd-gen-modal 先例形、寬約 340px）：
-      行 1＝captcha 圖置中（點擊換題）；行 2＝captcha 答案輸入＋真發碼鈕（NInputGroup）；
-      標題＝sendModalTitle 組合式（共用性設計、零新鍵） -->
-    <NModal v-model:show="showSend" preset="card" :title="sendModalTitle" class="w-340px">
+    <!-- U9 Send Code Layer（NModal preset card、沿 pwd-gen-modal 先例形、寬 340px＋U10 小螢幕
+      lt-sm 退 300px 響應式）：行 1＝captcha 圖置中（點擊換題）；行 2＝captcha 答案輸入＋真發碼鈕
+      （NInputGroup）；標題＝sendModalTitle 組合式（共用性設計、零新鍵） -->
+    <NModal v-model:show="showSend" preset="card" :title="sendModalTitle" class="w-340px lt-sm:w-300px">
       <NSpace vertical :size="16">
         <div class="flex justify-center">
           <img
@@ -272,7 +290,7 @@ async function handleUnbind() {
           />
         </div>
         <NInputGroup>
-          <NInput v-model:value="form.captchaAnswer" :placeholder="$t('page.userCenter.verify.captchaPlaceholder')" />
+          <NInput v-model:value="captchaAnswer" :placeholder="$t('page.userCenter.verify.captchaPlaceholder')" />
           <NButton type="primary" :disabled="isCounting" :loading="sending" @click="handleSendCode">
             {{ $t('page.userCenter.verify.sendCode') }}
           </NButton>
