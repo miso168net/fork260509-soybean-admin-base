@@ -132,6 +132,9 @@ const local: App.I18n.Schema = {
       // [rev4-inline I18N-WIRING(ii) 020-email-verify-smtp END]
     },
     system: {
+      // [rev4-inline I18N-WIRING(ii) maint-b133-b134] backend.system 固定鍵補齊（error.rs key() 之 internal/notFound；B-133）
+      internal: '系统发生内部错误，请稍后再试',
+      notFound: '找不到请求的资源',
       forbidden: '没有权限执行此操作'
     }
   },

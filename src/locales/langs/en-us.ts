@@ -132,6 +132,9 @@ const local: App.I18n.Schema = {
       // [rev4-inline I18N-WIRING(ii) 020-email-verify-smtp END]
     },
     system: {
+      // [rev4-inline I18N-WIRING(ii) maint-b133-b134] backend.system 固定鍵補齊（error.rs key() 之 internal/notFound；B-133）
+      internal: 'An internal error occurred. Please try again later',
+      notFound: 'The requested resource was not found',
       forbidden: 'You do not have permission to perform this action'
     }
   },

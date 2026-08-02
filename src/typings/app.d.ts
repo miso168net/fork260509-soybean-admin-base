@@ -445,6 +445,9 @@ declare namespace App {
           // [rev4-inline I18N-WIRING(iii) 020-email-verify-smtp END]
         };
         system: {
+          // [rev4-inline I18N-WIRING(iii) maint-b133-b134] backend.system 固定鍵補齊型（error.rs key() 之 internal/notFound；B-133）
+          internal: string;
+          notFound: string;
           forbidden: string;
         };
       };
