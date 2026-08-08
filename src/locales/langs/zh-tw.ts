@@ -38,10 +38,14 @@ const backendMessages = {
     },
     biz: {
       systemSettings: {
-        // 構造點＝server/src/validation.rs invalid_value()（T019、2222）：設定值驗證
-        // 拒因——型別不符／超範圍／enum 外值／三態非法。★notFound 鍵隨其構造點單元
-        //（T021 handler 未知鍵路徑）增補，先加即孤兒鍵紅（Lint24 逐鍵成對）。
+        // 構造點兩處（T019＋T021、2222）：server/src/validation.rs invalid_value()——
+        // 型別不符／超範圍／enum 外值；server/src/handler/system_settings.rs 同名
+        // 構造點——必填欄缺席／顯式 null／JSON 反序列化失敗（三態非法）。
         invalidValue: '設定值不合法（型別不符、超出範圍或非允許選項）',
+        // 構造點＝server/src/handler/system_settings.rs not_found()（T021、2222）：
+        // settingKey 不在 registry 宣告集（含軟刪防禦態——facade 的 deleted_at IS NULL
+        // filter 使軟刪列視同 miss；Clarify Q3 拍板 2222 非 4040）。
+        notFound: '找不到指定的設定鍵',
       },
       // 白名單八鍵（後端不發）：密碼政策明細由後端經 BizData 通道下發違規碼、前端逐碼譯後
       // 以 common.listSeparator 串接。★白名單 ∩ 後端實發集必須為空，非空即名冊腐化紅。

@@ -13,12 +13,31 @@ import { request } from '../request';
  * 授權＝Policy（casbin seed 政策列 66、R_SUPER only）；越權 5003／未認證 8888（contracts §2）。
  * 型別消費 rev5-settings.d.ts（T013、declaration merging 併入 Api.SystemManage）——
  * 未來 view 刀（B-008）接上即用、不需回頭補型別（spec FR-025）。
- * rev4: 承 rev4-system-settings.ts fetchGetSystemSettings 同名形；寫端
- * fetchUpdateSystemSetting 歸 T023（三態 req 型別隨寫端刀落）。
+ * rev4: 承 rev4-system-settings.ts fetchGetSystemSettings 同名形。
  */
 export function fetchGetSystemSettings() {
   return request<Api.SystemManage.SystemSetting[]>({
     url: '/systemManage/getSystemSettings',
     method: 'get'
+  });
+}
+
+/**
+ * 改單一設定值（`POST /systemManage/updateSystemSetting`；寫端契約＝contracts §2）
+ *
+ * req＝三態完備形（Api.SystemManage.UpdateSystemSettingReq、T013）：description 欄
+ * 缺席＝不動／`null`＝清空落 NULL／有值＝設值（ADR 0023）；settingValue 顯式 null＝
+ * 後端 2222 拒收（NOT NULL 欄清空非法）、故其型別不含 null。
+ * 成功回 `{data:null, code:"0000", msg:"common.success"}`；驗證失敗 2222
+ * （invalidValue／notFound）、越權 5003、未認證 8888（contracts §2 錯誤矩陣）。
+ * rev4: 承 rev4-system-settings.ts fetchUpdateSystemSetting 同名形；rev5 差異＝
+ * 兩散參（settingKey, settingValue）改單一 req 物件、承載三態 description
+ * （research R3 第 1 筆——UpdateReq 含三態欄、rev4 僅二欄）。
+ */
+export function fetchUpdateSystemSetting(req: Api.SystemManage.UpdateSystemSettingReq) {
+  return request<null>({
+    url: '/systemManage/updateSystemSetting',
+    method: 'post',
+    data: req
   });
 }
