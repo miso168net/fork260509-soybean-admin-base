@@ -36,8 +36,6 @@ const backendMessages = {
         reLogin: '請重新登入',
       },
     },
-    // 白名單八鍵（後端不發）：密碼政策明細由後端經 BizData 通道下發違規碼、前端逐碼譯後
-    // 以 common.listSeparator 串接。★白名單 ∩ 後端實發集必須為空，非空即名冊腐化紅。
     biz: {
       systemSettings: {
         // 構造點＝server/src/validation.rs invalid_value()（T019、2222）：設定值驗證
@@ -45,6 +43,10 @@ const backendMessages = {
         //（T021 handler 未知鍵路徑）增補，先加即孤兒鍵紅（Lint24 逐鍵成對）。
         invalidValue: '設定值不合法（型別不符、超出範圍或非允許選項）',
       },
+      // 白名單八鍵（後端不發）：密碼政策明細由後端經 BizData 通道下發違規碼、前端逐碼譯後
+      // 以 common.listSeparator 串接。★白名單 ∩ 後端實發集必須為空，非空即名冊腐化紅。
+      // ★本註解的主詞是 user 這一節——biz 樹另含 systemSettings（後端實發鍵），
+      // 「biz 全樹皆白名單」的敘述對現況不成立。
       user: {
         passwordViolation: {
           minLength: '長度未達政策下限',
