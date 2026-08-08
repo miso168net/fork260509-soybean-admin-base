@@ -34,10 +34,11 @@ declare namespace Api {
        * 用途說明——三態欄（B-026 envelope 級三態約定、data-model §2/§8）：
        * 欄位缺席＝不動；欄位值 JSON null＝清空落 NULL；欄位有值＝設值（不經 registry 驗證）。
        *
-       * ★快照已知失真（抽取器限制、非契約讓步）：typescript-json-schema 抽取 `string | null`
-       * 聯合型時 null 分支會被吃掉，wire-schema.json 中本欄僅呈 `{"type":"string"}`——
-       * 「null 是合法值」以本檔為權威（憲法 §I.3 權威序第 1 條＝typings 為 wire 唯一權威），
-       * rust 側裁判（server/tests/wire_schema.rs）設計時須將此失真納入考量。
+       * ★本欄的 nullability 在 wire-schema.json 快照中如實呈 `["null","string"]`——
+       * 抽取管線帶 `--strictNullChecks`（tools/wire-schema.py TSJS_FLAGS）才有此忠實度，
+       * 該旗標於本刀補上（rev4 承襲設定未帶、快照對所有 nullable 欄一律低報）。
+       * rust 側裁判（server/tests/wire_schema.rs、T021）因此可直接以快照斷言三態，
+       * 毋須為本欄手工豁免。
        */
       description?: string | null;
     }
