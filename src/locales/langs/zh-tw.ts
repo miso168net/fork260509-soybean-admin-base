@@ -29,11 +29,25 @@ const backendMessages = {
       forbidden: '沒有權限執行此操作',
     },
     auth: {
+      login: {
+        // error.rs `fn key()` 固定鍵：AppError::LoginFailed（1000）——帳密驗證不過
+        //（003-auth-session T010；譯文逐字＝specs/003-auth-session/contracts/msg-keys.md）。
+        failed: '帳號或密碼錯誤',
+      },
       session: {
         // error.rs `fn key()` 固定鍵：AppError::Logout（8888）——B12 未認證即發此鍵
         //（research R3 第 3 筆：rev4 發 3333，rev5 拍板改判，因 3333 會觸發前端 refresh 重試
         // 而本刀無 refresh 機制）。
         reLogin: '請重新登入',
+        // error.rs `fn key()` 固定鍵：AppError::ModalLogout（7777）——他處登入被踢、前端 modal
+        //（003-auth-session T010；譯文逐字＝specs/003-auth-session/contracts/msg-keys.md）。
+        kicked: '您的帳號已在其他裝置登入，此工作階段已結束',
+      },
+      token: {
+        // error.rs `fn key()` 固定鍵：AppError::TokenExpired（3333）——僅 exp 過期發此鍵、
+        // 前端據此靜默 refresh（003-auth-session T010；譯文逐字＝specs/003-auth-session/
+        // contracts/msg-keys.md）。
+        expired: '登入已逾時，正在重新取得授權',
       },
     },
     biz: {
