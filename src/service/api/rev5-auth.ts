@@ -38,3 +38,44 @@ export function fetchLogout(refreshToken: string) {
     }
   });
 }
+
+/**
+ * 取圖形驗證碼題（`GET /auth/loginCaptcha`；契約＝contracts/wire-auth.md §loginCaptcha）
+ *
+ * 軟區觸發後才呼叫；challenge 綁定送出的帳號名（跨帳號呈遞即拒）、對任意 userName 一律
+ * 發題（含不存在帳號＝零存在性洩漏）、產題對後端零狀態寫入。
+ * rev4: 承 rev4-login-captcha.ts fetchLoginCaptcha 同名形（合一進 rev5-auth.ts）。
+ */
+export function fetchLoginCaptcha(userName: string) {
+  return request<Api.Auth.LoginCaptcha>({
+    url: '/auth/loginCaptcha',
+    method: 'get',
+    params: { userName }
+  });
+}
+
+/**
+ * 登入（`POST /auth/login`；LoginReq additive 兩 optional 欄——契約 §login）
+ *
+ * 未附 captcha 時 `captchaId`/`captchaCode` 為 undefined、JSON 序列化即省略 ⇒ wire 形與
+ * upstream `fetchLogin` 完全相同；附掛時走軟區 captcha gate（★提交即消耗、答錯即失效）。
+ * 拒因（同碼 2222、僅 msg 相異）：`biz.auth.captchaRequired`（軟區缺／錯／過期／重放）／
+ * `biz.auth.locked`（硬鎖）——msg 回傳鏈由 auth store 消費。
+ * rev4: 承 rev4-login-captcha.ts fetchLoginWithCaptcha 同名形。
+ */
+export function fetchLoginWithCaptcha(
+  userName: string,
+  password: string,
+  captcha?: { captchaId: string; captchaCode: string }
+) {
+  return request<Api.Auth.LoginToken>({
+    url: '/auth/login',
+    method: 'post',
+    data: {
+      userName,
+      password,
+      captchaId: captcha?.captchaId,
+      captchaCode: captcha?.captchaCode
+    }
+  });
+}

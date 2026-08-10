@@ -51,6 +51,17 @@ const backendMessages = {
       },
     },
     biz: {
+      auth: {
+        // 構造點四處（003 U-L／T051、皆 2222）：server/src/throttle/mod.rs 之
+        // captcha_gate()——缺／無效題、重放、used 標記 SET NX 瞬斷、答錯一律此鍵
+        //（★構造點直書 Cow::Borrowed 字面、不設具名常數＝Lint24 抽取面①；
+        // 譯文逐字＝specs/003-auth-session/contracts/msg-keys.md）。
+        captchaRequired: '請完成圖形驗證碼後再試',
+        // 構造點兩處（T051、2222）：同檔 precheck() 之 ①L1 lock 鍵命中／③L2 計數達
+        // max_fails——硬鎖靜態一般化訊息（零觸發維度／剩餘時間／存在性；同為字面直書；
+        // 譯文逐字＝specs/003-auth-session/contracts/msg-keys.md）。
+        locked: '嘗試次數過多，請稍後再試',
+      },
       systemSettings: {
         // 構造點兩處（T019＋T021、2222）：server/src/validation.rs invalid_value()——
         // 型別不符／超範圍／enum 外值；server/src/handler/system_settings.rs 同名
