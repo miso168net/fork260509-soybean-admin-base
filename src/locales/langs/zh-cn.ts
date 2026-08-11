@@ -1,4 +1,57 @@
 const local: App.I18n.Schema = {
+  // [rev5-inline BASE-WEB-I18N-WIRING(ii)+ 003-auth-session START] backend 命名空間（wire msg
+  // key → 在地化顯示；22 鍵、六新鍵譯文單一權威＝specs/003-auth-session/contracts/msg-keys.md、
+  // 其餘鍵照 rev4 鏡像重打字消化）。★下一行 `  backend: {` 須獨佔一行——本檔不在
+  // MSG_DICT_LOCALES 字典鏈射程（B-030 子項）、結構由 App.I18n.Schema 必填型節＋typecheck 守。
+  backend: {
+    common: {
+      success: '操作成功',
+      // 白名單鍵（後端恆不發）：明細清單在地化分隔符（translateDetailValue join 用）
+      listSeparator: '、'
+    },
+    system: {
+      internal: '系统发生内部错误，请稍后再试',
+      notFound: '找不到请求的资源',
+      forbidden: '没有权限执行此操作'
+    },
+    auth: {
+      login: {
+        failed: '用户名或密码错误'
+      },
+      session: {
+        reLogin: '请重新登录',
+        kicked: '您的账号已在其他设备登录，当前会话已结束'
+      },
+      token: {
+        expired: '登录已过期，正在重新获取授权'
+      }
+    },
+    biz: {
+      auth: {
+        notSupported: '该功能暂未开放',
+        captchaRequired: '请完成验证码后再试',
+        locked: '尝试次数过多，请稍后再试'
+      },
+      systemSettings: {
+        invalidValue: '设置值无效',
+        notFound: '设置项不存在'
+      },
+      // 白名單八鍵（後端恆不發）：密碼政策違規碼逐碼譯文（translateDetailValue 消費）
+      user: {
+        passwordViolation: {
+          minLength: '长度未达策略下限',
+          maxLength: '长度超过策略上限',
+          maxBytes: '字节数超过上限',
+          requireDigit: '须包含数字',
+          requireLowercase: '须包含小写字母',
+          requireUppercase: '须包含大写字母',
+          requireSpecial: '须包含特殊符号',
+          forbidUsername: '不可与用户名相同'
+        }
+      }
+    }
+  },
+  // [rev5-inline BASE-WEB-I18N-WIRING(ii)+ 003-auth-session END]
   system: {
     title: 'Soybean 管理系统',
     updateTitle: '系统版本更新通知',

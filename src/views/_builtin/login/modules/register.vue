@@ -3,6 +3,9 @@ import { computed, reactive } from 'vue';
 import { useRouterPush } from '@/hooks/common/router';
 import { useFormRules, useNaiveForm } from '@/hooks/common/form';
 import { useCaptcha } from '@/hooks/business/captcha';
+// [rev5-inline BASE-WEB-AUTH-WIRING(b)+ 003-auth-session] 替代登入 stub wrapper import（直接路徑、
+// 避 barrel stale-export——沿 rev5-auth.ts 檔頭自陳）：下一行為純新增。
+import { fetchRegister } from '@/service/api/rev5-auth';
 import { $t } from '@/locales';
 
 defineOptions({
@@ -41,7 +44,13 @@ const rules = computed<Record<keyof FormModel, App.Global.FormRule[]>>(() => {
 async function handleSubmit() {
   await validate();
   // request to register
-  window.$message?.success($t('page.login.common.validateSuccess'));
+  // [rev5-inline BASE-WEB-AUTH-WIRING(b)] 改打誠實 stub（恆 2222→攔截器經 backend.* i18n 顯「該功能尚未開放」）、消滅假成功 toast（rev4: 同形接線）；原行: window.$message?.success($t('page.login.common.validateSuccess'));
+  await fetchRegister({
+    phone: model.phone,
+    code: model.code,
+    password: model.password,
+    confirmPassword: model.confirmPassword
+  });
 }
 </script>
 

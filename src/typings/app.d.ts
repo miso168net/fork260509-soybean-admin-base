@@ -311,6 +311,61 @@ declare namespace App {
     };
 
     type Schema = {
+      // [rev5-inline BASE-WEB-I18N-WIRING(iii)+ 003-auth-session START] 頂層 backend 必填型節
+      // （映射 wire msg key → 在地化；逐鍵鏡像 locale backend 樹 22 鍵——單一權威＝
+      // specs/003-auth-session/contracts/msg-keys.md）。★必填（非 optional）＝en-us.ts／
+      // zh-cn.ts 缺樹即 typecheck 紅——兩語結構自此由型別免費守（msg-keys.md 機器閘表）。
+      // rev4: 承 rev4 app.d.ts I18N-WIRING(iii) backend 型節同形、只取本刀 22 鍵射程；
+      // ★LangType 擴充／locale 註冊／zh-tw.ts 標型重構不帶回（R3-15、仍延前端 UI 刀）。
+      backend: {
+        common: {
+          success: string;
+          // 白名單鍵（後端恆不發）：明細清單在地化分隔符（translateDetailValue join 用）
+          listSeparator: string;
+        };
+        system: {
+          internal: string;
+          notFound: string;
+          forbidden: string;
+        };
+        auth: {
+          login: {
+            failed: string;
+          };
+          session: {
+            reLogin: string;
+            kicked: string;
+          };
+          token: {
+            expired: string;
+          };
+        };
+        biz: {
+          auth: {
+            notSupported: string;
+            captchaRequired: string;
+            locked: string;
+          };
+          systemSettings: {
+            invalidValue: string;
+            notFound: string;
+          };
+          // 白名單八鍵（後端恆不發）：密碼政策違規碼逐碼譯文（translateDetailValue 消費）
+          user: {
+            passwordViolation: {
+              minLength: string;
+              maxLength: string;
+              maxBytes: string;
+              requireDigit: string;
+              requireLowercase: string;
+              requireUppercase: string;
+              requireSpecial: string;
+              forbidUsername: string;
+            };
+          };
+        };
+      };
+      // [rev5-inline BASE-WEB-I18N-WIRING(iii)+ 003-auth-session END]
       system: {
         title: string;
         updateTitle: string;

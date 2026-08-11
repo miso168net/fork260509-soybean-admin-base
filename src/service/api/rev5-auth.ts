@@ -79,3 +79,62 @@ export function fetchLoginWithCaptcha(
     }
   });
 }
+
+// [rev5-inline BASE-WEB-WRAPPER+ 003-auth-session] 替代登入誠實 stub 四出口（T063 三表單＋
+// T064 captcha hook 消費；契約＝contracts/wire-auth.md §替代登入 stub）。後端四端點共用
+// alt_stub::not_supported_stub、恆回 `2222 biz.auth.notSupported`（data:null、零副作用、
+// 不解析 body）——讓「未開放」成為 wire 上可觀測的真話、取代 upstream 的假成功 toast
+// （spec US5）。四支共通約定：
+// ①呼叫端毋須自行顯錯——錯誤 toast 由 request 攔截器 showErrorMsg 鏈經 backend.* i18n
+// 　轉譯自動顯示（★BASE-WEB-I18N-WIRING(i)），成功腿不存在故亦無成功 toast；
+// ②一律不增 Api.Auth 請求型別（wire-schema 快照 38 definitions 零擴——該工具抽取面
+// 　TYPINGS_GLOB＝`src/typings/{common,api/*}.d.ts`，本檔不在其內，故簽名內的行內物件型
+// 　永不進快照）。單欄／雙欄沿本檔 fetchLogout／fetchLoginCaptcha 的純量慣例；★但
+// 　register／resetPwd 各吃四個同型 string，positional 形一旦相鄰兩欄對調，typecheck 全綠、
+// 　stub 不讀 body、前端無測試 runner ⇒ 錯位在本刀整個可觀測面絕對靜默，故此二支改吃**行內
+// 　具名物件**，讓錯位由 typecheck 當場擋下（成本＝呼叫端多寫欄名，零型別檔擴張）；
+// ③wire req 仍照各表單 model 欄位 camelCase 直送——stub 現不讀 body，但日後真做時
+// 　wire 形不變、表單端零改動。
+// rev4: 承 rev4-auth-stub.ts 四支 fetch 同名形（rev5 合一進本檔；rev4 走具名 interface 請求型
+// 　置於 typings，rev5 依②改成純量／行內物件、型別不出本檔）。
+
+/** 發送簡訊驗證碼（`POST /auth/sendCaptcha`；stub 恆 2222——captcha hook getCaptcha 消費） */
+export function fetchSendCaptcha(phone: string) {
+  return request<null>({
+    url: '/auth/sendCaptcha',
+    method: 'post',
+    data: { phone }
+  });
+}
+
+/** 驗證碼登入（`POST /auth/codeLogin`；stub 恆 2222——code-login.vue 消費） */
+export function fetchCodeLogin(phone: string, code: string) {
+  return request<null>({
+    url: '/auth/codeLogin',
+    method: 'post',
+    data: { phone, code }
+  });
+}
+
+/** 註冊（`POST /auth/register`；stub 恆 2222——register.vue 消費） */
+export function fetchRegister(req: { phone: string; code: string; password: string; confirmPassword: string }) {
+  return request<null>({
+    url: '/auth/register',
+    method: 'post',
+    data: req
+  });
+}
+
+/**
+ * 重設密碼（`POST /auth/resetPwd`；stub 恆 2222——reset-pwd.vue 消費）
+ *
+ * ★該表單 code 欄無送碼入口（不掛 useCaptcha）＝已知 UX 態、本刀不補（tasks T064 明載）——
+ * 端點恆 2222 之下補入口只是把同一句「該功能尚未開放」多鋪一條到達路徑。
+ */
+export function fetchResetPwd(req: { phone: string; code: string; password: string; confirmPassword: string }) {
+  return request<null>({
+    url: '/auth/resetPwd',
+    method: 'post',
+    data: req
+  });
+}

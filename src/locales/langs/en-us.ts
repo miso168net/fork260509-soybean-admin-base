@@ -1,4 +1,57 @@
 const local: App.I18n.Schema = {
+  // [rev5-inline BASE-WEB-I18N-WIRING(ii)+ 003-auth-session START] backend 命名空間（wire msg
+  // key → 在地化顯示；22 鍵、六新鍵譯文單一權威＝specs/003-auth-session/contracts/msg-keys.md、
+  // 其餘鍵照 rev4 鏡像重打字消化）。★下一行 `  backend: {` 須獨佔一行——傘狀 docs-sync 之
+  // gen.msg_dict 解除謂詞與 parse_locale_backend 起點掃描對該行整行 fullmatch。
+  backend: {
+    common: {
+      success: 'Operation successful',
+      // 白名單鍵（後端恆不發）：明細清單在地化分隔符（translateDetailValue join 用）
+      listSeparator: ', '
+    },
+    system: {
+      internal: 'An internal error occurred. Please try again later',
+      notFound: 'The requested resource was not found',
+      forbidden: 'You do not have permission to perform this action'
+    },
+    auth: {
+      login: {
+        failed: 'Incorrect username or password'
+      },
+      session: {
+        reLogin: 'Please log in again',
+        kicked: 'Your account signed in elsewhere; this session ended'
+      },
+      token: {
+        expired: 'Session expired, refreshing'
+      }
+    },
+    biz: {
+      auth: {
+        notSupported: 'This feature is not available yet',
+        captchaRequired: 'Please complete the captcha and try again',
+        locked: 'Too many attempts; please try again later'
+      },
+      systemSettings: {
+        invalidValue: 'Invalid setting value (wrong type, out of range or not an allowed option)',
+        notFound: 'The specified setting key was not found'
+      },
+      // 白名單八鍵（後端恆不發）：密碼政策違規碼逐碼譯文（translateDetailValue 消費）
+      user: {
+        passwordViolation: {
+          minLength: 'length below the policy minimum',
+          maxLength: 'length exceeds the policy maximum',
+          maxBytes: 'byte length exceeds the limit',
+          requireDigit: 'must contain a digit',
+          requireLowercase: 'must contain a lowercase letter',
+          requireUppercase: 'must contain an uppercase letter',
+          requireSpecial: 'must contain a special character',
+          forbidUsername: 'must not be identical to the user name'
+        }
+      }
+    }
+  },
+  // [rev5-inline BASE-WEB-I18N-WIRING(ii)+ 003-auth-session END]
   system: {
     title: 'SoybeanAdmin',
     updateTitle: 'System Version Update Notification',

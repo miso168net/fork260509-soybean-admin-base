@@ -61,6 +61,11 @@ const backendMessages = {
         // max_fails——硬鎖靜態一般化訊息（零觸發維度／剩餘時間／存在性；同為字面直書；
         // 譯文逐字＝specs/003-auth-session/contracts/msg-keys.md）。
         locked: '嘗試次數過多，請稍後再試',
+        // 構造點一處（T061、2222）：server/src/handler/auth/alt_stub.rs
+        // not_supported_stub()——替代登入四端點（sendCaptcha／codeLogin／register／
+        // resetPwd）共用誠實 stub（同為字面直書＝Lint24 抽取面①；
+        // 譯文逐字＝specs/003-auth-session/contracts/msg-keys.md）。
+        notSupported: '該功能尚未開放',
       },
       systemSettings: {
         // 構造點兩處（T019＋T021、2222）：server/src/validation.rs invalid_value()——
