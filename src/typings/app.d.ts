@@ -312,10 +312,11 @@ declare namespace App {
 
     type Schema = {
       // [rev5-inline BASE-WEB-I18N-WIRING(iii)+ 003-auth-session START] 頂層 backend 必填型節
-      // （映射 wire msg key → 在地化；逐鍵鏡像 locale backend 樹 22 鍵——單一權威＝
-      // specs/003-auth-session/contracts/msg-keys.md）。★必填（非 optional）＝en-us.ts／
+      // （映射 wire msg key → 在地化；逐鍵鏡像 locale backend 樹 **27 鍵**＝003-auth-session
+      // 之 22 鍵＋004-ip-trust-anchor T038 之 biz.ipRule.* 五鍵——各刀的單一權威＝該刀
+      // contracts/msg-keys.md）。★必填（非 optional）＝en-us.ts／
       // zh-cn.ts 缺樹即 typecheck 紅——兩語結構自此由型別免費守（msg-keys.md 機器閘表）。
-      // rev4: 承 rev4 app.d.ts I18N-WIRING(iii) backend 型節同形、只取本刀 22 鍵射程；
+      // rev4: 承 rev4 app.d.ts I18N-WIRING(iii) backend 型節同形、只取 003 那刀的 22 鍵射程；
       // ★LangType 擴充／locale 註冊／zh-tw.ts 標型重構不帶回（R3-15、仍延前端 UI 刀）。
       backend: {
         common: {
@@ -345,6 +346,15 @@ declare namespace App {
             notSupported: string;
             captchaRequired: string;
             locked: string;
+          };
+          // 004-ip-trust-anchor T038 五鍵（單一權威＝
+          // specs/004-ip-trust-anchor/contracts/msg-keys.md）
+          ipRule: {
+            invalidRuleType: string;
+            invalidCidr: string;
+            conflict: string;
+            notFound: string;
+            selfLock: string;
           };
           systemSettings: {
             invalidValue: string;

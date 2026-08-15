@@ -67,6 +67,27 @@ const backendMessages = {
         // 譯文逐字＝specs/003-auth-session/contracts/msg-keys.md）。
         notSupported: '該功能尚未開放',
       },
+      // 004-ip-trust-anchor T038 五鍵（皆 2222）：構造點全在
+      // server/src/handler/ip_rule.rs（五處直書 Cow::Borrowed 字面＝Lint24 抽取面①；
+      // 譯文語意單一權威＝specs/004-ip-trust-anchor/contracts/msg-keys.md）。
+      ipRule: {
+        // 規則類型非二值（allow｜deny）；★**構造點只在 addIpRule／updateIpRule 兩個寫端**
+        // （deleteIpRule／restoreIpRule 的請求體只有 id、結構上不帶類型）——清單 query 的
+        // wbipType／deleted 值域外一律**沉默**（值域外＝等值過濾自然零結果／未篩選），
+        // 契約面 contracts/wire-ip-rule.md §1 把該端點錯誤集逐字凍結為 5003／5000、
+        // 無業務錯誤腿，故本鍵**不承載任何 query 參數的值域錯誤**（拿它去報 deleted=xxx
+        // 會讓使用者看到指向錯欄位的訊息）。
+        invalidRuleType: '規則類型不正確',
+        // 網段字面解析失敗（含遮罩位數越界）。
+        invalidCidr: '網段格式不正確',
+        // 有效列唯一性衝突（同「網段×類型」；含復原後撞現役列）。
+        conflict: '相同網段與類型的規則已存在',
+        // 標的不存在，或其狀態不允許此操作（對回收桶列再刪、對現役列復原）。
+        notFound: '找不到指定的規則，或其狀態不允許此操作',
+        // ★防自鎖拒寫（本刀唯一的 fail-closed 例外）：訊息要講得出「為什麼被擋」與
+        // 「已經沒有寫進去」，否則操作者只會重試同一個動作。
+        selfLock: '此規則會使你目前的連線被阻擋，已拒絕寫入',
+      },
       systemSettings: {
         // 構造點兩處（T019＋T021、2222）：server/src/validation.rs invalid_value()——
         // 型別不符／超範圍／enum 外值；server/src/handler/system_settings.rs 同名

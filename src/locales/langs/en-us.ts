@@ -1,6 +1,7 @@
 const local: App.I18n.Schema = {
   // [rev5-inline BASE-WEB-I18N-WIRING(ii)+ 003-auth-session START] backend 命名空間（wire msg
-  // key → 在地化顯示；22 鍵、六新鍵譯文單一權威＝specs/003-auth-session/contracts/msg-keys.md、
+  // key → 在地化顯示；**27 鍵**＝003-auth-session 之 22 鍵＋004-ip-trust-anchor T038 之
+  // biz.ipRule.* 五鍵；各刀新鍵的譯文單一權威＝該刀 contracts/msg-keys.md，
   // 其餘鍵照 rev4 鏡像重打字消化）。★下一行 `  backend: {` 須獨佔一行——傘狀 docs-sync 之
   // gen.msg_dict 解除謂詞與 parse_locale_backend 起點掃描對該行整行 fullmatch。
   backend: {
@@ -31,6 +32,15 @@ const local: App.I18n.Schema = {
         notSupported: 'This feature is not available yet',
         captchaRequired: 'Please complete the captcha and try again',
         locked: 'Too many attempts; please try again later'
+      },
+      // 004-ip-trust-anchor T038 五鍵（譯文語意單一權威＝
+      // specs/004-ip-trust-anchor/contracts/msg-keys.md）
+      ipRule: {
+        invalidRuleType: 'Invalid rule type',
+        invalidCidr: 'Invalid network address format',
+        conflict: 'A rule with the same network and type already exists',
+        notFound: 'The rule was not found, or its state does not allow this action',
+        selfLock: 'This rule would block your current connection; the change was rejected'
       },
       systemSettings: {
         invalidValue: 'Invalid setting value (wrong type, out of range or not an allowed option)',
