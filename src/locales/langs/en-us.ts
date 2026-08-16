@@ -1,7 +1,7 @@
 const local: App.I18n.Schema = {
   // [rev5-inline BASE-WEB-I18N-WIRING(ii)+ 003-auth-session START] backend 命名空間（wire msg
-  // key → 在地化顯示；**27 鍵**＝003-auth-session 之 22 鍵＋004-ip-trust-anchor T038 之
-  // biz.ipRule.* 五鍵；各刀新鍵的譯文單一權威＝該刀 contracts/msg-keys.md，
+  // key → 在地化顯示；**28 鍵**＝003-auth-session 之 22 鍵＋004-ip-trust-anchor T038 之
+  // biz.ipRule.* 五鍵＋同刀 T054 之 biz.throttle.* 一鍵；各刀新鍵的譯文單一權威＝該刀 contracts/msg-keys.md，
   // 其餘鍵照 rev4 鏡像重打字消化）。★下一行 `  backend: {` 須獨佔一行——傘狀 docs-sync 之
   // gen.msg_dict 解除謂詞與 parse_locale_backend 起點掃描對該行整行 fullmatch。
   backend: {
@@ -45,6 +45,11 @@ const local: App.I18n.Schema = {
       systemSettings: {
         invalidValue: 'Invalid setting value (wrong type, out of range or not an allowed option)',
         notFound: 'The specified setting key was not found'
+      },
+      // 004-ip-trust-anchor T054 一鍵（譯文語意單一權威＝
+      // specs/004-ip-trust-anchor/contracts/msg-keys.md）
+      throttle: {
+        invalidUnlockTarget: 'Invalid unlock target'
       },
       // 白名單八鍵（後端恆不發）：密碼政策違規碼逐碼譯文（translateDetailValue 消費）
       user: {

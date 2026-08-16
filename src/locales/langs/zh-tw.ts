@@ -98,6 +98,18 @@ const backendMessages = {
         // filter 使軟刪列視同 miss；Clarify Q3 拍板 2222 非 4040）。
         notFound: '找不到指定的設定鍵',
       },
+      // 004-ip-trust-anchor T054 一鍵（2222）：構造點全在
+      // server/src/handler/throttle.rs 之 resolve_unlock_target——四個畸形形共用同一個
+      // `Cow::Borrowed` 字面構造點（＝Lint24 的靜態鍵抽取面）。★刻意**不**設具名常數：
+      // 常數形須先擴 docs-sync.py 的 I18N_CONST_ROSTER 名冊（該表現為空表），否則當場被
+      // 該閘 fail-loud 擋下——理由逐字見那支函式的碼註。譯文語意單一權威＝
+      // specs/004-ip-trust-anchor/contracts/msg-keys.md 第 6 列。
+      throttle: {
+        // 解鎖端點的參數畸形：維度不明／該維必填欄缺席／位址字面不可解析／unspecified
+        // 哨兵。★四形共用一把鍵是拍板（rev4 分 invalidDimension／invalidTarget 兩把、
+        // 不帶回）——對操作者而言它們是同一件事，訊息只需講「這個對象不對」。
+        invalidUnlockTarget: '解鎖對象不正確',
+      },
       // 白名單八鍵（後端不發）：密碼政策明細由後端經 BizData 通道下發違規碼、前端逐碼譯後
       // 以 common.listSeparator 串接。★白名單 ∩ 後端實發集必須為空，非空即名冊腐化紅。
       // ★本註解的主詞是 user 這一節——biz 樹另含 systemSettings（後端實發鍵），
