@@ -87,7 +87,7 @@ export function fetchLoginWithCaptcha(
 // （spec US5）。四支共通約定：
 // ①呼叫端毋須自行顯錯——錯誤 toast 由 request 攔截器 showErrorMsg 鏈經 backend.* i18n
 // 　轉譯自動顯示（★BASE-WEB-I18N-WIRING(i)），成功腿不存在故亦無成功 toast；
-// ②一律不增 Api.Auth 請求型別（wire-schema 快照 38 definitions 零擴——該工具抽取面
+// ②一律不增 Api.Auth 請求型別（wire-schema 快照零擴——該工具抽取面
 // 　TYPINGS_GLOB＝`src/typings/{common,api/*}.d.ts`，本檔不在其內，故簽名內的行內物件型
 // 　永不進快照）。單欄／雙欄沿本檔 fetchLogout／fetchLoginCaptcha 的純量慣例；★但
 // 　register／resetPwd 各吃四個同型 string，positional 形一旦相鄰兩欄對調，typecheck 全綠、
