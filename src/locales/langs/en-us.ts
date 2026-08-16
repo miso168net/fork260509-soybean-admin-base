@@ -332,6 +332,11 @@ const local: App.I18n.Schema = {
     'manage_user-detail': 'User Detail',
     manage_role: 'Role Manage',
     manage_menu: 'Menu Manage',
+    // [rev5-inline BASE-WEB-MANAGE-PAGE-WIRING(i)+ 004-ip-trust-anchor START] route: 樹補
+    // `manage_ip-rule` 一鍵——本樹型為 `Record<I18nRouteKey, string>`，路由外掛重算出該
+    // RouteKey 後不補鍵即型別檢查紅（鍵名＝seed 選單列的 route_name，逐字不可改）。
+    'manage_ip-rule': 'IP Rule Manage',
+    // [rev5-inline BASE-WEB-MANAGE-PAGE-WIRING(i)+ 004-ip-trust-anchor END]
     'multi-menu': 'Multi Menu',
     'multi-menu_first': 'Menu One',
     'multi-menu_first_child': 'Menu One Child',
@@ -592,6 +597,45 @@ const local: App.I18n.Schema = {
           disable: 'Disable'
         }
       },
+      // [rev5-inline BASE-WEB-MANAGE-PAGE-WIRING(i)+ 004-ip-trust-anchor START] page: 樹補
+      // `manage.ipRule` 節（IP 規則管理頁文案）——★兩語鍵集 MUST 相等，型節見 typings/app.d.ts。
+      // ★`order` 語彙一律「排序值」、絕不用「優先序」：規則集是 any-match 集合、該欄不參與判定
+      // （憲法 §I.7 島 F 之 F1）；文案暗示優先序會讓使用者以為排前面的規則先生效。
+      ipRule: {
+        title: 'IP Rule List',
+        wbipCidr: 'CIDR',
+        wbipType: 'Rule Type',
+        wbipMemo: 'Memo',
+        order: 'Display Order',
+        status: 'Status',
+        createdAt: 'Created At',
+        updatedAt: 'Updated At',
+        createdBy: 'Created By',
+        updatedBy: 'Updated By',
+        statusActive: 'Active',
+        statusDeleted: 'Deleted',
+        statusAll: 'All',
+        addIpRule: 'Add IP Rule',
+        editIpRule: 'Edit IP Rule',
+        restore: 'Restore',
+        confirmRestore: 'Restore this rule?',
+        restoreSuccess: 'Restored',
+        ruleTypeMap: {
+          allow: 'Allow',
+          deny: 'Deny'
+        },
+        form: {
+          wbipCidr: 'CIDR fragment (fuzzy match)',
+          wbipType: 'Select a rule type',
+          status: 'Select a status',
+          cidr: 'CIDR, IPv4 or IPv6 (e.g. 192.168.1.0/24)',
+          type: 'Select a rule type',
+          memo: 'Memo (optional)',
+          order: 'Display order (optional)'
+        },
+        empty: '—'
+      },
+      // [rev5-inline BASE-WEB-MANAGE-PAGE-WIRING(i)+ 004-ip-trust-anchor END]
       role: {
         title: 'Role List',
         roleName: 'Role Name',

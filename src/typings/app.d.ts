@@ -769,6 +769,45 @@ declare namespace App {
               disable: string;
             };
           };
+          // [rev5-inline BASE-WEB-MANAGE-PAGE-WIRING(i)+ 004-ip-trust-anchor START]
+          // `page.manage.ipRule` 型節（逐鍵鏡像兩語 locale）。★本節**必需、非「如需」**：
+          // `page:` 是顯式型樹，少一鍵就是 `$t('page.manage.ipRule.…')` 型別檢查紅
+          // （對比 `route:` 樹型為 `Record<I18nRouteKey, string>`、鍵集自路由產物自動導出）。
+          ipRule: {
+            title: string;
+            wbipCidr: string;
+            wbipType: string;
+            wbipMemo: string;
+            order: string;
+            status: string;
+            createdAt: string;
+            updatedAt: string;
+            createdBy: string;
+            updatedBy: string;
+            statusActive: string;
+            statusDeleted: string;
+            statusAll: string;
+            addIpRule: string;
+            editIpRule: string;
+            restore: string;
+            confirmRestore: string;
+            restoreSuccess: string;
+            ruleTypeMap: {
+              allow: string;
+              deny: string;
+            };
+            form: {
+              wbipCidr: string;
+              wbipType: string;
+              status: string;
+              cidr: string;
+              type: string;
+              memo: string;
+              order: string;
+            };
+            empty: string;
+          };
+          // [rev5-inline BASE-WEB-MANAGE-PAGE-WIRING(i)+ 004-ip-trust-anchor END]
           role: {
             title: string;
             roleName: string;
