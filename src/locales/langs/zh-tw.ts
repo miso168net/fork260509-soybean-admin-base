@@ -88,6 +88,29 @@ const backendMessages = {
         // 「已經沒有寫進去」，否則操作者只會重試同一個動作。
         selfLock: '此規則會使你目前的連線被阻擋，已拒絕寫入',
       },
+      // 005-role-menu-crud T020 九鍵（皆 2222）：構造點全在 server/src/handler/role.rs 的
+      // 三支 map_*_err（直書 Cow::Borrowed 字面＝Lint24 抽取面①；鍵字面與譯文語意單一權威＝
+      // specs/005-role-menu-crud/contracts/msg-keys.md）。
+      role: {
+        // roleCode 形制不合（^[A-Za-z0-9_]{1,64}$；欄缺席→空串亦此鍵）
+        codeInvalid: '角色編碼格式不正確（僅允許字母、數字、底線，最長 64 位）',
+        // 活性代碼重複（先驗＋23505 兜底同鍵）
+        codeExists: '角色編碼已存在',
+        // updateRole 試改 roleCode（★出現即拒、值不比對——rev4 等值放行形不帶回）
+        codeImmutable: '角色編碼建立後不可修改',
+        // 標的不存在／已刪
+        notFound: '角色不存在',
+        // deleteRole 撞 seed 三角色
+        seededProtected: '系統內建角色，不可刪除',
+        // 有掛載使用者（others>0）；★rev4 攜參形 {userCount} 不帶回——純 key 零插值（R2-9）
+        inUse: '該角色仍掛有使用者，不可刪除',
+        // 刪自己所屬角色（三層守門固定序 seeded→in-use→self-role 之末層）
+        cannotDeleteSelfRole: '不能刪除目前登入使用者所屬的角色',
+        // 停用自己所屬角色（updateRole 停用雙護欄之一）
+        cannotDisableSelfRole: '不能停用目前登入使用者所屬的角色',
+        // 停用 R_SUPER（恆禁、不因操作者身分而異）
+        superCannotDisable: '超級管理員角色不可停用',
+      },
       systemSettings: {
         // 構造點兩處（T019＋T021、2222）：server/src/validation.rs invalid_value()——
         // 型別不符／超範圍／enum 外值；server/src/handler/system_settings.rs 同名

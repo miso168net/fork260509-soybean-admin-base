@@ -1,7 +1,8 @@
 const local: App.I18n.Schema = {
   // [rev5-inline BASE-WEB-I18N-WIRING(ii)+ 003-auth-session START] backend 命名空間（wire msg
-  // key → 在地化顯示；**28 鍵**＝003-auth-session 之 22 鍵＋004-ip-trust-anchor T038 之
-  // biz.ipRule.* 五鍵＋同刀 T054 之 biz.throttle.* 一鍵；各刀新鍵的譯文單一權威＝該刀 contracts/msg-keys.md，
+  // key → 在地化顯示；**37 鍵**＝003-auth-session 之 22 鍵＋004-ip-trust-anchor 之
+  // biz.ipRule.* 五鍵與 biz.throttle.* 一鍵＋005-role-menu-crud T020 之 biz.role.* 九鍵；
+  // 各刀新鍵的譯文單一權威＝該刀 contracts/msg-keys.md，
   // 其餘鍵照 rev4 鏡像重打字消化）。★下一行 `  backend: {` 須獨佔一行——本檔不在
   // MSG_DICT_LOCALES 字典鏈射程（B-030 子項）、結構由 App.I18n.Schema 必填型節＋typecheck 守。
   backend: {
@@ -41,6 +42,20 @@ const local: App.I18n.Schema = {
         conflict: '相同网段与类型的规则已存在',
         notFound: '找不到指定的规则，或其状态不允许此操作',
         selfLock: '此规则会使你当前的连接被阻断，已拒绝写入'
+      },
+      // 005-role-menu-crud T020 九鍵（鍵字面與譯文語意單一權威＝
+      // specs/005-role-menu-crud/contracts/msg-keys.md；譯文照 rev4:zh-cn.ts biz.role
+      // 對應鍵消化、★inUse 攜參形不帶回——rev5 純 key 零插值〔R2-9〕）
+      role: {
+        codeInvalid: '角色编码格式不正确（仅允许字母、数字、下划线，最长 64 位）',
+        codeExists: '角色编码已存在',
+        codeImmutable: '角色编码创建后不可修改',
+        notFound: '角色不存在',
+        seededProtected: '系统内置角色，不可删除',
+        inUse: '该角色仍挂有用户，不可删除',
+        cannotDeleteSelfRole: '不能删除当前登录用户所属的角色',
+        cannotDisableSelfRole: '不能停用当前登录用户所属的角色',
+        superCannotDisable: '超级管理员角色不可停用'
       },
       systemSettings: {
         invalidValue: '设置值无效',
@@ -643,13 +658,21 @@ const local: App.I18n.Schema = {
         roleCode: '角色编码',
         roleStatus: '角色状态',
         roleDesc: '角色描述',
+        // [rev5-inline BASE-WEB-MANAGE-PAGE-WIRING(ii)+ 005-role-menu-crud START] page: 樹補
+        // `manage.role.roleMemo` 欄標籤鍵（FR-043 memo 欄；★兩語鍵集 MUST 相等，型節見 typings/app.d.ts）
+        roleMemo: '角色备注',
+        // [rev5-inline BASE-WEB-MANAGE-PAGE-WIRING(ii)+ 005-role-menu-crud END]
         menuAuth: '菜单权限',
         buttonAuth: '按钮权限',
         form: {
           roleName: '请输入角色名称',
           roleCode: '请输入角色编码',
           roleStatus: '请选择角色状态',
-          roleDesc: '请输入角色描述'
+          roleDesc: '请输入角色描述',
+          // [rev5-inline BASE-WEB-MANAGE-PAGE-WIRING(ii)+ 005-role-menu-crud START] memo placeholder
+          // （★逐字註明僅管理員可見＝FR-043）
+          roleMemo: '请输入角色备注（仅管理员可见）'
+          // [rev5-inline BASE-WEB-MANAGE-PAGE-WIRING(ii)+ 005-role-menu-crud END]
         },
         addRole: '新增角色',
         editRole: '编辑角色'

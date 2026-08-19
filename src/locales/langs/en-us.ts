@@ -1,7 +1,8 @@
 const local: App.I18n.Schema = {
   // [rev5-inline BASE-WEB-I18N-WIRING(ii)+ 003-auth-session START] backend 命名空間（wire msg
-  // key → 在地化顯示；**28 鍵**＝003-auth-session 之 22 鍵＋004-ip-trust-anchor T038 之
-  // biz.ipRule.* 五鍵＋同刀 T054 之 biz.throttle.* 一鍵；各刀新鍵的譯文單一權威＝該刀 contracts/msg-keys.md，
+  // key → 在地化顯示；**37 鍵**＝003-auth-session 之 22 鍵＋004-ip-trust-anchor 之
+  // biz.ipRule.* 五鍵與 biz.throttle.* 一鍵＋005-role-menu-crud T020 之 biz.role.* 九鍵；
+  // 各刀新鍵的譯文單一權威＝該刀 contracts/msg-keys.md，
   // 其餘鍵照 rev4 鏡像重打字消化）。★下一行 `  backend: {` 須獨佔一行——傘狀 docs-sync 之
   // gen.msg_dict 解除謂詞與 parse_locale_backend 起點掃描對該行整行 fullmatch。
   backend: {
@@ -41,6 +42,20 @@ const local: App.I18n.Schema = {
         conflict: 'A rule with the same network and type already exists',
         notFound: 'The rule was not found, or its state does not allow this action',
         selfLock: 'This rule would block your current connection; the change was rejected'
+      },
+      // 005-role-menu-crud T020 九鍵（鍵字面與譯文語意單一權威＝
+      // specs/005-role-menu-crud/contracts/msg-keys.md；譯文照 rev4:en-us.ts biz.role
+      // 對應鍵消化、★inUse 攜參形不帶回——rev5 純 key 零插值〔R2-9〕）
+      role: {
+        codeInvalid: 'Invalid role code (letters, digits and underscore only, up to 64 characters)',
+        codeExists: 'The role code already exists',
+        codeImmutable: 'The role code cannot be changed after creation',
+        notFound: 'The role was not found',
+        seededProtected: 'Built-in system roles cannot be deleted',
+        inUse: 'The role still has users assigned and cannot be deleted',
+        cannotDeleteSelfRole: 'You cannot delete a role assigned to your own account',
+        cannotDisableSelfRole: 'You cannot disable a role assigned to your own account',
+        superCannotDisable: 'The super administrator role cannot be disabled'
       },
       systemSettings: {
         invalidValue: 'Invalid setting value (wrong type, out of range or not an allowed option)',
@@ -647,13 +662,21 @@ const local: App.I18n.Schema = {
         roleCode: 'Role Code',
         roleStatus: 'Role Status',
         roleDesc: 'Role Description',
+        // [rev5-inline BASE-WEB-MANAGE-PAGE-WIRING(ii)+ 005-role-menu-crud START] page: 樹補
+        // `manage.role.roleMemo` 欄標籤鍵（FR-043 memo 欄；★兩語鍵集 MUST 相等，型節見 typings/app.d.ts）
+        roleMemo: 'Role Memo',
+        // [rev5-inline BASE-WEB-MANAGE-PAGE-WIRING(ii)+ 005-role-menu-crud END]
         menuAuth: 'Menu Auth',
         buttonAuth: 'Button Auth',
         form: {
           roleName: 'Please enter role name',
           roleCode: 'Please enter role code',
           roleStatus: 'Please select role status',
-          roleDesc: 'Please enter role description'
+          roleDesc: 'Please enter role description',
+          // [rev5-inline BASE-WEB-MANAGE-PAGE-WIRING(ii)+ 005-role-menu-crud START] memo placeholder
+          // （★逐字註明僅管理員可見＝FR-043）
+          roleMemo: 'Role memo (visible to administrators only)'
+          // [rev5-inline BASE-WEB-MANAGE-PAGE-WIRING(ii)+ 005-role-menu-crud END]
         },
         addRole: 'Add Role',
         editRole: 'Edit Role'
