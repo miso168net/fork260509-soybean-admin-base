@@ -110,6 +110,8 @@ const backendMessages = {
         cannotDisableSelfRole: '不能停用目前登入使用者所屬的角色',
         // 停用 R_SUPER（恆禁、不因操作者身分而異）
         superCannotDisable: '超級管理員角色不可停用',
+        // ★第十鍵（ADR 0023 補充條款 1；user 拍板 2026-08-19）：NOT NULL 欄收顯式 null
+        nameRequired: '角色名稱不可為空',
       },
       systemSettings: {
         // 構造點兩處（T019＋T021、2222）：server/src/validation.rs invalid_value()——
