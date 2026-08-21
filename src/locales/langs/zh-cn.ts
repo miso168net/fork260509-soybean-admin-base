@@ -750,6 +750,10 @@ const local: App.I18n.Schema = {
         buttonCode: '按钮编码',
         buttonDesc: '按钮描述',
         menuStatus: '菜单状态',
+        // [rev5-inline BASE-WEB-MANAGE-PAGE-WIRING(ii)+ 005-role-menu-crud START] page: 樹補
+        // `manage.menu.menuMemo` 欄標籤鍵（FR-043 memo 欄；★兩語鍵集 MUST 相等，型節見 typings/app.d.ts）
+        menuMemo: '菜单备注',
+        // [rev5-inline BASE-WEB-MANAGE-PAGE-WIRING(ii)+ 005-role-menu-crud END]
         form: {
           home: '请选择首页',
           menuType: '请选择菜单类型',
@@ -775,7 +779,12 @@ const local: App.I18n.Schema = {
           button: '请选择是否按钮',
           buttonCode: '请输入按钮编码',
           buttonDesc: '请输入按钮描述',
-          menuStatus: '请选择菜单状态'
+          menuStatus: '请选择菜单状态',
+          // [rev5-inline BASE-WEB-MANAGE-PAGE-WIRING(ii)+ 005-role-menu-crud START] memo placeholder
+          // （★逐字註明僅管理員可見＝FR-043）＋父選擇器「頂層」合成選項標籤（parentId=0 提交入口）
+          menuMemo: '请输入菜单备注（仅管理员可见）',
+          parentRoot: '顶层（无父级）'
+          // [rev5-inline BASE-WEB-MANAGE-PAGE-WIRING(ii)+ 005-role-menu-crud END]
         },
         addMenu: '新增菜单',
         editMenu: '编辑菜单',

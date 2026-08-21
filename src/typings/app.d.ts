@@ -922,6 +922,11 @@ declare namespace App {
             buttonCode: string;
             buttonDesc: string;
             menuStatus: string;
+            // [rev5-inline BASE-WEB-MANAGE-PAGE-WIRING(ii)+ 005-role-menu-crud START]
+            // `page.manage.menu.menuMemo` 欄標籤鍵型節（逐鍵鏡像兩語 locale；page: 為顯式型樹、
+            // 少鍵即 $t 型別檢查紅——同 role.roleMemo 的既有論證）
+            menuMemo: string;
+            // [rev5-inline BASE-WEB-MANAGE-PAGE-WIRING(ii)+ 005-role-menu-crud END]
             form: {
               home: string;
               menuType: string;
@@ -948,6 +953,11 @@ declare namespace App {
               buttonCode: string;
               buttonDesc: string;
               menuStatus: string;
+              // [rev5-inline BASE-WEB-MANAGE-PAGE-WIRING(ii)+ 005-role-menu-crud START] memo placeholder
+              // ＋父選擇器「頂層」合成選項標籤型節
+              menuMemo: string;
+              parentRoot: string;
+              // [rev5-inline BASE-WEB-MANAGE-PAGE-WIRING(ii)+ 005-role-menu-crud END]
             };
             addMenu: string;
             editMenu: string;
