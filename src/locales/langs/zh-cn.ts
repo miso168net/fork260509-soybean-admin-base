@@ -1,7 +1,8 @@
 const local: App.I18n.Schema = {
   // [rev5-inline BASE-WEB-I18N-WIRING(ii)+ 003-auth-session START] backend 命名空間（wire msg
-  // key → 在地化顯示；**38 鍵**＝003-auth-session 之 22 鍵＋004-ip-trust-anchor 之
-  // biz.ipRule.* 五鍵與 biz.throttle.* 一鍵＋005-role-menu-crud 之 biz.role.* 十鍵；
+  // key → 在地化顯示；**49 鍵**＝003-auth-session 之 22 鍵＋004-ip-trust-anchor 之
+  // biz.ipRule.* 五鍵與 biz.throttle.* 一鍵＋005-role-menu-crud 之 biz.role.* 十鍵與
+  // biz.menu.* 十一鍵；
   // 各刀新鍵的譯文單一權威＝該刀 contracts/msg-keys.md，
   // 其餘鍵照 rev4 鏡像重打字消化）。★下一行 `  backend: {` 須獨佔一行——本檔不在
   // MSG_DICT_LOCALES 字典鏈射程（B-030 子項）、結構由 App.I18n.Schema 必填型節＋typecheck 守。
@@ -42,6 +43,23 @@ const local: App.I18n.Schema = {
         conflict: '相同网段与类型的规则已存在',
         notFound: '找不到指定的规则，或其状态不允许此操作',
         selfLock: '此规则会使你当前的连接被阻断，已拒绝写入'
+      },
+      // 005-role-menu-crud T026 十一鍵（鍵字面與譯文語意單一權威＝
+      // specs/005-role-menu-crud/contracts/msg-keys.md；譯文照 rev4:zh-cn.ts biz.menu
+      // 對應鍵消化、★parentNotFound 併鍵「不存在或已刪」——rev5 單鍵、rev4 兩鍵形不帶回；
+      // constantParent／nameRequired 為 rev5 新鍵、rev4 無對應）
+      menu: {
+        notFound: '菜单不存在',
+        routeNameExists: '路由名称已存在',
+        routeNameImmutable: '路由名称创建后不可修改',
+        menuTypeImmutable: '菜单类型创建后不可修改',
+        parentNotFound: '父级菜单不存在或已删除',
+        cycleDetected: '不可将菜单移至自身或其子孙之下',
+        hasChildren: '菜单下尚有子项，请先处理子项',
+        protectedMenu: '受保护菜单，不可删除',
+        constantParent: '常量菜单仅能挂在常量父菜单之下',
+        nameRequired: '菜单名称不能为空',
+        routeNameInvalid: '路由名称格式不正确（仅允许字母、数字、下划线、连字符，最长 100 位）'
       },
       // 005-role-menu-crud T020 九鍵（鍵字面與譯文語意單一權威＝
       // specs/005-role-menu-crud/contracts/msg-keys.md；譯文照 rev4:zh-cn.ts biz.role

@@ -88,6 +88,35 @@ const backendMessages = {
         // 「已經沒有寫進去」，否則操作者只會重試同一個動作。
         selfLock: '此規則會使你目前的連線被阻擋，已拒絕寫入',
       },
+      // 005-role-menu-crud T026 十一鍵（皆 2222）：構造點全在 server/src/handler/menu.rs
+      // ——十鍵在三支 map_*_err、第十一鍵 nameRequired 在 update_menu 早拒臂（皆直書
+      // Cow::Borrowed 字面＝Lint24 抽取面①；鍵字面與譯文語意單一權威＝
+      // specs/005-role-menu-crud/contracts/msg-keys.md；restoreConflict 隨回收桶單元
+      // 接線、提前落鍵即孤兒紅）。
+      menu: {
+        // 標的不存在／已刪（updateMenu／deleteMenu 家族共用；重刪已刪標的亦此鍵）
+        notFound: '選單不存在',
+        // 活性同鍵（addMenu 先驗＋23505 兜底同鍵）
+        routeNameExists: '路由名稱已存在',
+        // 不可變錨欄試改（★出現即拒、值不比對——rev4 等值放行形不帶回；島 H4）
+        routeNameImmutable: '路由名稱建立後不可修改',
+        menuTypeImmutable: '選單類型建立後不可修改',
+        // 父不存在或已刪（新增／改父兩處同鍵——rev5 併鍵、rev4 兩鍵形不帶回；停用不擋）
+        parentNotFound: '父層選單不存在或已刪除',
+        // 改父成環（含上溯逾限保守判環）
+        cycleDetected: '不可將選單移至自身或其子孫之下',
+        // deleteMenu 存在未刪子項（★不論啟停）
+        hasChildren: '選單下尚有子項，請先處理子項',
+        // deleteMenu 撞受保護列（protected 旗標、守門第一腿）
+        protectedMenu: '受保護選單，不可刪除',
+        // 常量父鏈守門拒（rev5 專屬、島 H3——防 Public 端點外洩受保護父目錄）
+        constantParent: '常量選單僅能掛在常量父選單之下',
+        // ★第十鍵（ADR 0023 補充條款 1；user 拍板 2026-08-19 兩域同式）：NOT NULL 欄
+        // menuName 收顯式 null
+        nameRequired: '選單名稱不可為空',
+        // routeName 形制不合（rev4 同名鍵；^[A-Za-z0-9_-]{1,100}$）
+        routeNameInvalid: '路由名稱格式不正確（僅允許字母、數字、底線、連字號，最長 100 位）',
+      },
       // 005-role-menu-crud T020 九鍵（皆 2222）：構造點全在 server/src/handler/role.rs 的
       // 三支 map_*_err（直書 Cow::Borrowed 字面＝Lint24 抽取面①；鍵字面與譯文語意單一權威＝
       // specs/005-role-menu-crud/contracts/msg-keys.md）。

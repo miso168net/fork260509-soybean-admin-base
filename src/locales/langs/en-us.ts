@@ -1,7 +1,8 @@
 const local: App.I18n.Schema = {
   // [rev5-inline BASE-WEB-I18N-WIRING(ii)+ 003-auth-session START] backend 命名空間（wire msg
-  // key → 在地化顯示；**38 鍵**＝003-auth-session 之 22 鍵＋004-ip-trust-anchor 之
-  // biz.ipRule.* 五鍵與 biz.throttle.* 一鍵＋005-role-menu-crud 之 biz.role.* 十鍵；
+  // key → 在地化顯示；**49 鍵**＝003-auth-session 之 22 鍵＋004-ip-trust-anchor 之
+  // biz.ipRule.* 五鍵與 biz.throttle.* 一鍵＋005-role-menu-crud 之 biz.role.* 十鍵與
+  // biz.menu.* 十一鍵；
   // 各刀新鍵的譯文單一權威＝該刀 contracts/msg-keys.md，
   // 其餘鍵照 rev4 鏡像重打字消化）。★下一行 `  backend: {` 須獨佔一行——傘狀 docs-sync 之
   // gen.msg_dict 解除謂詞與 parse_locale_backend 起點掃描對該行整行 fullmatch。
@@ -42,6 +43,23 @@ const local: App.I18n.Schema = {
         conflict: 'A rule with the same network and type already exists',
         notFound: 'The rule was not found, or its state does not allow this action',
         selfLock: 'This rule would block your current connection; the change was rejected'
+      },
+      // 005-role-menu-crud T026 十一鍵（鍵字面與譯文語意單一權威＝
+      // specs/005-role-menu-crud/contracts/msg-keys.md；譯文照 rev4:en-us.ts biz.menu
+      // 對應鍵消化、★parentNotFound 併鍵「不存在或已刪」——rev5 單鍵、rev4 兩鍵形不帶回；
+      // constantParent／nameRequired 為 rev5 新鍵、rev4 無對應）
+      menu: {
+        notFound: 'Menu not found',
+        routeNameExists: 'Route name already exists',
+        routeNameImmutable: 'Route name cannot be changed after creation',
+        menuTypeImmutable: 'Menu type cannot be changed after creation',
+        parentNotFound: 'Parent menu does not exist or has been deleted',
+        cycleDetected: 'A menu cannot be moved under itself or its descendants',
+        hasChildren: 'This menu still has child items; please handle the child items first',
+        protectedMenu: 'Protected menus cannot be deleted',
+        constantParent: 'A constant menu can only be placed under a constant parent menu',
+        nameRequired: 'Menu name must not be null',
+        routeNameInvalid: 'Invalid route name (letters, digits, underscore and hyphen only, up to 100 characters)'
       },
       // 005-role-menu-crud T020 九鍵（鍵字面與譯文語意單一權威＝
       // specs/005-role-menu-crud/contracts/msg-keys.md；譯文照 rev4:en-us.ts biz.role
