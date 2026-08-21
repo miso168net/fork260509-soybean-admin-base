@@ -88,11 +88,11 @@ const backendMessages = {
         // 「已經沒有寫進去」，否則操作者只會重試同一個動作。
         selfLock: '此規則會使你目前的連線被阻擋，已拒絕寫入',
       },
-      // 005-role-menu-crud T026 十一鍵（皆 2222）：構造點全在 server/src/handler/menu.rs
-      // ——十鍵在三支 map_*_err、第十一鍵 nameRequired 在 update_menu 早拒臂（皆直書
-      // Cow::Borrowed 字面＝Lint24 抽取面①；鍵字面與譯文語意單一權威＝
-      // specs/005-role-menu-crud/contracts/msg-keys.md；restoreConflict 隨回收桶單元
-      // 接線、提前落鍵即孤兒紅）。
+      // 005-role-menu-crud T026 十一鍵＋T031 一鍵（皆 2222）：構造點全在
+      // server/src/handler/menu.rs——十一鍵在四支 map_*_err（含 map_restore_err）、
+      // 第十二鍵 nameRequired 在 update_menu 早拒臂（皆直書 Cow::Borrowed 字面＝Lint24
+      // 抽取面①；鍵字面與譯文語意單一權威＝
+      // specs/005-role-menu-crud/contracts/msg-keys.md）。
       menu: {
         // 標的不存在／已刪（updateMenu／deleteMenu 家族共用；重刪已刪標的亦此鍵）
         notFound: '選單不存在',
@@ -116,6 +116,9 @@ const backendMessages = {
         nameRequired: '選單名稱不可為空',
         // routeName 形制不合（rev4 同名鍵；^[A-Za-z0-9_-]{1,100}$）
         routeNameInvalid: '路由名稱格式不正確（僅允許字母、數字、底線、連字號，最長 100 位）',
+        // 復原撞活性同鍵（U12 回收桶；先驗＋23505 兜底同鍵——rev4 併 routeNameExists
+        // 形不帶回、rev5 復原語境獨立鍵）
+        restoreConflict: '同名路由已有生效選單，無法復原',
       },
       // 005-role-menu-crud T020 九鍵（皆 2222）：構造點全在 server/src/handler/role.rs 的
       // 三支 map_*_err（直書 Cow::Borrowed 字面＝Lint24 抽取面①；鍵字面與譯文語意單一權威＝

@@ -1,8 +1,8 @@
 const local: App.I18n.Schema = {
   // [rev5-inline BASE-WEB-I18N-WIRING(ii)+ 003-auth-session START] backend 命名空間（wire msg
-  // key → 在地化顯示；**49 鍵**＝003-auth-session 之 22 鍵＋004-ip-trust-anchor 之
+  // key → 在地化顯示；**50 鍵**＝003-auth-session 之 22 鍵＋004-ip-trust-anchor 之
   // biz.ipRule.* 五鍵與 biz.throttle.* 一鍵＋005-role-menu-crud 之 biz.role.* 十鍵與
-  // biz.menu.* 十一鍵；
+  // biz.menu.* 十二鍵；
   // 各刀新鍵的譯文單一權威＝該刀 contracts/msg-keys.md，
   // 其餘鍵照 rev4 鏡像重打字消化）。★下一行 `  backend: {` 須獨佔一行——傘狀 docs-sync 之
   // gen.msg_dict 解除謂詞與 parse_locale_backend 起點掃描對該行整行 fullmatch。
@@ -44,10 +44,11 @@ const local: App.I18n.Schema = {
         notFound: 'The rule was not found, or its state does not allow this action',
         selfLock: 'This rule would block your current connection; the change was rejected'
       },
-      // 005-role-menu-crud T026 十一鍵（鍵字面與譯文語意單一權威＝
+      // 005-role-menu-crud T026 十一鍵＋T031 一鍵（鍵字面與譯文語意單一權威＝
       // specs/005-role-menu-crud/contracts/msg-keys.md；譯文照 rev4:en-us.ts biz.menu
       // 對應鍵消化、★parentNotFound 併鍵「不存在或已刪」——rev5 單鍵、rev4 兩鍵形不帶回；
-      // constantParent／nameRequired 為 rev5 新鍵、rev4 無對應）
+      // constantParent／nameRequired／restoreConflict 為 rev5 新鍵、rev4 無對應
+      // ——restoreConflict＝復原撞活性同鍵〔rev4 併 routeNameExists 形不帶回〕）
       menu: {
         notFound: 'Menu not found',
         routeNameExists: 'Route name already exists',
@@ -59,7 +60,8 @@ const local: App.I18n.Schema = {
         protectedMenu: 'Protected menus cannot be deleted',
         constantParent: 'A constant menu can only be placed under a constant parent menu',
         nameRequired: 'Menu name must not be null',
-        routeNameInvalid: 'Invalid route name (letters, digits, underscore and hyphen only, up to 100 characters)'
+        routeNameInvalid: 'Invalid route name (letters, digits, underscore and hyphen only, up to 100 characters)',
+        restoreConflict: 'An active menu with the same route name already exists; cannot restore'
       },
       // 005-role-menu-crud T020 九鍵（鍵字面與譯文語意單一權威＝
       // specs/005-role-menu-crud/contracts/msg-keys.md；譯文照 rev4:en-us.ts biz.role
@@ -755,8 +757,14 @@ const local: App.I18n.Schema = {
         buttonDesc: 'Button Desc',
         menuStatus: 'Menu Status',
         // [rev5-inline BASE-WEB-MANAGE-PAGE-WIRING(ii)+ 005-role-menu-crud START] page: 樹補
-        // `manage.menu.menuMemo` 欄標籤鍵（FR-043 memo 欄；★兩語鍵集 MUST 相等，型節見 typings/app.d.ts）
+        // `manage.menu.menuMemo` 欄標籤鍵（FR-043 memo 欄）＋回收桶 toggle 四鍵（U12——
+        // showDeleted/confirmRestore＝msg-keys 前端補鍵段既列、restore/restoreSuccess＝
+        // 復原鈕標籤與成功 toast 頁自有鍵；★兩語鍵集 MUST 相等，型節見 typings/app.d.ts）
         menuMemo: 'Menu Memo',
+        showDeleted: 'Show Deleted',
+        restore: 'Restore',
+        confirmRestore: 'Restore this menu?',
+        restoreSuccess: 'Restored',
         // [rev5-inline BASE-WEB-MANAGE-PAGE-WIRING(ii)+ 005-role-menu-crud END]
         form: {
           home: 'Please select home',

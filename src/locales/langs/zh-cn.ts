@@ -1,8 +1,8 @@
 const local: App.I18n.Schema = {
   // [rev5-inline BASE-WEB-I18N-WIRING(ii)+ 003-auth-session START] backend 命名空間（wire msg
-  // key → 在地化顯示；**49 鍵**＝003-auth-session 之 22 鍵＋004-ip-trust-anchor 之
+  // key → 在地化顯示；**50 鍵**＝003-auth-session 之 22 鍵＋004-ip-trust-anchor 之
   // biz.ipRule.* 五鍵與 biz.throttle.* 一鍵＋005-role-menu-crud 之 biz.role.* 十鍵與
-  // biz.menu.* 十一鍵；
+  // biz.menu.* 十二鍵；
   // 各刀新鍵的譯文單一權威＝該刀 contracts/msg-keys.md，
   // 其餘鍵照 rev4 鏡像重打字消化）。★下一行 `  backend: {` 須獨佔一行——本檔不在
   // MSG_DICT_LOCALES 字典鏈射程（B-030 子項）、結構由 App.I18n.Schema 必填型節＋typecheck 守。
@@ -44,10 +44,11 @@ const local: App.I18n.Schema = {
         notFound: '找不到指定的规则，或其状态不允许此操作',
         selfLock: '此规则会使你当前的连接被阻断，已拒绝写入'
       },
-      // 005-role-menu-crud T026 十一鍵（鍵字面與譯文語意單一權威＝
+      // 005-role-menu-crud T026 十一鍵＋T031 一鍵（鍵字面與譯文語意單一權威＝
       // specs/005-role-menu-crud/contracts/msg-keys.md；譯文照 rev4:zh-cn.ts biz.menu
       // 對應鍵消化、★parentNotFound 併鍵「不存在或已刪」——rev5 單鍵、rev4 兩鍵形不帶回；
-      // constantParent／nameRequired 為 rev5 新鍵、rev4 無對應）
+      // constantParent／nameRequired／restoreConflict 為 rev5 新鍵、rev4 無對應
+      // ——restoreConflict＝復原撞活性同鍵〔rev4 併 routeNameExists 形不帶回〕）
       menu: {
         notFound: '菜单不存在',
         routeNameExists: '路由名称已存在',
@@ -59,7 +60,8 @@ const local: App.I18n.Schema = {
         protectedMenu: '受保护菜单，不可删除',
         constantParent: '常量菜单仅能挂在常量父菜单之下',
         nameRequired: '菜单名称不能为空',
-        routeNameInvalid: '路由名称格式不正确（仅允许字母、数字、下划线、连字符，最长 100 位）'
+        routeNameInvalid: '路由名称格式不正确（仅允许字母、数字、下划线、连字符，最长 100 位）',
+        restoreConflict: '同名路由已有生效菜单，无法恢复'
       },
       // 005-role-menu-crud T020 九鍵（鍵字面與譯文語意單一權威＝
       // specs/005-role-menu-crud/contracts/msg-keys.md；譯文照 rev4:zh-cn.ts biz.role
@@ -751,8 +753,14 @@ const local: App.I18n.Schema = {
         buttonDesc: '按钮描述',
         menuStatus: '菜单状态',
         // [rev5-inline BASE-WEB-MANAGE-PAGE-WIRING(ii)+ 005-role-menu-crud START] page: 樹補
-        // `manage.menu.menuMemo` 欄標籤鍵（FR-043 memo 欄；★兩語鍵集 MUST 相等，型節見 typings/app.d.ts）
+        // `manage.menu.menuMemo` 欄標籤鍵（FR-043 memo 欄）＋回收桶 toggle 四鍵（U12——
+        // showDeleted/confirmRestore＝msg-keys 前端補鍵段既列、restore/restoreSuccess＝
+        // 復原鈕標籤與成功 toast 頁自有鍵；★兩語鍵集 MUST 相等，型節見 typings/app.d.ts）
         menuMemo: '菜单备注',
+        showDeleted: '显示已删除',
+        restore: '恢复',
+        confirmRestore: '确定恢复此菜单？',
+        restoreSuccess: '恢复成功',
         // [rev5-inline BASE-WEB-MANAGE-PAGE-WIRING(ii)+ 005-role-menu-crud END]
         form: {
           home: '请选择首页',

@@ -5,13 +5,14 @@
 // menu 頁自本刀改消費本檔；demo 版 fetchGetMenuTree 尚餘 role 頁授權 modal（檔級硬邊界、
 // 授權治理刀射程）引用、demo 版 fetchGetMenuList 自此零消費者（凍結檔照留）。
 //
-// ★六支動詞逐條對齊 contracts：讀端兩支 GET（清單帶 params）、寫端 add/update POST＋JSON body、
-// ★deleteMenu／batchDeleteMenu 走 **DELETE 動詞＋JSON body**（沿 rev5-role-admin 先例）。
-// ★拒因一律不在此處加工：`2222` 十一鍵（notFound／routeNameExists／routeNameImmutable／
+// ★八支動詞逐條對齊 contracts：讀端三支 GET（清單／已刪清單帶 params）、寫端
+// add/update/restore POST＋JSON body、★deleteMenu／batchDeleteMenu 走 **DELETE 動詞＋
+// JSON body**（沿 rev5-role-admin 先例）。
+// ★拒因一律不在此處加工：`2222` 十二鍵（notFound／routeNameExists／routeNameImmutable／
 // menuTypeImmutable／parentNotFound／cycleDetected／hasChildren／protectedMenu／
-// constantParent／nameRequired／routeNameInvalid）由 service/request 共用攔截層轉譯
-// `backend.biz.menu.*` 後 toast，呼叫端只看 `error` 是否為真（頁內零拒因專屬 UI）。
-// 回收桶兩端點（getDeletedMenus／restoreMenu）屬 U12（T031）、屆時隨其 UI 接線增補。
+// constantParent／nameRequired／routeNameInvalid／restoreConflict）由 service/request
+// 共用攔截層轉譯 `backend.biz.menu.*` 後 toast，呼叫端只看 `error` 是否為真（頁內零拒因
+// 專屬 UI）。
 import { request } from '../request';
 
 /**
@@ -107,5 +108,40 @@ export function fetchBatchDeleteMenu(ids: number[]) {
     url: '/systemManage/batchDeleteMenu',
     method: 'delete',
     data: { ids }
+  });
+}
+
+/**
+ * 讀已刪選單清單（`GET /systemManage/getDeletedMenus`；契約＝contracts §7、U12）
+ *
+ * 回收桶資料源（「顯示已刪除」toggle 開＝清單換打本端點）：僅已刪列、★平面不組樹
+ * （`children` 恆缺席）、穩定排序 `deleted_at DESC, id DESC`；列形同 `MenuRecord`
+ * （`deleted` 恆 true）、★契約定案**無 restorable 旗標**——復原守門（restoreMenu 重驗）
+ * 即唯一權威、清單不預判。分頁 query 與回應形沿 `ListQuery`／`ListRes`（§1 同 clamp 語意）。
+ * rev4: 承 rev4-menu-admin.ts fetchGetDeletedMenus 同名同路徑形；rev5 型別切 Api.MenuAdmin
+ * 命名空間（rev4 復用 demo MenuList 型＝差異點不帶回）。
+ */
+export function fetchGetDeletedMenus(params?: Api.MenuAdmin.ListQuery) {
+  return request<Api.MenuAdmin.ListRes>({
+    url: '/systemManage/getDeletedMenus',
+    method: 'get',
+    params
+  });
+}
+
+/**
+ * 復原已刪選單（`POST /systemManage/restoreMenu`；契約＝contracts §8、U12）
+ *
+ * 域內鎖列重驗（已刪存在→同鍵活性衝突 `restoreConflict`→父未刪 `parentNotFound`）→
+ * 成對清空軟刪欄＋★原 status 保留；★復原現役列＝`2222 notFound` 業務錯誤（非冪等成功）；
+ * ★零授權回灌（歸檔列不動、可見性經授權治理刀重勾）、後端零判定面同步——前端零追加
+ * 「生效」呼叫。
+ * rev4: 承 rev4-menu-admin.ts fetchRestoreMenu 同名形（散參 id、body 由本層組）。
+ */
+export function fetchRestoreMenu(id: number) {
+  return request<null>({
+    url: '/systemManage/restoreMenu',
+    method: 'post',
+    data: { id }
   });
 }

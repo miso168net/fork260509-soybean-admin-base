@@ -312,9 +312,9 @@ declare namespace App {
 
     type Schema = {
       // [rev5-inline BASE-WEB-I18N-WIRING(iii)+ 003-auth-session START] 頂層 backend 必填型節
-      // （映射 wire msg key → 在地化；逐鍵鏡像 locale backend 樹 **49 鍵**＝003-auth-session
+      // （映射 wire msg key → 在地化；逐鍵鏡像 locale backend 樹 **50 鍵**＝003-auth-session
       // 之 22 鍵＋004-ip-trust-anchor 之 biz.ipRule.* 五鍵與 biz.throttle.* 一鍵＋
-      // 005-role-menu-crud 之 biz.role.* 十鍵與 biz.menu.* 十一鍵——各刀的單一權威＝該刀 contracts/msg-keys.md）。★必填（非 optional）＝en-us.ts／
+      // 005-role-menu-crud 之 biz.role.* 十鍵與 biz.menu.* 十二鍵——各刀的單一權威＝該刀 contracts/msg-keys.md）。★必填（非 optional）＝en-us.ts／
       // zh-cn.ts 缺樹即 typecheck 紅——兩語結構自此由型別免費守（msg-keys.md 機器閘表）。
       // rev4: 承 rev4 app.d.ts I18N-WIRING(iii) backend 型節同形、只取 003 那刀的 22 鍵射程；
       // ★LangType 擴充／locale 註冊／zh-tw.ts 標型重構不帶回（R3-15、仍延前端 UI 刀）。
@@ -356,8 +356,8 @@ declare namespace App {
             notFound: string;
             selfLock: string;
           };
-          // 005-role-menu-crud T026 十一鍵（單一權威＝
-          // specs/005-role-menu-crud/contracts/msg-keys.md）
+          // 005-role-menu-crud T026 十一鍵＋T031 一鍵（restoreConflict＝回收桶復原撞
+          // 活性同鍵；單一權威＝specs/005-role-menu-crud/contracts/msg-keys.md）
           menu: {
             notFound: string;
             routeNameExists: string;
@@ -370,6 +370,7 @@ declare namespace App {
             constantParent: string;
             nameRequired: string;
             routeNameInvalid: string;
+            restoreConflict: string;
           };
           // 005-role-menu-crud T020 九鍵（單一權威＝
           // specs/005-role-menu-crud/contracts/msg-keys.md）
@@ -923,9 +924,13 @@ declare namespace App {
             buttonDesc: string;
             menuStatus: string;
             // [rev5-inline BASE-WEB-MANAGE-PAGE-WIRING(ii)+ 005-role-menu-crud START]
-            // `page.manage.menu.menuMemo` 欄標籤鍵型節（逐鍵鏡像兩語 locale；page: 為顯式型樹、
-            // 少鍵即 $t 型別檢查紅——同 role.roleMemo 的既有論證）
+            // `page.manage.menu.menuMemo` 欄標籤鍵＋回收桶 toggle 四鍵型節（U12；逐鍵鏡像
+            // 兩語 locale；page: 為顯式型樹、少鍵即 $t 型別檢查紅——同 role.roleMemo 的既有論證）
             menuMemo: string;
+            showDeleted: string;
+            restore: string;
+            confirmRestore: string;
+            restoreSuccess: string;
             // [rev5-inline BASE-WEB-MANAGE-PAGE-WIRING(ii)+ 005-role-menu-crud END]
             form: {
               home: string;

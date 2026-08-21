@@ -1,5 +1,6 @@
 <script setup lang="tsx">
-import { ref } from 'vue';
+// [rev5-inline BASE-WEB-MANAGE-PAGE-WIRING(ii) 005-role-menu-crud] 回收桶 toggle 需 watch（切換即回第一頁重取——rev4: (d) 010-menu-admin 同形）；原行: import { ref } from 'vue';
+import { ref, watch } from 'vue';
 import type { Ref } from 'vue';
 import { NButton, NPopconfirm, NTag } from 'naive-ui';
 import { useBoolean } from '@sa/hooks';
@@ -7,8 +8,14 @@ import { yesOrNoRecord } from '@/constants/common';
 import { enableStatusRecord, menuTypeRecord } from '@/constants/business';
 // [rev5-inline BASE-WEB-MANAGE-PAGE-WIRING(ii) 005-role-menu-crud] 樹表資料源＋刪除批刪換 rev5 wrapper（直接路徑、不經 barrel——沿 rev5-role-admin 先例）；fetchGetAllPages 續走 barrel（route 家族、非本刀射程）；demo 版 fetchGetMenuList 續留凍結檔；原行: import { fetchGetAllPages, fetchGetMenuList } from '@/service/api';
 import { fetchGetAllPages } from '@/service/api';
-// [rev5-inline BASE-WEB-MANAGE-PAGE-WIRING(ii) 005-role-menu-crud] menu 六端點 rev5 wrapper（T027；getMenuList/v2 路徑字面在 wrapper 內）
-import { fetchBatchDeleteMenu, fetchDeleteMenu, fetchGetMenuList } from '@/service/api/rev5-menu-admin';
+// [rev5-inline BASE-WEB-MANAGE-PAGE-WIRING(ii) 005-role-menu-crud] menu 端點 rev5 wrapper（T027 六支＋T031 回收桶兩支；getMenuList/v2 路徑字面在 wrapper 內）
+import {
+  fetchBatchDeleteMenu,
+  fetchDeleteMenu,
+  fetchGetDeletedMenus,
+  fetchGetMenuList,
+  fetchRestoreMenu
+} from '@/service/api/rev5-menu-admin';
 import { useAppStore } from '@/store/modules/app';
 import { defaultTransform, useNaivePaginatedTable, useTableOperate } from '@/hooks/common/table';
 import { $t } from '@/locales';
@@ -21,8 +28,23 @@ const { bool: visible, setTrue: openModal } = useBoolean();
 
 const wrapperRef = ref<HTMLElement | null>(null);
 
+// [rev5-inline BASE-WEB-MANAGE-PAGE-WIRING(ii) 005-role-menu-crud START] 「顯示已刪除」toggle
+// 狀態＋回收桶分頁參（rev4: (d) 010-menu-admin toggle 形重打；開＝資料源換打 getDeletedMenus、
+// 操作欄整欄換「復原」；已刪模式僅此頁消費 deletedSearchParams）
+const showDeleted = ref(false);
+const deletedSearchParams = ref<Api.MenuAdmin.ListQuery>({ current: 1, size: 10 });
+// [rev5-inline BASE-WEB-MANAGE-PAGE-WIRING(ii) 005-role-menu-crud END]
+
 const { columns, columnChecks, data, loading, pagination, getData, getDataByPage } = useNaivePaginatedTable({
-  api: () => fetchGetMenuList(),
+  // [rev5-inline BASE-WEB-MANAGE-PAGE-WIRING(ii) 005-role-menu-crud] toggle 切資料源（治理清單⇄回收桶——契約 §1/§7；rev4: (d) 同形）；原行: api: () => fetchGetMenuList(),
+  api: () => (showDeleted.value ? fetchGetDeletedMenus(deletedSearchParams.value) : fetchGetMenuList()),
+  // [rev5-inline BASE-WEB-MANAGE-PAGE-WIRING(ii) 005-role-menu-crud START] 回收桶分頁同步
+  // （僅已刪模式消費 deletedSearchParams；治理清單維持無參一次取全樹形）
+  onPaginationParamsChange: params => {
+    deletedSearchParams.value.current = params.page ?? 1;
+    deletedSearchParams.value.size = params.pageSize ?? 10;
+  },
+  // [rev5-inline BASE-WEB-MANAGE-PAGE-WIRING(ii) 005-role-menu-crud END]
   transform: response => defaultTransform(response),
   columns: () => [
     {
@@ -158,6 +180,24 @@ const { columns, columnChecks, data, loading, pagination, getData, getDataByPage
       align: 'center',
       width: 230,
       render: row => (
+        // [rev5-inline BASE-WEB-MANAGE-PAGE-WIRING(ii) 005-role-menu-crud START] 已刪模式操作欄
+        // 整欄換「復原」（無按鈕碼 gating——門＝頁級 R_SUPER＋列級復原重驗；confirmRestore
+        // 確認流；rev4: (d) 010-menu-admin 同形、rev4 hasAuth gating 不帶回——rev5 拍板不 gating）
+        showDeleted.value ? (
+          <div class="flex-center justify-end gap-8px">
+            <NPopconfirm onPositiveClick={() => handleRestore(row.id)}>
+              {{
+                default: () => $t('page.manage.menu.confirmRestore'),
+                trigger: () => (
+                  <NButton type="primary" ghost size="small">
+                    {$t('page.manage.menu.restore')}
+                  </NButton>
+                )
+              }}
+            </NPopconfirm>
+          </div>
+        ) : (
+        // [rev5-inline BASE-WEB-MANAGE-PAGE-WIRING(ii) 005-role-menu-crud END]
         <div class="flex-center justify-end gap-8px">
           {row.menuType === '1' && (
             <NButton type="primary" ghost size="small" onClick={() => handleAddChildMenu(row)}>
@@ -178,12 +218,20 @@ const { columns, columnChecks, data, loading, pagination, getData, getDataByPage
             }}
           </NPopconfirm>
         </div>
+        )
       )
     }
   ]
 });
 
 const { checkedRowKeys, onBatchDeleted, onDeleted } = useTableOperate(data, 'id', getData);
+
+// [rev5-inline BASE-WEB-MANAGE-PAGE-WIRING(ii) 005-role-menu-crud START] 切換顯示已刪除→
+// 回第一頁重取（兩資料源分頁語意不同：治理清單以頂層計、回收桶以已刪列計）
+watch(showDeleted, () => {
+  getDataByPage(1);
+});
+// [rev5-inline BASE-WEB-MANAGE-PAGE-WIRING(ii) 005-role-menu-crud END]
 
 const operateType = ref<OperateType>('add');
 
@@ -213,6 +261,21 @@ async function handleDelete(id: number) {
 
   onDeleted();
 }
+
+// [rev5-inline BASE-WEB-MANAGE-PAGE-WIRING(ii) 005-role-menu-crud START] 復原已刪選單
+// （契約 §8：域內鎖列重驗〔已刪存在→同鍵活性衝突 restoreConflict→父未刪 parentNotFound〕、
+// 原 status 保留、零授權回灌；拒因 toast 由共用攔截層轉譯 backend.biz.menu.*、此處只看 error）
+async function handleRestore(id: number) {
+  const { error } = await fetchRestoreMenu(id);
+  if (error) {
+    return;
+  }
+
+  window.$message?.success($t('page.manage.menu.restoreSuccess'));
+
+  await getData();
+}
+// [rev5-inline BASE-WEB-MANAGE-PAGE-WIRING(ii) 005-role-menu-crud END]
 
 /** the edit menu data or the parent menu data when adding a child menu */
 // [rev5-inline BASE-WEB-MANAGE-PAGE-WIRING(ii) 005-role-menu-crud] 型別切 rev5 獨立命名空間（接真 wire 形）；原行: const editingData: Ref<Api.SystemManage.Menu | null> = ref(null);
@@ -254,6 +317,11 @@ init();
   <div ref="wrapperRef" class="flex-col-stretch gap-16px overflow-hidden lt-sm:overflow-auto">
     <NCard :title="$t('page.manage.menu.title')" :bordered="false" size="small" class="card-wrapper sm:flex-1-hidden">
       <template #header-extra>
+        <!--
+          自閉合改開閉標——TableHeaderOperation 需承載 prefix／default 兩 slot（皆共用元件既有擴充點、table-header-operation.vue 一行不動）。
+          ★本註解刻意排成 multiline 形：singleline 形下 eslint（vue/html-comment-content-newline）的 fix 會把註解閉合符併回行尾、令行尾錨定的「原行」擷取值失真（fork-delta-lint 當場紅）；
+          [rev5-inline BASE-WEB-MANAGE-PAGE-WIRING(ii) 005-role-menu-crud] 原行: />
+        -->
         <TableHeaderOperation
           v-model:columns="columnChecks"
           :disabled-delete="checkedRowKeys.length === 0"
@@ -261,7 +329,52 @@ init();
           @add="handleAdd"
           @delete="handleBatchDelete"
           @refresh="getData"
-        />
+        >
+          <!--
+            [rev5-inline BASE-WEB-MANAGE-PAGE-WIRING(ii) 005-role-menu-crud START] 回收桶 UI 入口兩件：
+            ①「顯示已刪除」toggle（prefix slot；v-model 綁 showDeleted＝資料源／操作欄切換的唯一寫入者；
+            NSwitch 走 unplugin 全域註冊、毋須 script import——rev4: (d) 010-menu-admin 同形重打）。
+            ②已刪模式下新增／批量刪除入口不現（資料源語意不同：新增後刷新的是已刪清單、批刪打已軟刪列必
+            notFound）：覆寫 default slot、!showDeleted 條件化（鈕形照共用元件 default slot 原形重打；
+            rev4: MODAL-WIRING(b) 同段之 hasAuth('menu:add'/'menu:delete') 按鈕碼 gating 為 rev5 已推翻
+            行為〔spec 拍板不 gating、頁級 R_SUPER 即門〕、不帶回）。
+          -->
+          <template #prefix>
+            <div class="flex-center gap-8px">
+              <span class="text-14px">{{ $t('page.manage.menu.showDeleted') }}</span>
+              <NSwitch v-model:value="showDeleted" />
+            </div>
+          </template>
+          <!--
+            ★此 slot 不得渲染成全註解：兩鈕若直接掛 v-if、已刪模式下 slot 只剩註解 vnode，
+            Vue renderSlot 判定內容無效即改渲染 **fallback**（共用元件自帶的新增／批刪鈕、
+            且 @add/@delete 綁定仍活）——寫端入口反而冒回來。故外層容器 div 永遠渲染
+            （保底非註解節點）、以 v-show 於已刪模式移出版面（空 div 不佔 NSpace 間距）；
+            內層 v-if 負責把互動入口自 DOM 誠實移除。gap-12px＝NSpace medium 水平間距同值。
+          -->
+          <template #default>
+            <div v-show="!showDeleted" class="flex-y-center gap-12px">
+              <NButton v-if="!showDeleted" size="small" ghost type="primary" @click="handleAdd">
+                <template #icon>
+                  <icon-ic-round-plus class="text-icon" />
+                </template>
+                {{ $t('common.add') }}
+              </NButton>
+              <NPopconfirm v-if="!showDeleted" @positive-click="handleBatchDelete">
+                <template #trigger>
+                  <NButton size="small" ghost type="error" :disabled="checkedRowKeys.length === 0">
+                    <template #icon>
+                      <icon-ic-round-delete class="text-icon" />
+                    </template>
+                    {{ $t('common.batchDelete') }}
+                  </NButton>
+                </template>
+                {{ $t('common.confirmDelete') }}
+              </NPopconfirm>
+            </div>
+          </template>
+          <!-- [rev5-inline BASE-WEB-MANAGE-PAGE-WIRING(ii) 005-role-menu-crud END] -->
+        </TableHeaderOperation>
       </template>
       <!--
         新增 menuMemo 欄（minWidth 120）⇒ scroll-x 隨欄寬總和 1088+120＝1208（欄寬總和不變式：scroll-x＝Σ(width|minWidth)，增刪欄時必須同批改）。

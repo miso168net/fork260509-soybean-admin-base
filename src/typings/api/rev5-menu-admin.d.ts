@@ -1,7 +1,8 @@
 // [rev5-inline BASE-WEB-ADAPT+ 005-role-menu-crud] wire 契約錨點新檔——以 TS 跨檔 declaration merging 併入 Api、不改既有 system-manage.d.ts（contracts/wire-menu-admin.md、同軌先例＝rev5-role-admin.d.ts）。
 declare namespace Api {
   /**
-   * menu 管理（`/systemManage/*Menu*` 六端點；contracts/wire-menu-admin.md §1~§6）
+   * menu 管理（`/systemManage/*Menu*` 八端點——六支 CRUD＋回收桶兩支
+   * getDeletedMenus／restoreMenu；contracts/wire-menu-admin.md §1~§8）
    *
    * ★**刻意獨立命名空間、不併進 `Api.SystemManage`**（沿 rev5-role-admin.d.ts 拍板理由）：demo 殼的
    * `Menu`／`MenuList`／`MenuTree` 同名家族仍住在凍結的 system-manage.d.ts，併入就得逐支
@@ -88,14 +89,19 @@ declare namespace Api {
     };
 
     /**
-     * 樹清單查詢參數（`GET getMenuList/v2`；contracts §1）
+     * 樹清單查詢參數（`GET getMenuList/v2`／`GET getDeletedMenus` 共用；contracts §1/§7）
      *
-     * `current`／`size` ★分頁以頂層計；全可缺席——無參呼叫形＝後端預設 current 1／size 100
-     * 一次取全樹（size clamp 常數 [1,100]＝rev4 as-built、與前端 hook 無參呼叫形對齊）。
+     * `current`／`size` ★getMenuList/v2 分頁以頂層計、getDeletedMenus 以已刪列計；全可
+     * 缺席——無參呼叫形＝後端預設 current 1／size 100（size clamp 常數 [1,100]＝rev4
+     * as-built、與前端 hook 無參呼叫形對齊；兩端點同 clamp 語意——U12）。
      */
     type ListQuery = CommonType.RecordNullable<Common.CommonSearchParams>;
 
-    /** 樹清單回應（沿 §I.3 分頁形 `{current, size, total, records}`＝後端 envelope::PageRes） */
+    /**
+     * 樹清單／已刪清單回應（沿 §I.3 分頁形 `{current, size, total, records}`＝後端
+     * envelope::PageRes；getDeletedMenus 之 records ★平面（children 恆缺席）、`deleted`
+     * 恆 true、★無 restorable 旗標——契約定案、復原守門即唯一權威）
+     */
     type ListRes = Common.PaginatingQueryRecord<MenuRecord>;
 
     /**
