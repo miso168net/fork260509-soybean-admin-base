@@ -10,6 +10,9 @@
 // seededProtected／inUse／cannotDeleteSelfRole／cannotDisableSelfRole／superCannotDisable）由
 // service/request 共用攔截層轉譯 `backend.biz.role.*` 後 toast，呼叫端只看 `error` 是否為真
 // （頁內零拒因專屬 UI）。
+// ★006-authz-governance 追加授權回收桶兩支（讀端 GET＋params、復原 POST＋JSON body；
+// contracts/wire-policy-archive.md）：拒因 `biz.policy.notRestorable` 同樣由攔截層轉譯、此處不加工；
+// 型住 `Api.PolicyArchive` 獨立命名空間（rev5-role-admin.d.ts）、消費端＝views/manage/policy-archive/。
 import { request } from '../request';
 
 /**
@@ -99,5 +102,37 @@ export function fetchBatchDeleteRole(ids: number[]) {
     url: '/systemManage/batchDeleteRole',
     method: 'delete',
     data: { ids }
+  });
+}
+
+/**
+ * 讀授權回收桶清單（`GET /systemManage/getArchivedPolicies`；契約＝contracts/wire-policy-archive.md §1）
+ *
+ * 回 `{current, size, total, records}` 分頁形、穩定排序 `archived_at DESC, id DESC`；`roleCode` 等值濾
+ * 來源角色（空字串忽略）、`dimension` 等值（未知值靜默不濾）。每列隨帶後端派生之 `restorable` 旗標
+ * （前端據此切停用態、後端為最終防線）。授權＝R_SUPER（seed 政策列、protected）。
+ * rev4: 承 rev4-role-admin.ts fetchGetArchivedPolicies 同名形；rev4 型取 `Api.SystemManage.*`＝差異點不帶回。
+ */
+export function fetchGetArchivedPolicies(params?: Api.PolicyArchive.ArchivedPolicyListQuery) {
+  return request<Api.PolicyArchive.ArchivedPolicyListRes>({
+    url: '/systemManage/getArchivedPolicies',
+    method: 'get',
+    params
+  });
+}
+
+/**
+ * 復原歸檔授權（`POST /systemManage/restorePolicy`；契約＝contracts/wire-policy-archive.md §2）
+ *
+ * 三態：Applied→`data: null`（判定面同步）／NoOp（標的已在現役）→`data: null`、歸檔列仍消費移除／
+ * NotRestorable→`2222 biz.policy.notRestorable`（攔截層 toast）。★前端不可區分 Applied／NoOp
+ * （沿 rev4、已知態）；成功後**零追加「生效」呼叫**，呼叫端只需刷新清單。
+ * rev4: 承 rev4-role-admin.ts fetchRestorePolicy 同名形（散參 id、body 由本層組）。
+ */
+export function fetchRestorePolicy(id: number) {
+  return request<null>({
+    url: '/systemManage/restorePolicy',
+    method: 'post',
+    data: { id }
   });
 }

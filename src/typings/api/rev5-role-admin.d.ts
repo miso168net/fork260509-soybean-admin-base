@@ -99,4 +99,66 @@ declare namespace Api {
       status?: Api.Common.EnableStatus | null;
     };
   }
+
+  /**
+   * 授權回收桶（`/systemManage/getArchivedPolicies`／`restorePolicy` 兩端點；
+   * contracts/wire-policy-archive.md）
+   *
+   * ★**獨立命名空間、不併進 `Api.SystemManage` 亦不塞進 `Api.RoleAdmin`**（沿本檔與
+   * rev5-ip-rule.d.ts 拍板理由）：回收桶是 casbin 歸檔列的讀／復原面，與角色 CRUD 是兩個
+   * 資源；消費端寫 `Api.PolicyArchive.ArchivedPolicy`，前綴由命名空間承擔。
+   * rev4: 承 rev4-role-admin.d.ts 之 ArchivedPolicy 家族**欄形**，但 rev4 併入 `Api.SystemManage`
+   * 且 `archivedBy` 為 uid＝rev5 差異點——rev5 改帳號名 enrich（`string | null`，004 慣例）。
+   */
+  namespace PolicyArchive {
+    /** 歸檔維度（後端由 `v2` 推導隨列下發：`menu`／`button`＝維度標記、其餘 HTTP 方法＝`endpoint`） */
+    type ArchivedPolicyDimension = 'menu' | 'button' | 'endpoint';
+
+    /**
+     * 歸檔列 wire 形（`getArchivedPolicies` 之 `records` 元素；contracts §共用型、恰 14 欄）
+     *
+     * - `ptype`／`v0`～`v5`＝casbin 原始欄原樣過境（`v0` 來源角色代碼、`v1` 授權標的、
+     *   `v2` 維度標記或 HTTP 方法、`v3`～`v5` 空字串）。
+     * - `archiveReason`＝封閉詞彙**原字面**（頁面不映譯、沿 rev4／CDP 基準）。
+     * - `archivedBy`＝操作者**帳號名**（後端批次 enrich、查無即 `null`），不是 id。
+     * - `roleId`＝來源角色識別；歷史列可為 `null`（誠實退化、不可復原）。
+     * - `restorable`＝後端派生旗標（reason gate／同實例／封死不擋／端點在冊逐腿合取；
+     *   選單維／按鈕維恆 `false`）——★前端只據此切停用態，後端為最終防線。
+     */
+    type ArchivedPolicy = {
+      /** 歸檔列 id（restore 請求鍵；後端 i64 過 2^53 守衛後以 JSON number 上 wire） */
+      id: number;
+      /** 恆 `'p'` */
+      ptype: string;
+      v0: string;
+      v1: string;
+      v2: string;
+      v3: string;
+      v4: string;
+      v5: string;
+      archiveReason: string;
+      /** RFC3339 帶 offset 字面 */
+      archivedAt: string;
+      archivedBy: string | null;
+      roleId: number | null;
+      restorable: boolean;
+      dimension: ArchivedPolicyDimension;
+    };
+
+    /**
+     * 清單查詢參數（`GET getArchivedPolicies`；contracts §1）
+     *
+     * `roleCode` **等值**濾 `v0`（空字串忽略）、`dimension` 等值（未知值後端靜默不濾）；
+     * `current`／`size` 沿 §I.3 分頁形（後端預設 1／10、`size` clamp 至 `[1, 100]`）。
+     */
+    type ArchivedPolicyListQuery = CommonType.RecordNullable<
+      {
+        roleCode: string;
+        dimension: ArchivedPolicyDimension;
+      } & Common.CommonSearchParams
+    >;
+
+    /** 清單回應（沿 §I.3 分頁形 `{current, size, total, records}`；穩定序 `archived_at DESC, id DESC`） */
+    type ArchivedPolicyListRes = Common.PaginatingQueryRecord<ArchivedPolicy>;
+  }
 }

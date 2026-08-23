@@ -382,6 +382,11 @@ const local: App.I18n.Schema = {
     // RouteKey 後不補鍵即型別檢查紅（鍵名＝seed 選單列的 route_name，逐字不可改）。
     'manage_ip-rule': 'IP 规则管理',
     // [rev5-inline BASE-WEB-MANAGE-PAGE-WIRING(i)+ 004-ip-trust-anchor END]
+    // [rev5-inline BASE-WEB-MANAGE-PAGE-WIRING(iv)+ 006-authz-governance START] route: 樹補
+    // `manage_policy-archive` 一鍵（鍵名＝seed 選單列 10 的 route_name，逐字不可改；
+    // 路由外掛重算出該 RouteKey 後不補鍵即型別檢查紅——同 (i) 用途的既有論證）。
+    'manage_policy-archive': '授权回收站',
+    // [rev5-inline BASE-WEB-MANAGE-PAGE-WIRING(iv)+ 006-authz-governance END]
     'multi-menu': '多级菜单',
     'multi-menu_first': '菜单一',
     'multi-menu_first_child': '菜单一子菜单',
@@ -706,6 +711,31 @@ const local: App.I18n.Schema = {
         addRole: '新增角色',
         editRole: '编辑角色'
       },
+      // [rev5-inline BASE-WEB-MANAGE-PAGE-WIRING(iv)+ 006-authz-governance START] page: 樹補
+      // `manage.policyArchive` 節（授權回收桶頁文案、15 葉鍵；contracts/msg-keys.md 逐字）——
+      // ★兩語鍵集 MUST 相等，型節見 typings/app.d.ts。`archiveReason` 欄顯示原字面、本節不設映譯鍵。
+      policyArchive: {
+        title: '授权回收站',
+        sourceRole: '来源角色',
+        dimension: '授权维度',
+        target: '授权标的',
+        archiveReason: '归档原因',
+        archivedAt: '归档时间',
+        archivedBy: '归档者',
+        restore: '复原',
+        confirmRestore: '确定复原此授权？',
+        restoreSuccess: '复原成功',
+        form: {
+          sourceRole: '请输入来源角色编码',
+          dimension: '请选择授权维度'
+        },
+        dimensionLabel: {
+          menu: '菜单',
+          button: '按钮',
+          endpoint: '端点'
+        }
+      },
+      // [rev5-inline BASE-WEB-MANAGE-PAGE-WIRING(iv)+ 006-authz-governance END]
       user: {
         title: '用户列表',
         userName: '用户名',

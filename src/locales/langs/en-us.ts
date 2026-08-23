@@ -386,6 +386,11 @@ const local: App.I18n.Schema = {
     // RouteKey 後不補鍵即型別檢查紅（鍵名＝seed 選單列的 route_name，逐字不可改）。
     'manage_ip-rule': 'IP Rule Manage',
     // [rev5-inline BASE-WEB-MANAGE-PAGE-WIRING(i)+ 004-ip-trust-anchor END]
+    // [rev5-inline BASE-WEB-MANAGE-PAGE-WIRING(iv)+ 006-authz-governance START] route: 樹補
+    // `manage_policy-archive` 一鍵（鍵名＝seed 選單列 10 的 route_name，逐字不可改；
+    // 路由外掛重算出該 RouteKey 後不補鍵即型別檢查紅——同 (i) 用途的既有論證）。
+    'manage_policy-archive': 'Policy Recycle Bin',
+    // [rev5-inline BASE-WEB-MANAGE-PAGE-WIRING(iv)+ 006-authz-governance END]
     'multi-menu': 'Multi Menu',
     'multi-menu_first': 'Menu One',
     'multi-menu_first_child': 'Menu One Child',
@@ -710,6 +715,31 @@ const local: App.I18n.Schema = {
         addRole: 'Add Role',
         editRole: 'Edit Role'
       },
+      // [rev5-inline BASE-WEB-MANAGE-PAGE-WIRING(iv)+ 006-authz-governance START] page: 樹補
+      // `manage.policyArchive` 節（授權回收桶頁文案、15 葉鍵；contracts/msg-keys.md 逐字）——
+      // ★兩語鍵集 MUST 相等，型節見 typings/app.d.ts。`archiveReason` 欄顯示原字面、本節不設映譯鍵。
+      policyArchive: {
+        title: 'Policy Recycle Bin',
+        sourceRole: 'Source Role',
+        dimension: 'Dimension',
+        target: 'Target',
+        archiveReason: 'Archive Reason',
+        archivedAt: 'Archived At',
+        archivedBy: 'Archived By',
+        restore: 'Restore',
+        confirmRestore: 'Confirm to restore this policy?',
+        restoreSuccess: 'Restore success',
+        form: {
+          sourceRole: 'Please enter source role code',
+          dimension: 'Please select dimension'
+        },
+        dimensionLabel: {
+          menu: 'Menu',
+          button: 'Button',
+          endpoint: 'Endpoint'
+        }
+      },
+      // [rev5-inline BASE-WEB-MANAGE-PAGE-WIRING(iv)+ 006-authz-governance END]
       user: {
         title: 'User List',
         userName: 'User Name',

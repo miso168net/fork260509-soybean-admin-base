@@ -201,6 +201,7 @@ const routeMap: RouteMap = {
   "manage": "/manage",
   "manage_ip-rule": "/manage/ip-rule",
   "manage_menu": "/manage/menu",
+  "manage_policy-archive": "/manage/policy-archive",
   "manage_role": "/manage/role",
   "manage_user": "/manage/user",
   "manage_user-detail": "/manage/user-detail/:id",

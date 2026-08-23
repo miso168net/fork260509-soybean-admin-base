@@ -877,6 +877,32 @@ declare namespace App {
             menuAuth: string;
             buttonAuth: string;
           };
+          // [rev5-inline BASE-WEB-MANAGE-PAGE-WIRING(iv)+ 006-authz-governance START]
+          // `page.manage.policyArchive` 型節（逐鍵鏡像兩語 locale、15 葉鍵）。★本節**必需、非「如需」**：
+          // `page:` 是顯式型樹，少一鍵就是 `$t('page.manage.policyArchive.…')` 型別檢查紅
+          // （同 (i) 用途的既有論證）。
+          policyArchive: {
+            title: string;
+            sourceRole: string;
+            dimension: string;
+            target: string;
+            archiveReason: string;
+            archivedAt: string;
+            archivedBy: string;
+            restore: string;
+            confirmRestore: string;
+            restoreSuccess: string;
+            form: {
+              sourceRole: string;
+              dimension: string;
+            };
+            dimensionLabel: {
+              menu: string;
+              button: string;
+              endpoint: string;
+            };
+          };
+          // [rev5-inline BASE-WEB-MANAGE-PAGE-WIRING(iv)+ 006-authz-governance END]
           user: {
             title: string;
             userName: string;

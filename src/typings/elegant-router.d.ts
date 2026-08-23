@@ -55,6 +55,7 @@ declare module "@elegant-router/types" {
     "manage": "/manage";
     "manage_ip-rule": "/manage/ip-rule";
     "manage_menu": "/manage/menu";
+    "manage_policy-archive": "/manage/policy-archive";
     "manage_role": "/manage/role";
     "manage_user": "/manage/user";
     "manage_user-detail": "/manage/user-detail/:id";
@@ -194,6 +195,7 @@ declare module "@elegant-router/types" {
     | "home"
     | "manage_ip-rule"
     | "manage_menu"
+    | "manage_policy-archive"
     | "manage_role"
     | "manage_user-detail"
     | "manage_user"
