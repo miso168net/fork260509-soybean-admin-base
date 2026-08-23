@@ -144,6 +144,9 @@ const backendMessages = {
         superCannotDisable: '超級管理員角色不可停用',
         // ★第十鍵（ADR 0023 補充條款 1；user 拍板 2026-08-19）：NOT NULL 欄收顯式 null
         nameRequired: '角色名稱不可為空',
+        // 006-authz-governance T016：三維寫端撤銷集觸及 protected（整批拒、島 G2；構造點＝
+        // server/src/handler/role.rs map_reject_cause；純 key 零明細——rev4 blocked 明細通道不帶回）
+        protectedRevoke: '存在受保護的授權，無法撤銷',
       },
       systemSettings: {
         // 構造點兩處（T019＋T021、2222）：server/src/validation.rs invalid_value()——

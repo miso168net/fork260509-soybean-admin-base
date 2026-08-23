@@ -1,8 +1,8 @@
 const local: App.I18n.Schema = {
   // [rev5-inline BASE-WEB-I18N-WIRING(ii)+ 003-auth-session START] backend 命名空間（wire msg
-  // key → 在地化顯示；**50 鍵**＝003-auth-session 之 22 鍵＋004-ip-trust-anchor 之
+  // key → 在地化顯示；**51 鍵**＝003-auth-session 之 22 鍵＋004-ip-trust-anchor 之
   // biz.ipRule.* 五鍵與 biz.throttle.* 一鍵＋005-role-menu-crud 之 biz.role.* 十鍵與
-  // biz.menu.* 十二鍵；
+  // biz.menu.* 十二鍵＋006-authz-governance 之 biz.role.* 一鍵；
   // 各刀新鍵的譯文單一權威＝該刀 contracts/msg-keys.md，
   // 其餘鍵照 rev4 鏡像重打字消化）。★下一行 `  backend: {` 須獨佔一行——傘狀 docs-sync 之
   // gen.msg_dict 解除謂詞與 parse_locale_backend 起點掃描對該行整行 fullmatch。
@@ -76,7 +76,8 @@ const local: App.I18n.Schema = {
         cannotDeleteSelfRole: 'You cannot delete a role assigned to your own account',
         cannotDisableSelfRole: 'You cannot disable a role assigned to your own account',
         superCannotDisable: 'The super administrator role cannot be disabled',
-        nameRequired: 'Role name must not be null'
+        nameRequired: 'Role name must not be null',
+        protectedRevoke: 'Protected policies cannot be revoked'
       },
       systemSettings: {
         invalidValue: 'Invalid setting value (wrong type, out of range or not an allowed option)',
