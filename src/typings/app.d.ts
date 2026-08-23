@@ -876,6 +876,11 @@ declare namespace App {
             editRole: string;
             menuAuth: string;
             buttonAuth: string;
+            // [rev5-inline BASE-WEB-MANAGE-PAGE-WIRING(iii)+ 006-authz-governance START]
+            // `page.manage.role.endpointAuth` 型節（逐鍵鏡像兩語 locale；page: 為顯式型樹、
+            // 少鍵即 $t 型別檢查紅——同 (i)(ii) 用途的既有論證）
+            endpointAuth: string;
+            // [rev5-inline BASE-WEB-MANAGE-PAGE-WIRING(iii)+ 006-authz-governance END]
           };
           // [rev5-inline BASE-WEB-MANAGE-PAGE-WIRING(iv)+ 006-authz-governance START]
           // `page.manage.policyArchive` 型節（逐鍵鏡像兩語 locale、15 葉鍵）。★本節**必需、非「如需」**：

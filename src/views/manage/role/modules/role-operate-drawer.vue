@@ -9,6 +9,10 @@ import { fetchAddRole, fetchUpdateRole } from '@/service/api/rev5-role-admin';
 import { $t } from '@/locales';
 import MenuAuthModal from './menu-auth-modal.vue';
 import ButtonAuthModal from './button-auth-modal.vue';
+// [rev5-inline BASE-WEB-MANAGE-PAGE-WIRING(iii)+ 006-authz-governance START] 端點維授權 modal（rev5 新增型新檔）掛載——
+// 同檔雙用途：上方 (ii) 之 CRUD 接真標記一字不動、本用途只加純新增行（憲法 §III.2 (iii) 列）
+import EndpointAuthModal from './endpoint-auth-modal.vue';
+// [rev5-inline BASE-WEB-MANAGE-PAGE-WIRING(iii)+ 006-authz-governance END]
 
 defineOptions({
   name: 'RoleOperateDrawer'
@@ -38,6 +42,9 @@ const { formRef, validate, restoreValidation } = useNaiveForm();
 const { defaultRequiredRule } = useFormRules();
 const { bool: menuAuthVisible, setTrue: openMenuAuthModal } = useBoolean();
 const { bool: buttonAuthVisible, setTrue: openButtonAuthModal } = useBoolean();
+// [rev5-inline BASE-WEB-MANAGE-PAGE-WIRING(iii)+ 006-authz-governance START] 第三顆 modal 顯隱（鏡像上兩行形）
+const { bool: endpointAuthVisible, setTrue: openEndpointAuthModal } = useBoolean();
+// [rev5-inline BASE-WEB-MANAGE-PAGE-WIRING(iii)+ 006-authz-governance END]
 
 const title = computed(() => {
   const titles: Record<NaiveUI.TableOperateType, string> = {
@@ -165,6 +172,10 @@ watch(visible, () => {
         <MenuAuthModal v-model:visible="menuAuthVisible" :role-id="roleId" />
         <NButton @click="openButtonAuthModal">{{ $t('page.manage.role.buttonAuth') }}</NButton>
         <ButtonAuthModal v-model:visible="buttonAuthVisible" :role-id="roleId" />
+        <!-- [rev5-inline BASE-WEB-MANAGE-PAGE-WIRING(iii)+ 006-authz-governance START] 端點維授權觸發鈕＋掛載（鏡像上兩顆；三鈕零 hasAuth gating、門在頁級＝FR-040） -->
+        <NButton @click="openEndpointAuthModal">{{ $t('page.manage.role.endpointAuth') }}</NButton>
+        <EndpointAuthModal v-model:visible="endpointAuthVisible" :role-id="roleId" />
+        <!-- [rev5-inline BASE-WEB-MANAGE-PAGE-WIRING(iii)+ 006-authz-governance END] -->
       </NSpace>
       <template #footer>
         <NSpace :size="16">

@@ -702,6 +702,11 @@ const local: App.I18n.Schema = {
         // [rev5-inline BASE-WEB-MANAGE-PAGE-WIRING(ii)+ 005-role-menu-crud END]
         menuAuth: 'Menu Auth',
         buttonAuth: 'Button Auth',
+        // [rev5-inline BASE-WEB-MANAGE-PAGE-WIRING(iii)+ 006-authz-governance START] page: 樹補
+        // `manage.role.endpointAuth` 鍵（端點維授權 modal 觸發鈕／標題；contracts/msg-keys.md 逐字；
+        // ★兩語鍵集 MUST 相等，型節見 typings/app.d.ts）
+        endpointAuth: 'Endpoint Auth',
+        // [rev5-inline BASE-WEB-MANAGE-PAGE-WIRING(iii)+ 006-authz-governance END]
         form: {
           roleName: 'Please enter role name',
           roleCode: 'Please enter role code',

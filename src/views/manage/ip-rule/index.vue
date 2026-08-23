@@ -243,14 +243,26 @@ async function handleRestore(id: number) {
     >
       <template #header-extra>
         <TableHeaderOperation v-model:columns="columnChecks" :loading="loading" @refresh="getData">
-          <!-- 覆寫 default slot：本頁無批次刪除，只渲染新增鈕（權限碼 gating） -->
+          <!--
+            覆寫 default slot：本頁無批次刪除，只渲染新增鈕（權限碼 gating）。
+            ★此 slot 不得渲染成全註解（B-099）：新增鈕若直接掛 v-if、hasAuth=false 時 slot 只剩註解 vnode，
+            Vue renderSlot 判定內容無效即改渲染 **fallback**＝共用元件自帶的新增鈕與批次刪除鈕。本頁的
+            TableHeaderOperation 只綁 @refresh、未綁 @add／@delete，故 fallback 兩鈕點下去是 no-op（無可寫入路徑）；
+            實際危害＝無權使用者仍會看見不該有的寫端入口、且批次刪除鈕本頁根本不存在。故外層容器 div 永遠渲染
+            （保底非註解節點）、以 v-show 於無權時移出版面（空 div 不佔 NSpace 間距）；內層 v-if 負責把互動入口自
+            DOM 誠實移除。形照 menu/index.vue 既驗寫法——惟該頁確有 @add／@delete 綁定、其註解之「綁定仍活」子句
+            對該頁為真、對本頁不成立故不照抄；條件亦取本頁之 hasAuth('ipRule:add')（不照抄 menu 的 !showDeleted）；
+            gap-12px＝NSpace medium 水平間距同值。
+          -->
           <template #default>
-            <NButton v-if="hasAuth('ipRule:add')" size="small" ghost type="primary" @click="handleAdd">
-              <template #icon>
-                <icon-ic-round-plus class="text-icon" />
-              </template>
-              {{ $t('common.add') }}
-            </NButton>
+            <div v-show="hasAuth('ipRule:add')" class="flex-y-center gap-12px">
+              <NButton v-if="hasAuth('ipRule:add')" size="small" ghost type="primary" @click="handleAdd">
+                <template #icon>
+                  <icon-ic-round-plus class="text-icon" />
+                </template>
+                {{ $t('common.add') }}
+              </NButton>
+            </div>
           </template>
         </TableHeaderOperation>
       </template>
