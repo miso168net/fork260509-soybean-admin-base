@@ -111,7 +111,16 @@ const checks = computed<string[]>({
   }
 });
 
+/**
+ * 現況讀就緒守（★user 拍板 2026-08-24、U9 品質審查升級）：全量替換語意下、`getRoleEndpoints` 未成即按確定＝
+ * 把空集當「期望全集」送出→該角色端點維授權整批被撤（與 handleSubmit 內的候選就緒守互補：彼守 leafMap、
+ * 此守現況）。守法＝確定鈕在現況讀成功前 `disabled`（見模板 footer）；讀失敗（攔截層已 toast）維持停用、
+ * 使用者僅能取消重開。每次開啟（含切換角色）於 getChecks 起手復位。
+ */
+const checksLoaded = shallowRef(false);
+
 async function getChecks() {
+  checksLoaded.value = false;
   const { error, data } = await fetchGetRoleEndpoints(props.roleId);
   if (error) {
     return;
@@ -119,6 +128,7 @@ async function getChecks() {
   // 先落 protected 集、再經 setter 落勾選集
   protectedKeys.value = new Set(data.filter(item => item.protected).map(item => leafKey(item.path, item.method)));
   checks.value = data.map(item => leafKey(item.path, item.method));
+  checksLoaded.value = true;
 }
 
 async function handleSubmit() {
@@ -188,7 +198,8 @@ watch(visible, val => {
         <NButton size="small" class="mt-16px" @click="closeModal">
           {{ $t('common.cancel') }}
         </NButton>
-        <NButton type="primary" size="small" class="mt-16px" @click="handleSubmit">
+        <!-- 就緒守：現況讀成功前停用確定鈕（送空集＝整批撤，見 checksLoaded doc；user 拍板 2026-08-24） -->
+        <NButton type="primary" size="small" class="mt-16px" :disabled="!checksLoaded" @click="handleSubmit">
           {{ $t('common.confirm') }}
         </NButton>
       </NSpace>

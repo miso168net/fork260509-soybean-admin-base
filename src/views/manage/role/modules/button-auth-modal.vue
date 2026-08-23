@@ -38,7 +38,7 @@ type ButtonConfig = {
   disabled: boolean;
 };
 
-// [rev5-inline BASE-WEB-MANAGE-PAGE-WIRING(iii)+ 006-authz-governance START] 候選全集＋protected 鎖定（FR-004／FR-041；rev4 零藍本）
+// [rev5-inline BASE-WEB-MANAGE-PAGE-WIRING(iii)+ 006-authz-governance START] 候選全集＋protected 鎖定＋就緒守（FR-004／FR-041；rev4 零藍本）
 /** 按鈕碼候選全集（getAllButtons 原樣：治理域 buttons 聯集、去重、首見序） */
 const codes = shallowRef<string[]>([]);
 
@@ -51,6 +51,13 @@ const protectedCodes = shallowRef(new Set<string>());
 
 /** NTree 實際持有的勾選集（只經下方 `checks` setter 寫入） */
 const rawChecks = shallowRef<string[]>([]);
+
+/**
+ * 現況讀就緒守（★user 拍板 2026-08-24、U9 品質審查升級）：全量替換語意下、`getRoleButton` 未成即按確定＝把空集
+ * 當「期望全集」送出→該角色按鈕維授權整批被撤。守法＝確定鈕在現況讀成功前 `disabled`（見模板 footer）；
+ * 讀失敗（攔截層已 toast）維持停用、使用者僅能取消重開。每次開啟（含切換角色）於 getChecks 起手復位。
+ */
+const checksLoaded = shallowRef(false);
 // [rev5-inline BASE-WEB-MANAGE-PAGE-WIRING(iii)+ 006-authz-governance END]
 
 // [rev5-inline BASE-WEB-MANAGE-PAGE-WIRING(iii) 006-authz-governance] 改 computed：候選（getAllButtons）與現況（getRoleButton）並發取回、先後不定，任一到位即重算（id=label=code、disabled＝protected 鎖定第一道；模板 :data="tree" 一行不動）；原行: const tree = shallowRef<ButtonConfig[]>([]);
@@ -90,13 +97,15 @@ const checks = computed<string[]>({
 
 async function getChecks() {
   // [rev5-inline BASE-WEB-MANAGE-PAGE-WIRING(iii) 006-authz-governance] 接真 getRoleButton（query 鍵 id；回 {code, protected}[]）；原行: console.log(props.roleId);
-  // [rev5-inline BASE-WEB-MANAGE-PAGE-WIRING(iii) 006-authz-governance] 寫死 1..5 移除、改讀現況（先落 protected 集、再經 setter 落勾選集）；原行: checks.value = [1, 2, 3, 4, 5];
+  // [rev5-inline BASE-WEB-MANAGE-PAGE-WIRING(iii) 006-authz-governance] 寫死 1..5 移除、改讀現況（先落 protected 集、再經 setter 落勾選集；就緒守起手復位、成功才開閘）；原行: checks.value = [1, 2, 3, 4, 5];
+  checksLoaded.value = false;
   const { error, data } = await fetchGetRoleButton(props.roleId);
   if (error) {
     return;
   }
   protectedCodes.value = new Set(data.filter(item => item.protected).map(item => item.code));
   checks.value = data.map(item => item.code);
+  checksLoaded.value = true;
 }
 
 // [rev5-inline BASE-WEB-MANAGE-PAGE-WIRING(iii) 006-authz-governance] 提交改 async 接真；原行: function handleSubmit() {
@@ -142,7 +151,12 @@ watch(visible, val => {
         <NButton size="small" class="mt-16px" @click="closeModal">
           {{ $t('common.cancel') }}
         </NButton>
-        <NButton type="primary" size="small" class="mt-16px" @click="handleSubmit">
+        <!--
+          就緒守：現況讀成功前停用確定鈕（送空集＝整批撤，見 checksLoaded doc；user 拍板 2026-08-24）。
+          ★本註解刻意排成 multiline 形：singleline 形下 eslint（vue/html-comment-content-newline）的 fix 會把註解閉合符併回行尾、令行尾錨定的「原行」擷取值失真（fork-delta-lint 當場紅）；
+          [rev5-inline BASE-WEB-MANAGE-PAGE-WIRING(iii) 006-authz-governance] 原行: <NButton type="primary" size="small" class="mt-16px" @click="handleSubmit">
+        -->
+        <NButton type="primary" size="small" class="mt-16px" :disabled="!checksLoaded" @click="handleSubmit">
           {{ $t('common.confirm') }}
         </NButton>
       </NSpace>
