@@ -1,8 +1,8 @@
 const local: App.I18n.Schema = {
   // [rev5-inline BASE-WEB-I18N-WIRING(ii)+ 003-auth-session START] backend 命名空間（wire msg
-  // key → 在地化顯示；**52 鍵**＝003-auth-session 之 22 鍵＋004-ip-trust-anchor 之
+  // key → 在地化顯示；**53 鍵**＝003-auth-session 之 22 鍵＋004-ip-trust-anchor 之
   // biz.ipRule.* 五鍵與 biz.throttle.* 一鍵＋005-role-menu-crud 之 biz.role.* 十鍵與
-  // biz.menu.* 十二鍵＋006-authz-governance 之 biz.role.* 兩鍵；
+  // biz.menu.* 十二鍵＋006-authz-governance 之 biz.role.* 兩鍵與 biz.policy.* 一鍵；
   // 各刀新鍵的譯文單一權威＝該刀 contracts/msg-keys.md，
   // 其餘鍵照 rev4 鏡像重打字消化）。★下一行 `  backend: {` 須獨佔一行——傘狀 docs-sync 之
   // gen.msg_dict 解除謂詞與 parse_locale_backend 起點掃描對該行整行 fullmatch。
@@ -62,6 +62,12 @@ const local: App.I18n.Schema = {
         nameRequired: 'Menu name must not be null',
         routeNameInvalid: 'Invalid route name (letters, digits, underscore and hyphen only, up to 100 characters)',
         restoreConflict: 'An active menu with the same route name already exists; cannot restore'
+      },
+      // 006-authz-governance T023 一鍵（鍵字面與譯文語意單一權威＝
+      // specs/006-authz-governance/contracts/msg-keys.md；譯文照 rev4:en-us.ts
+      // backend.biz.policy.notRestorable 同鍵消化）
+      policy: {
+        notRestorable: 'This archived policy cannot be restored'
       },
       // 005-role-menu-crud T020 九鍵（鍵字面與譯文語意單一權威＝
       // specs/005-role-menu-crud/contracts/msg-keys.md；譯文照 rev4:en-us.ts biz.role

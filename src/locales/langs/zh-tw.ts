@@ -120,6 +120,14 @@ const backendMessages = {
         // 形不帶回、rev5 復原語境獨立鍵）
         restoreConflict: '同名路由已有生效選單，無法復原',
       },
+      // 006-authz-governance T023 一鍵（2222）：構造點＝server/src/handler/policy_archive.rs
+      // restore_policy（直書 Cow::Borrowed 字面＝Lint24 抽取面①；鍵字面與譯文語意單一權威＝
+      // specs/006-authz-governance/contracts/msg-keys.md）。
+      policy: {
+        // restorePolicy 識別不存在／五腿任一拒／23505 競態（ADR 0055 三態之 NotRestorable；
+        // 純 key 零明細——復原鈕於 restorable=false 列已停用、後端為最終防線）
+        notRestorable: '該歸檔授權不可復原',
+      },
       // 005-role-menu-crud T020 九鍵（皆 2222）：構造點全在 server/src/handler/role.rs 的
       // 三支 map_*_err（直書 Cow::Borrowed 字面＝Lint24 抽取面①；鍵字面與譯文語意單一權威＝
       // specs/005-role-menu-crud/contracts/msg-keys.md）。
