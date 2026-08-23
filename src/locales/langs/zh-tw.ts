@@ -147,6 +147,9 @@ const backendMessages = {
         // 006-authz-governance T016：三維寫端撤銷集觸及 protected（整批拒、島 G2；構造點＝
         // server/src/handler/role.rs map_reject_cause；純 key 零明細——rev4 blocked 明細通道不帶回）
         protectedRevoke: '存在受保護的授權，無法撤銷',
+        // 006-authz-governance T019：端點維新授集觸及受保護端點政策且標的非 R_SUPER（結構性封死、
+        // 島 G6／ADR 0054；構造點＝server/src/handler/role.rs map_reject_cause；純 key 零明細）
+        protectedGrant: '受保護的端點僅限超級管理員持有',
       },
       systemSettings: {
         // 構造點兩處（T019＋T021、2222）：server/src/validation.rs invalid_value()——

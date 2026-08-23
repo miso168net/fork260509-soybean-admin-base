@@ -1,8 +1,8 @@
 const local: App.I18n.Schema = {
   // [rev5-inline BASE-WEB-I18N-WIRING(ii)+ 003-auth-session START] backend 命名空間（wire msg
-  // key → 在地化顯示；**51 鍵**＝003-auth-session 之 22 鍵＋004-ip-trust-anchor 之
+  // key → 在地化顯示；**52 鍵**＝003-auth-session 之 22 鍵＋004-ip-trust-anchor 之
   // biz.ipRule.* 五鍵與 biz.throttle.* 一鍵＋005-role-menu-crud 之 biz.role.* 十鍵與
-  // biz.menu.* 十二鍵＋006-authz-governance 之 biz.role.* 一鍵；
+  // biz.menu.* 十二鍵＋006-authz-governance 之 biz.role.* 兩鍵；
   // 各刀新鍵的譯文單一權威＝該刀 contracts/msg-keys.md，
   // 其餘鍵照 rev4 鏡像重打字消化）。★下一行 `  backend: {` 須獨佔一行——本檔不在
   // MSG_DICT_LOCALES 字典鏈射程（B-030 子項）、結構由 App.I18n.Schema 必填型節＋typecheck 守。
@@ -77,7 +77,8 @@ const local: App.I18n.Schema = {
         cannotDisableSelfRole: '不能停用当前登录用户所属的角色',
         superCannotDisable: '超级管理员角色不可停用',
         nameRequired: '角色名称不能为空',
-        protectedRevoke: '存在受保护的授权，无法撤销'
+        protectedRevoke: '存在受保护的授权，无法撤销',
+        protectedGrant: '受保护的端点仅限超级管理员持有'
       },
       systemSettings: {
         invalidValue: '设置值无效',
