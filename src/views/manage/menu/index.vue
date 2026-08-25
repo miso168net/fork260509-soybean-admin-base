@@ -227,8 +227,11 @@ const { columns, columnChecks, data, loading, pagination, getData, getDataByPage
 const { checkedRowKeys, onBatchDeleted, onDeleted } = useTableOperate(data, 'id', getData);
 
 // [rev5-inline BASE-WEB-MANAGE-PAGE-WIRING(ii) 005-role-menu-crud START] 切換顯示已刪除→
-// 回第一頁重取（兩資料源分頁語意不同：治理清單以頂層計、回收桶以已刪列計）
+// 回第一頁重取（兩資料源分頁語意不同：治理清單以頂層計、回收桶以已刪列計）；切換即清勾選
+// ——兩資料源的列不同族、跨源殘留勾選會把已軟刪 id 送進批刪（B-100：已刪模式亦有 selection
+// 欄可勾，勾完關 toggle 即解除批刪鈕的 disabled，送出後端整批拒 2222 notFound）
 watch(showDeleted, () => {
+  checkedRowKeys.value = [];
   getDataByPage(1);
 });
 // [rev5-inline BASE-WEB-MANAGE-PAGE-WIRING(ii) 005-role-menu-crud END]

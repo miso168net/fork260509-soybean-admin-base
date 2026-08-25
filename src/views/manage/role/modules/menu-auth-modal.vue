@@ -122,6 +122,18 @@ const tree = computed(() => lockTree(menuTree.value));
 const rawChecks = shallowRef<number[]>([]);
 
 /**
+ * getChecks 的請求世代序號（B-116）：角色 A 的現況讀還在飛行中、使用者關掉本 modal 改開角色 B 時，
+ * B 讀失敗而 A 遲到成功 ⇒ A 的回應會寫進 protected 集與 checks 並開閘就緒守（確定鈕可按、內容卻是
+ * A 的授權集），按下去等於把 A 的集合覆蓋到 B 身上。守法＝每輪 getChecks 起手遞增本序號，await 回來
+ * 先比對，非最新一輪即整段丟棄（成功、失敗一律丟棄——就緒守毋須在此補救：新一輪起手已把 checksLoaded
+ * 復位為 false、確定鈕維持停用）。
+ * ★取序號而非 AbortController：包裝層（packages/axios flatRequest）對外只回 `{data, error}`、abort 通道
+ * 鎖在內部 abortControllerMap（對外僅 cancelAllRequest 全域形），rev5-role-admin wrapper 亦不收 config 參
+ * ⇒ 走 abort 得連 wrapper 簽名一起改；序號是最小改動、且三顆 modal 可逐字同形。
+ */
+let checksReq = 0;
+
+/**
  * 現況讀就緒守（★user 拍板 2026-08-24、U9 品質審查升級）：全量替換語意下、`getRoleMenu` 未成即按確定＝把空集
  * 當「期望全集」送出→該角色選單維授權整批被撤。守法＝確定鈕在現況讀成功前 `disabled`（見模板 footer）；
  * 讀失敗（攔截層已 toast）維持停用、使用者僅能取消重開。每次開啟（含切換角色）於 getChecks 起手復位。
@@ -142,8 +154,13 @@ const checks = computed<number[]>({
 async function getChecks() {
   // [rev5-inline BASE-WEB-MANAGE-PAGE-WIRING(iii) 006-authz-governance] 接真 getRoleMenu（query 鍵 id；回 {id, protected}[]）；原行: console.log(props.roleId);
   // [rev5-inline BASE-WEB-MANAGE-PAGE-WIRING(iii) 006-authz-governance] 寫死 1..21 移除、改讀現況（先落 protected 集、再經 setter 落勾選集；就緒守起手復位、成功才開閘）；原行: checks.value = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21];
+  const req = ++checksReq;
   checksLoaded.value = false;
   const { error, data } = await fetchGetRoleMenu(props.roleId);
+  // 過期回應一律丟棄（成功、失敗皆然；理由與就緒守的關係見 checksReq）
+  if (req !== checksReq) {
+    return;
+  }
   if (error) {
     return;
   }

@@ -147,6 +147,20 @@ export const request = createFlatRequest(
         backendErrorCode = String(error.response?.data?.code || '');
       }
 
+      // [rev5-inline BASE-WEB-I18N-WIRING(i)+ maint-b083-b106-b108-b111-b116-other START] 真 HTTP 層錯誤的信封 msg
+      // 也走轉譯（B-117）：上一段只在 `BACKEND_ERROR_CODE`（HTTP 200＋業務碼）分支譯，真 4xx／5xx 走 axios 原生
+      // message ⇒ toast 顯「Request failed with status code 403」，而 `backend.system.forbidden` 譯文早已在兩語
+      // locale 就位卻永遠打不到。守法＝只譯「回應帶信封 msg」者；無信封（網路中斷／逾時／非 JSON 回應）維持
+      // axios 原文，未命中鍵仍由 translateBackendMsg 的原文 fallback 兜住（憲法 §III.2 (i) 收窄條件不變）。
+      // ★不動 backendErrorCode ⇒ 下方 modalLogout／expiredToken 兩道判斷面零影響（那兩碼恆走 HTTP 200 業務碼分支）。
+      if (error.code !== BACKEND_ERROR_CODE) {
+        const httpBackendMsg = error.response?.data?.msg;
+        if (typeof httpBackendMsg === 'string' && httpBackendMsg) {
+          message = translateBackendMsg(httpBackendMsg, error.response?.data?.data);
+        }
+      }
+      // [rev5-inline BASE-WEB-I18N-WIRING(i)+ maint-b083-b106-b108-b111-b116-other END]
+
       // the error message is displayed in the modal
       const modalLogoutCodes = import.meta.env.VITE_SERVICE_MODAL_LOGOUT_CODES?.split(',') || [];
       if (modalLogoutCodes.includes(backendErrorCode)) {
