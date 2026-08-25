@@ -1,6 +1,7 @@
 <script setup lang="tsx">
 // [rev5-inline BASE-WEB-MANAGE-PAGE-WIRING(ii) 005-role-menu-crud] 回收桶 toggle 需 watch（切換即回第一頁重取——rev4: (d) 010-menu-admin 同形）；原行: import { ref } from 'vue';
-import { ref, watch } from 'vue';
+// [rev5-inline BASE-WEB-MANAGE-PAGE-WIRING(ii) maint-b097] computed 供治理清單分頁凍結（B-097／ADR 0060）；原行: import { ref, watch } from 'vue';
+import { computed, ref, watch } from 'vue';
 import type { Ref } from 'vue';
 import { NButton, NPopconfirm, NTag } from 'naive-ui';
 import { useBoolean } from '@sa/hooks';
@@ -314,6 +315,33 @@ function init() {
 
 // init
 init();
+// [rev5-inline BASE-WEB-MANAGE-PAGE-WIRING(ii) maint-b097 START] 治理清單分頁凍結（B-097／ADR 0060）
+// 治理清單走 fetchGetMenuList() 無參＝一次取全樹（後端 size 預設 100、rev4 as-built 同形），
+// 分頁器故對它恆無效：改 pageSize 會被 onFetched 的 `pagination.pageSize = data.pageSize` 回彈成
+// 100（且 100 不在 pageSizes [10,15,20,25,30] 內）。此處不抽掉分頁列、改「凍結」——UI 位置不動，
+// 僅把三個數字歸位並整列上鎖（user 拍板 2026-08-25）。
+// ★itemCount MUST 傳 undefined：naive-ui 之 mergedPageCountRef 讓 itemCount 優先於 pageCount
+// （Pagination.mjs「item count has high priority」），保留 itemCount 時 pageSize=0 會令
+// pageCount = Math.ceil(11/0) = Infinity，而 createPageItemsInfo 的 rightSplit 分支據此呼叫
+// createRange(8, Infinity)＝`for (i=8; i<=Infinity; ++i)` ⇒ 分頁不是被凍結、是把瀏覽器凍死
+// （2026-08-25 實測：POC 頁面卡死、CDP 腳本逾時零輸出）。故走 pageCount 分支並自備 prefix。
+const tablePagination = computed(() => {
+  if (showDeleted.value) return pagination;
+
+  const total = pagination.itemCount ?? 0;
+
+  return {
+    ...pagination,
+    itemCount: undefined,
+    pageCount: 1,
+    page: 1,
+    pageSize: 0,
+    disabled: true,
+    prefix: () => $t('datatable.itemCount', { total })
+  };
+});
+// [rev5-inline BASE-WEB-MANAGE-PAGE-WIRING(ii) maint-b097 END]
+
 </script>
 
 <template>
@@ -383,6 +411,7 @@ init();
         新增 menuMemo 欄（minWidth 120）⇒ scroll-x 隨欄寬總和 1088+120＝1208（欄寬總和不變式：scroll-x＝Σ(width|minWidth)，增刪欄時必須同批改）。
         ★本註解刻意排成 multiline 形：singleline 形下 eslint（vue/html-comment-content-newline）的 fix 會把註解閉合符併回行尾、令行尾錨定的「原行」擷取值失真（fork-delta-lint 當場紅）；
         [rev5-inline BASE-WEB-MANAGE-PAGE-WIRING(ii) 005-role-menu-crud] 原行: :scroll-x="1088"
+        [rev5-inline BASE-WEB-MANAGE-PAGE-WIRING(ii) maint-b097] 治理清單模式綁凍結版（B-097／ADR 0060）；原行: :pagination="pagination"
       -->
       <NDataTable
         v-model:checked-row-keys="checkedRowKeys"
@@ -394,7 +423,7 @@ init();
         :loading="loading"
         :row-key="row => row.id"
         remote
-        :pagination="pagination"
+        :pagination="tablePagination"
         class="sm:h-full"
       />
       <MenuOperateModal
