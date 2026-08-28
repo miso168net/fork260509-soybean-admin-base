@@ -406,6 +406,18 @@ declare namespace App {
           };
           // 白名單八鍵（後端恆不發）：密碼政策違規碼逐碼譯文（translateDetailValue 消費）
           user: {
+            // 後端實發十一鍵（007 U2／US1 七支管理端點；譯文權威＝contracts/msg-keys.md）
+            notFound: string;
+            userNameExists: string;
+            userNameInvalid: string;
+            userNameImmutable: string;
+            userEmailExists: string;
+            userEmailInvalid: string;
+            seededProtected: string;
+            superCannotDisable: string;
+            cannotDeleteSelf: string;
+            cannotEditSelfRoleOrStatus: string;
+            roleNotFound: string;
             passwordViolation: {
               minLength: string;
               maxLength: string;

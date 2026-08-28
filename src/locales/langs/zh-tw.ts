@@ -186,6 +186,28 @@ const backendMessages = {
       // ★本註解的主詞是 user 這一節——biz 樹另含 systemSettings（後端實發鍵），
       // 「biz 全樹皆白名單」的敘述對現況不成立。
       user: {
+        // 標的不存在或已軟刪（活性判準＝未軟刪；只有 restoreUser 認得已刪列）
+        notFound: '使用者不存在',
+        // 現役同名（先驗＋23505 兜底同鍵）
+        userNameExists: '使用者名稱已存在',
+        // 形制不合（^[A-Za-z0-9_-]{1,64}$）
+        userNameInvalid: '使用者名稱格式不正確',
+        // updateUser 帶 userName（★出現即拒、值不比對——rev4 等值放行形不帶回）
+        userNameImmutable: '使用者名稱不可修改',
+        // 現役同信箱（不分大小寫；已刪列同信箱與現役並存合法）
+        userEmailExists: '信箱已被使用',
+        // 信箱簡式格式守門
+        userEmailInvalid: '信箱格式不正確',
+        // seed 三帳號不可刪／id 1 不可解除超管指派（島 I3 結構保護）
+        seededProtected: '內建帳號受保護',
+        // id 1 恆禁停用（系統恆有至少一個啟用的超級管理員）
+        superCannotDisable: '超級管理員不可停用',
+        // self 五不：不得刪除自己
+        cannotDeleteSelf: '不能刪除自己',
+        // self 五不：status／roleIds 出現即拒（「不得停用自己」亦由本鍵承載）
+        cannotEditSelfRoleOrStatus: '不能修改自己的角色或狀態',
+        // roleIds 含不存在或已軟刪之角色 id（整筆拒、非 orphan skip）
+        roleNotFound: '角色不存在',
         passwordViolation: {
           minLength: '長度未達政策下限',
           maxLength: '長度超過政策上限',

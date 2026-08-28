@@ -97,6 +97,17 @@ const local: App.I18n.Schema = {
       },
       // 白名單八鍵（後端恆不發）：密碼政策違規碼逐碼譯文（translateDetailValue 消費）
       user: {
+        notFound: '用户不存在',
+        userNameExists: '用户名已存在',
+        userNameInvalid: '用户名格式不正确',
+        userNameImmutable: '用户名不可修改',
+        userEmailExists: '邮箱已被使用',
+        userEmailInvalid: '邮箱格式不正确',
+        seededProtected: '内置账号受保护',
+        superCannotDisable: '超级管理员不可停用',
+        cannotDeleteSelf: '不能删除自己',
+        cannotEditSelfRoleOrStatus: '不能修改自己的角色或状态',
+        roleNotFound: '角色不存在',
         passwordViolation: {
           minLength: '长度未达策略下限',
           maxLength: '长度超过策略上限',
