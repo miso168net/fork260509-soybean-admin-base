@@ -23,7 +23,8 @@ const local: App.I18n.Schema = {
       },
       session: {
         reLogin: '请重新登录',
-        kicked: '您的账号已在其他设备登录，当前会话已结束'
+        kicked: '您的账号已在其他设备登录，当前会话已结束',
+        kickedByAdmin: '此会话已被管理员结束，请重新登录'
       },
       token: {
         expired: '登录已过期，正在重新获取授权'
@@ -106,6 +107,7 @@ const local: App.I18n.Schema = {
         seededProtected: '内置账号受保护',
         superCannotDisable: '超级管理员不可停用',
         cannotDeleteSelf: '不能删除自己',
+        cannotKickSelf: '不能踢除自己',
         cannotEditSelfRoleOrStatus: '不能修改自己的角色或状态',
         roleNotFound: '角色不存在',
         passwordViolation: {

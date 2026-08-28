@@ -23,7 +23,8 @@ const local: App.I18n.Schema = {
       },
       session: {
         reLogin: 'Please log in again',
-        kicked: 'Your account signed in elsewhere; this session ended'
+        kicked: 'Your account signed in elsewhere; this session ended',
+        kickedByAdmin: 'This session was ended by an administrator, please sign in again'
       },
       token: {
         expired: 'Session expired, refreshing'
@@ -106,6 +107,7 @@ const local: App.I18n.Schema = {
         seededProtected: 'Built-in account is protected',
         superCannotDisable: 'Super administrator cannot be disabled',
         cannotDeleteSelf: 'Cannot delete yourself',
+        cannotKickSelf: 'Cannot kick yourself',
         cannotEditSelfRoleOrStatus: 'Cannot change your own roles or status',
         roleNotFound: 'Role not found',
         passwordViolation: {

@@ -42,6 +42,10 @@ const backendMessages = {
         // error.rs `fn key()` 固定鍵：AppError::ModalLogout（7777）——他處登入被踢、前端 modal
         //（003-auth-session T010；譯文逐字＝specs/003-auth-session/contracts/msg-keys.md）。
         kicked: '您的帳號已在其他裝置登入，此工作階段已結束',
+        // error.rs `fn key()` 固定鍵：AppError::ModalLogoutByAdmin（7777）——管理員踢除
+        // （denylist reason admin_kick）、前端同一條 modal 通道但文案不同（本刀 U3；
+        // 譯文權威＝specs/007-user-password-admin/contracts/msg-keys.md）。
+        kickedByAdmin: '此工作階段已被管理員結束，請重新登入',
       },
       token: {
         // error.rs `fn key()` 固定鍵：AppError::TokenExpired（3333）——僅 exp 過期發此鍵、
@@ -204,6 +208,8 @@ const backendMessages = {
         superCannotDisable: '超級管理員不可停用',
         // self 五不：不得刪除自己
         cannotDeleteSelf: '不能刪除自己',
+        // self 五不：不得踢除自己（kickUser 守門③；本刀 U3）
+        cannotKickSelf: '不能踢除自己',
         // self 五不：status／roleIds 出現即拒（「不得停用自己」亦由本鍵承載）
         cannotEditSelfRoleOrStatus: '不能修改自己的角色或狀態',
         // roleIds 含不存在或已軟刪之角色 id（整筆拒、非 orphan skip）
