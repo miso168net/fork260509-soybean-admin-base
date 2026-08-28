@@ -110,6 +110,13 @@ const local: App.I18n.Schema = {
         cannotKickSelf: 'Cannot kick yourself',
         cannotEditSelfRoleOrStatus: 'Cannot change your own roles or status',
         roleNotFound: 'Role not found',
+        cannotResetSelfPassword: 'Change your own password in the user center',
+        passwordConfirmMismatch: 'Passwords do not match',
+        oldPasswordMismatch: 'Old password is incorrect',
+        passwordSameAsOld: 'New password must differ from the old one',
+        changePasswordThrottled: 'Too many attempts, please try again later',
+        passwordPolicy: 'Password does not meet the policy: {violations}',
+        pwdSetTooFrequent: 'Password was set too recently, retry in {remainingSeconds}s',
         passwordViolation: {
           minLength: 'length below the policy minimum',
           maxLength: 'length exceeds the policy maximum',

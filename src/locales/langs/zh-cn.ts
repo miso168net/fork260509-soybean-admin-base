@@ -110,6 +110,13 @@ const local: App.I18n.Schema = {
         cannotKickSelf: '不能踢除自己',
         cannotEditSelfRoleOrStatus: '不能修改自己的角色或状态',
         roleNotFound: '角色不存在',
+        cannotResetSelfPassword: '请到个人中心修改自己的密码',
+        passwordConfirmMismatch: '两次输入的密码不一致',
+        oldPasswordMismatch: '旧密码不正确',
+        passwordSameAsOld: '新密码不能与旧密码相同',
+        changePasswordThrottled: '尝试次数过多，请稍后再试',
+        passwordPolicy: '密码不符合安全策略：{violations}',
+        pwdSetTooFrequent: '密码设置过于频繁，请 {remainingSeconds} 秒后再试',
         passwordViolation: {
           minLength: '长度未达策略下限',
           maxLength: '长度超过策略上限',

@@ -214,6 +214,26 @@ const backendMessages = {
         cannotEditSelfRoleOrStatus: '不能修改自己的角色或狀態',
         // roleIds 含不存在或已軟刪之角色 id（整筆拒、非 orphan skip）
         roleNotFound: '角色不存在',
+        // self 五不：不得以管理頁重設自己的密碼（改密動線導向個人中心；本刀 U4）
+        cannotResetSelfPassword: '請到個人中心修改自己的密碼',
+        // changePassword 五步序②：兩次輸入不一致
+        passwordConfirmMismatch: '兩次輸入的密碼不一致',
+        // changePassword 五步序④：舊密碼驗證不過
+        oldPasswordMismatch: '舊密碼不正確',
+        // changePassword 五步序⑤：新密碼與舊密碼相同
+        passwordSameAsOld: '新密碼不能與舊密碼相同',
+        // 改密舊密猜測節流（15 分鐘 5 次；★純 key、不下發剩餘次數或秒數）
+        changePasswordThrottled: '嘗試次數過多，請稍後再試',
+        // ★攜參拒因之一（BizData）：{violations}＝前端把 data.violations 逐碼經下方
+        //   passwordViolation 白名單譯後、以 common.listSeparator 串起來的清單
+        // ★★佔位符字面 MUST 逐字等於後端信封 data 的**鍵名**（`violations`）：轉譯點
+        //   service/request/index.ts 的 translateBackendMsg 是把 data 的鍵名原樣當
+        //   vue-i18n 具名參數，名字對不上時 vue-i18n 把該參數渲染成**空字串**（不報錯、
+        //   不 fallback）⇒ 使用者看到「密碼不符合安全策略：」後面整段違規明細消失，而
+        //   Lint24 只比鍵集、typecheck 看不到字串內容 ⇒ 全樹零紅點。
+        passwordPolicy: '密碼不符合安全策略：{violations}',
+        // ★攜參拒因之二（BizData）：{remainingSeconds}＝data.remainingSeconds 逐字
+        pwdSetTooFrequent: '密碼設定過於頻繁，請 {remainingSeconds} 秒後再試',
         passwordViolation: {
           minLength: '長度未達政策下限',
           maxLength: '長度超過政策上限',

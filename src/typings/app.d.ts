@@ -407,7 +407,8 @@ declare namespace App {
           };
           // 白名單八鍵（後端恆不發）：密碼政策違規碼逐碼譯文（translateDetailValue 消費）
           user: {
-            // 後端實發十二鍵（US1 七支管理端點十一鍵＋本刀 U3 之 cannotKickSelf；
+            // 後端實發十九鍵（US1 七支管理端點十一鍵＋U3 之 cannotKickSelf＋本刀 U4 之
+            // 密碼面七鍵〔cannotResetSelfPassword／五步序四鍵／攜參二鍵〕；
             // 譯文權威＝contracts/msg-keys.md）
             notFound: string;
             userNameExists: string;
@@ -421,6 +422,16 @@ declare namespace App {
             cannotKickSelf: string;
             cannotEditSelfRoleOrStatus: string;
             roleNotFound: string;
+            cannotResetSelfPassword: string;
+            passwordConfirmMismatch: string;
+            oldPasswordMismatch: string;
+            passwordSameAsOld: string;
+            changePasswordThrottled: string;
+            // ★攜參二鍵（後端 AppError::BizData）：passwordPolicy 帶 {violations}、
+            //   pwdSetTooFrequent 帶 {remainingSeconds}——佔位符字面權威＝
+            //   specs/007-user-password-admin/contracts/msg-keys.md
+            passwordPolicy: string;
+            pwdSetTooFrequent: string;
             passwordViolation: {
               minLength: string;
               maxLength: string;
