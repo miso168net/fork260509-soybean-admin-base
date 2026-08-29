@@ -216,6 +216,9 @@ const backendMessages = {
         roleNotFound: '角色不存在',
         // self 五不：不得以管理頁重設自己的密碼（改密動線導向個人中心；本刀 U4）
         cannotResetSelfPassword: '請到個人中心修改自己的密碼',
+        // updateUserSessionPolicy 的 sessionPolicy 不在三值內（inherit／single／multi；
+        // 欄缺席＝空字串亦走本鍵——契約 §10「缺席→空串→同一拒因」；本刀 U5）
+        sessionPolicyInvalid: '會話策略無效',
         // changePassword 五步序②：兩次輸入不一致
         passwordConfirmMismatch: '兩次輸入的密碼不一致',
         // changePassword 五步序④：舊密碼驗證不過

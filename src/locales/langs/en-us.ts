@@ -111,6 +111,7 @@ const local: App.I18n.Schema = {
         cannotEditSelfRoleOrStatus: 'Cannot change your own roles or status',
         roleNotFound: 'Role not found',
         cannotResetSelfPassword: 'Change your own password in the user center',
+        sessionPolicyInvalid: 'Invalid session policy',
         passwordConfirmMismatch: 'Passwords do not match',
         oldPasswordMismatch: 'Old password is incorrect',
         passwordSameAsOld: 'New password must differ from the old one',

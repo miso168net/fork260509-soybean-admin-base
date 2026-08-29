@@ -111,6 +111,7 @@ const local: App.I18n.Schema = {
         cannotEditSelfRoleOrStatus: '不能修改自己的角色或状态',
         roleNotFound: '角色不存在',
         cannotResetSelfPassword: '请到个人中心修改自己的密码',
+        sessionPolicyInvalid: '会话策略无效',
         passwordConfirmMismatch: '两次输入的密码不一致',
         oldPasswordMismatch: '旧密码不正确',
         passwordSameAsOld: '新密码不能与旧密码相同',

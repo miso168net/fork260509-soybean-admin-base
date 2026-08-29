@@ -407,9 +407,9 @@ declare namespace App {
           };
           // 白名單八鍵（後端恆不發）：密碼政策違規碼逐碼譯文（translateDetailValue 消費）
           user: {
-            // 後端實發十九鍵（US1 七支管理端點十一鍵＋U3 之 cannotKickSelf＋本刀 U4 之
-            // 密碼面七鍵〔cannotResetSelfPassword／五步序四鍵／攜參二鍵〕；
-            // 譯文權威＝contracts/msg-keys.md）
+            // 後端實發二十鍵（US1 七支管理端點十一鍵＋U3 之 cannotKickSelf＋U4 之
+            // 密碼面七鍵〔cannotResetSelfPassword／五步序四鍵／攜參二鍵〕＋本刀 U5 之
+            // sessionPolicyInvalid＝本刀終態；譯文權威＝contracts/msg-keys.md）
             notFound: string;
             userNameExists: string;
             userNameInvalid: string;
@@ -423,6 +423,7 @@ declare namespace App {
             cannotEditSelfRoleOrStatus: string;
             roleNotFound: string;
             cannotResetSelfPassword: string;
+            sessionPolicyInvalid: string;
             passwordConfirmMismatch: string;
             oldPasswordMismatch: string;
             passwordSameAsOld: string;
