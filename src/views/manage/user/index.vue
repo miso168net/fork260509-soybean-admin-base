@@ -1,7 +1,8 @@
 <script setup lang="tsx">
 // [rev5-inline BASE-WEB-MANAGE-PAGE-WIRING(v) 007-user-password-admin] 加 watch（回收桶 toggle 切資料源時清勾選＋回第一頁，見檔尾）；原行: import { ref } from 'vue';
 import { ref, watch } from 'vue';
-import { NButton, NPopconfirm, NTag } from 'naive-ui';
+// [rev5-inline BASE-WEB-MANAGE-PAGE-WIRING(v) 007-user-password-admin] 本刀 U7 補 NDropdown＝operate 欄「踢除／重設密碼／隨機密碼」三個維運動作的收納入口（憲法 §III.2 (v) 列紀律欄逐字「操作下拉之踢除·重設密碼·隨機密碼」）；原行: import { NButton, NPopconfirm, NTag } from 'naive-ui';
+import { NButton, NDropdown, NPopconfirm, NTag } from 'naive-ui';
 import { enableStatusRecord, userGenderRecord } from '@/constants/business';
 // [rev5-inline BASE-WEB-MANAGE-PAGE-WIRING(v) 007-user-password-admin] 資料源與單刪／批刪／復原全數改 rev5 wrapper（★直接路徑、不經 barrel——沿 rev5-role-admin／rev5-ip-rule 先例）；demo 殼的同名 fetchGetUserList 續留 barrel 供 demo 面、一行不動（其去留＝B-018、不在本刀射程）；原行: import { fetchGetUserList } from '@/service/api';
 import {
@@ -9,15 +10,52 @@ import {
   fetchDeleteUser,
   fetchGetDeletedUsers,
   fetchGetUserList,
+  // [rev5-inline BASE-WEB-MANAGE-PAGE-WIRING(v)+ 007-user-password-admin] 本刀 U7：踢除（契約 §8）與重設他人密碼（契約 §9）取得 UI 消費者
+  fetchKickUser,
+  fetchResetUserPassword,
   fetchRestoreUser
 } from '@/service/api/rev5-user-admin';
+// [rev5-inline BASE-WEB-MANAGE-PAGE-WIRING(v)+ 007-user-password-admin START] 本刀 U7 三支新相依：
+// ①`usePwdPolicy`＝政策七欄投影的共用取得與快取（產密浮層的構造資料源）——★管理頁讀它是為了
+//   「產一組合規密碼」，不是為了在前端擋下不合規的輸入（後端仍是唯一裁判、島 I5 單一驗證點）；
+//   ★快取住在 hook 的模組層＝本頁與抽屜共用同一份，不是各持一份（FR-007 共用件零拷貝）。
+// ②`useAuth().hasAuth`＝七枚按鈕碼的顯隱判準（★僅前端可見性，後端 `require_policy` 才是安全邊界）。
+// ③`authStore.userInfo.userId`＝判「這一列是不是自己」的唯一料源（self 五不之「重設密碼」入口收斂）。
+import { useAuth } from '@/hooks/business/auth';
+import { usePwdPolicy } from '@/hooks/business/pwd-policy';
 import { useAppStore } from '@/store/modules/app';
+import { useAuthStore } from '@/store/modules/auth';
+// [rev5-inline BASE-WEB-MANAGE-PAGE-WIRING(v)+ 007-user-password-admin END]
 import { defaultTransform, useNaivePaginatedTable, useTableOperate } from '@/hooks/common/table';
 import { $t } from '@/locales';
+// [rev5-inline BASE-WEB-MANAGE-PAGE-WIRING(v)+ 007-user-password-admin] 本刀 U7：產密浮層（CSPRNG 依政策構造性產出、零網路請求）
+import PwdGenModal from '@/components/custom/pwd-gen-modal.vue';
 import UserOperateDrawer from './modules/user-operate-drawer.vue';
 import UserSearch from './modules/user-search.vue';
+// [rev5-inline BASE-WEB-MANAGE-PAGE-WIRING(v)+ 007-user-password-admin] 本刀 U7：頁首解鎖浮層（雙維、打 004 既有 unlockLogin 端點）
+import UserUnlockModal from './modules/user-unlock-modal.vue';
 
 const appStore = useAppStore();
+
+// [rev5-inline BASE-WEB-MANAGE-PAGE-WIRING(v)+ 007-user-password-admin START] 本刀 U7：按鈕碼 gating 與 self 判定的取用點。
+// ★七枚按鈕碼＝`user:add`／`user:edit`／`user:delete`／`user:reset-pwd`／`user:kick`／`user:restore`／`user:unlock`
+// （m002 seed 全在案）。本頁**逐鈕** gating 的判準＝該頁 menu 維政策非僅 R_SUPER（`manage_user` 實測
+// ＝{R_SUPER, R_ADMIN}）⇒ 非超管進得來、看得到的鈕就必須誠實反映他被授了什麼；role／menu 兩頁的
+// menu 維政策僅 R_SUPER、門在頁級，故那兩頁不 gating 之既有拍板不變（ADR 0063 款三例外釋義）。
+// ★**鈕可見 ≠ 呼得動**：按鈕碼與端點政策是兩把各自獨立的鑰匙、由超管一併治理——被授鈕未被授端點者
+// 按下去得 5003（誠實），反之端點有鈕無者鈕不見而 API 仍可達（spec US4 情境 6）。
+const { hasAuth } = useAuth();
+
+const authStore = useAuthStore();
+
+// 密碼政策七欄投影＋其取得（共用 hook；`policy` 具名為 pwdPolicy 以免與本檔其他「政策」字樣混讀）
+const { policy: pwdPolicy, ensureLoaded: ensurePwdPolicy } = usePwdPolicy();
+
+// 頁首「解鎖登入」浮層開關（`user:unlock` gating）。★**刻意不隨回收桶 toggle 收起**：解鎖的標的是
+// 登入節流的計數桶／帳號鎖，與本頁當下看的是現役清單還是回收桶無關（同 rev4 該鈕的既有取態）；
+// 新增／批刪那兩顆才需要跟著 toggle 走——它們打的是清單裡的列。
+const unlockVisible = ref(false);
+// [rev5-inline BASE-WEB-MANAGE-PAGE-WIRING(v)+ 007-user-password-admin END]
 
 // [rev5-inline BASE-WEB-MANAGE-PAGE-WIRING(v)+ 007-user-password-admin START] 「顯示已刪除」toggle 狀態＋回收桶分頁參
 // （契約 §2 之 getDeletedUsers 只收 `{current, size}`、無過濾欄，故回收桶側自持一份分頁參；形照本 repo
@@ -214,46 +252,69 @@ const { columns, columnChecks, data, getData, getDataByPage, loading, mobilePagi
       key: 'operate',
       title: $t('common.operate'),
       align: 'center',
-      width: 130,
-      // [rev5-inline BASE-WEB-MANAGE-PAGE-WIRING(v) 007-user-password-admin] 已刪模式整欄換「復原」、隱編輯與刪除（兩資料源的列不同族：對已軟刪列打編輯／刪除必得 notFound）。★不另加刪除時間欄——回收桶的次序語意由契約 §2 的 `deleted_at DESC, id DESC` 承載，wire 亦不帶該欄（rev4 的 deletedAt 孤兒鍵不帶回＝R2#28）；原行: render: row => (
-      render: row =>
-        showDeleted.value ? (
+      // [rev5-inline BASE-WEB-MANAGE-PAGE-WIRING(v) 007-user-password-admin] 本刀 U7：operate 欄自兩控件（編輯／刪除）加寬到三控件（＋維運動作下拉）——★`scroll-x` 的 Σ 欄寬不變式同批改（見下方 NDataTable）；原行: width: 130,
+      width: 200,
+      // [rev5-inline BASE-WEB-MANAGE-PAGE-WIRING(v) 007-user-password-admin] 已刪模式整欄換「復原」、隱編輯與刪除（兩資料源的列不同族：對已軟刪列打編輯／刪除必得 notFound）。★不另加刪除時間欄——回收桶的次序語意由契約 §2 的 `deleted_at DESC, id DESC` 承載，wire 亦不帶該欄（rev4 的 deletedAt 孤兒鍵不帶回＝R2#28）。本刀 U7 再改箭頭本體為區塊形：維運動作的選項集要先算一次再用兩次（渲染判斷＋傳給 NDropdown），表達式形只能重算一遍；原行: render: row => (
+      render: row => {
+        if (showDeleted.value) {
+          return (
+            <div class="flex-center gap-8px">
+              {hasAuth('user:restore') && (
+                <NPopconfirm onPositiveClick={() => handleRestore(row.id)}>
+                  {{
+                    // ★確認框逐字明示「復原後需重新指派角色」（spec US1 情境 5）：復原是零回灌——刪除交易已硬刪
+                    // 全部指派列，不在按下去之前講清楚，使用者會以為角色會跟著回來。
+                    default: () => (
+                      <div class="flex-col-stretch gap-4px">
+                        <span>{$t('page.manage.user.confirmRestore')}</span>
+                        <span>{$t('page.manage.user.restoreHint')}</span>
+                      </div>
+                    ),
+                    trigger: () => (
+                      <NButton type="primary" ghost size="small">
+                        {$t('page.manage.user.restore')}
+                      </NButton>
+                    )
+                  }}
+                </NPopconfirm>
+              )}
+            </div>
+          );
+        }
+
+        // 維運動作（踢除／重設密碼／隨機密碼）：選項集空＝兩枚按鈕碼皆無權、或這一列是自己而重設密碼
+        // 兩項被收斂掉 ⇒ 整顆下拉不渲染（留一顆點開是空的鈕比不給還糟）。
+        const operateOptions = getOperateOptions(row);
+
+        return (
           <div class="flex-center gap-8px">
-            <NPopconfirm onPositiveClick={() => handleRestore(row.id)}>
-              {{
-                // ★確認框逐字明示「復原後需重新指派角色」（spec US1 情境 5）：復原是零回灌——刪除交易已硬刪
-                // 全部指派列，不在按下去之前講清楚，使用者會以為角色會跟著回來。
-                default: () => (
-                  <div class="flex-col-stretch gap-4px">
-                    <span>{$t('page.manage.user.confirmRestore')}</span>
-                    <span>{$t('page.manage.user.restoreHint')}</span>
-                  </div>
-                ),
-                trigger: () => (
-                  <NButton type="primary" ghost size="small">
-                    {$t('page.manage.user.restore')}
-                  </NButton>
-                )
-              }}
-            </NPopconfirm>
+            {hasAuth('user:edit') && (
+              <NButton type="primary" ghost size="small" onClick={() => edit(row.id)}>
+                {$t('common.edit')}
+              </NButton>
+            )}
+            {hasAuth('user:delete') && (
+              <NPopconfirm onPositiveClick={() => handleDelete(row.id)}>
+                {{
+                  default: () => $t('common.confirmDelete'),
+                  trigger: () => (
+                    <NButton type="error" ghost size="small">
+                      {$t('common.delete')}
+                    </NButton>
+                  )
+                }}
+              </NPopconfirm>
+            )}
+            {operateOptions.length > 0 && (
+              <NDropdown options={operateOptions} onSelect={key => handleOperateSelect(key as OperateKey, row)}>
+                <NButton size="small" ghost>
+                  {$t('common.action')}
+                </NButton>
+              </NDropdown>
+            )}
           </div>
-        ) : (
-          <div class="flex-center gap-8px">
-            <NButton type="primary" ghost size="small" onClick={() => edit(row.id)}>
-              {$t('common.edit')}
-            </NButton>
-            <NPopconfirm onPositiveClick={() => handleDelete(row.id)}>
-              {{
-                default: () => $t('common.confirmDelete'),
-                trigger: () => (
-                  <NButton type="error" ghost size="small">
-                    {$t('common.delete')}
-                  </NButton>
-                )
-              }}
-            </NPopconfirm>
-          </div>
-        )
+        );
+      }
     }
   ]
 });
@@ -319,6 +380,144 @@ async function handleRestore(id: number) {
 function edit(id: number) {
   handleEdit(id);
 }
+
+// [rev5-inline BASE-WEB-MANAGE-PAGE-WIRING(v)+ 007-user-password-admin START] 本刀 U7：列上維運動作三件
+// （踢除／重設密碼／隨機密碼）與兩顆浮層的狀態機。
+// ★三個動作共用同一個「標的列」——`operateTarget` 於開浮層時鎖定，浮層本身不再從清單重讀，
+// 免得清單在浮層開著的期間被刷新（分頁、搜尋、其他動作的 getData）而讓送出的 id 換了一個人。
+
+/** 這一列是不是操作者自己（`userInfo.userId` 為**字串**、列 wire 的 `id` 為 number ⇒ 對齊字串側比較；反向 Number() 在 id 超出安全整數時會靜默失真） */
+function isSelfRow(row: Api.UserAdmin.UserRecord) {
+  return String(row.id) === authStore.userInfo.userId;
+}
+
+/**
+ * 維運動作鍵（下拉選項與分派臂的**唯一**字面來源）
+ *
+ * ★不可退回裸 `string`：選項側與分派側各寫一遍同樣的字面、彼此零型別關聯時，任一邊打錯字
+ * （`resetPwd` 誤寫成 `resetPassword`）六道閘全綠、build 照過，使用者點下該項只會得到**完全靜默
+ * 的無反應**（浮層不開、無 toast、無請求）——base-web 無測試 runner，這種錯只有人工點過才會發現。
+ * 綁成字面聯合型別後：選項側打錯＝不可指派（TS2322）、分派側打錯＝無交集比較（TS2367），當場紅。
+ */
+type OperateKey = 'kick' | 'resetPwd' | 'randomPassword';
+
+/**
+ * 維運動作下拉的選項集（逐鈕 gating＋self 收斂）
+ *
+ * ★**自己那一列不列「重設密碼」與「隨機密碼」**（self 五不）：兩者打的是同一支 `resetUserPassword`，
+ * 而契約 §9 對 self 的拒因逐字是「請到個人中心修改自己的密碼」＝一條**改道指引**，不是單純的不允許
+ * ——既然另有正確的路，就別讓人先按了才知道走錯門。
+ * ★踢除**不**做同樣的收斂：`cannotKickSelf` 是單純的不允許（沒有替代路徑），與同列的「刪除」對 self
+ * 的處置一致——由後端拒因 toast 承載，前端不多做一套。
+ */
+function getOperateOptions(row: Api.UserAdmin.UserRecord) {
+  const options: { label: string; key: OperateKey }[] = [];
+
+  if (hasAuth('user:kick')) {
+    options.push({ label: $t('page.manage.user.kick'), key: 'kick' });
+  }
+
+  if (hasAuth('user:reset-pwd') && !isSelfRow(row)) {
+    options.push({ label: $t('page.manage.user.resetPwd'), key: 'resetPwd' });
+    options.push({ label: $t('page.manage.user.randomPassword'), key: 'randomPassword' });
+  }
+
+  return options;
+}
+
+/** 當前維運動作的標的列（浮層開啟期間鎖定；null＝沒有進行中的動作） */
+const operateTarget = ref<Api.UserAdmin.UserRecord | null>(null);
+const kickVisible = ref(false);
+const resetPwdVisible = ref(false);
+/** 重設密碼浮層的輸入值（手輸或由產密浮層帶入；關閉即清、不跨開關留存） */
+const resetPwdValue = ref('');
+const pwdGenVisible = ref(false);
+
+function handleOperateSelect(key: OperateKey, row: Api.UserAdmin.UserRecord) {
+  operateTarget.value = row;
+
+  if (key === 'kick') {
+    kickVisible.value = true;
+  } else if (key === 'resetPwd') {
+    // 輸入欄不必在此清空：「關閉即清」的不變式由下方 watch 單點維持（closed ⇒ empty），開啟必然是空的
+    resetPwdVisible.value = true;
+  } else if (key === 'randomPassword') {
+    openPwdGen();
+  }
+}
+
+async function openPwdGen() {
+  // 取政策（已有快取即零請求）；讀失敗維持 null＝浮層以自帶預設界生成、不擋產密（見 hook 註）
+  await ensurePwdPolicy();
+
+  pwdGenVisible.value = true;
+}
+
+// 產密浮層「帶入」→ 填進重設密碼浮層的輸入欄並開之：★產出的密碼**不直接送出**，一律再經一次
+// 確認才寫——一鍵改掉別人的密碼是不可逆的破壞性動作，值得多按一下。
+function handlePwdGenApply(password: string) {
+  resetPwdValue.value = password;
+  resetPwdVisible.value = true;
+}
+
+async function handleKick() {
+  const target = operateTarget.value;
+
+  if (!target) {
+    return;
+  }
+
+  // 踢除不改列資料（帳號仍活）⇒ 毋需刷新清單；拒因（notFound／cannotKickSelf／5003）由攔截層 toast
+  const { error } = await fetchKickUser(target.id);
+
+  kickVisible.value = false;
+
+  if (error) {
+    return;
+  }
+
+  window.$message?.success($t('page.manage.user.kickSuccess'));
+}
+
+// 關閉重設密碼浮層即清明文（同本刀 U6 為抽屜補的「敏感狀態與顯示狀態同進退」）：`resetPwdValue` 是
+// 模組級 ref，而本頁常被 KeepAlive 留在分頁堆疊裡——不清就會讓打進去（或產生後帶入）的明文密碼一路
+// 留到下一次有人再開這顆浮層為止。
+// ★掛在 visible 的 falsy 邊、不掛取消鈕的處理器：NModal 的 closable 叉、遮罩點擊與 ESC 都直接改 visible、
+// 不經任何按鈕處理器，掛在鈕上會漏掉那三條路。
+watch(resetPwdVisible, val => {
+  if (!val) {
+    resetPwdValue.value = '';
+  }
+});
+
+async function handleResetPwd() {
+  const target = operateTarget.value;
+
+  if (!target) {
+    return;
+  }
+
+  // 拒因（notFound／cannotResetSelfPassword／5003／政策攜參 violations／冷卻攜參 remainingSeconds）
+  // 一律由攔截層 toast；★失敗時**浮層留著**、輸入值不清，讓使用者就地改一個合規的再送。
+  const { error } = await fetchResetUserPassword({ id: target.id, password: resetPwdValue.value });
+
+  if (error) {
+    return;
+  }
+
+  // 關閉即由 watch 清掉輸入的明文（見上）
+  resetPwdVisible.value = false;
+  window.$message?.success($t('page.manage.user.resetPwdSuccess'));
+
+  // ★重設**會**改列資料 ⇒ 必須刷新：後端在 UPDATE `password` 的同一交易裡成對 bump 標的列的
+  // `updated_at`／`updated_by`（憲法 §I.6：密碼變更＝使用者列變更），而本頁的「更新時間」「更新人」
+  // 兩欄預設可見——不刷新的話那兩格會一路停在重設前的舊值（該帳號從未被編輯過時甚至仍是空的），
+  // 直到有人手動按刷新鈕、換頁或重新搜尋為止。形同本檔 handleRestore（`await getData()`＝留在當前頁
+  // 重取，不像 getDataByPage 會把頁碼帶回第一頁——重設不增刪列、頁碼不該跳）。
+  // ★同批的 handleKick **不**做這件事是對的：踢除只撤票、零列變更（見該處註解）。
+  await getData();
+}
+// [rev5-inline BASE-WEB-MANAGE-PAGE-WIRING(v)+ 007-user-password-admin END]
 </script>
 
 <template>
@@ -340,14 +539,20 @@ function edit(id: number) {
           @refresh="getData"
         >
           <!--
-            [rev5-inline BASE-WEB-MANAGE-PAGE-WIRING(v)+ 007-user-password-admin START] 回收桶 UI 入口兩件：
+            [rev5-inline BASE-WEB-MANAGE-PAGE-WIRING(v)+ 007-user-password-admin START] 本 slot as-built ＝**三顆鈕**
+            （新增／批量刪除／解鎖登入），另含回收桶 UI 入口兩件：
             ①「顯示已刪除」toggle（prefix slot；v-model 綁 showDeleted＝資料源／操作欄切換的唯一寫入者；
             NSwitch 走 unplugin 全域註冊、毋須 script import）。
             ②已刪模式下新增／批量刪除入口不現（資料源語意不同：新增後刷新的是已刪清單、批刪打已軟刪列必 notFound）。
-            ★此 slot 不得渲染成全註解（B-099）：兩鈕若直接掛 v-if、已刪模式下 slot 只剩註解 vnode，Vue renderSlot
-            判定內容無效即改渲染 **fallback**（共用元件自帶的新增／批刪鈕，且本頁確有 @add／@delete 綁定＝綁定仍活）
-            ——寫端入口反而冒回來。故外層容器 div 永遠渲染（保底非註解節點）、以 v-show 於已刪模式移出版面
-            （空 div 不佔 NSpace 間距）；內層 v-if 負責把互動入口自 DOM 誠實移除。gap-12px＝NSpace medium 水平間距同值。
+            ★此 slot 不得渲染成全註解（B-099）：三鈕若直接掛 v-if，條件全假時（已刪模式且無 user:unlock、
+            或三枚按鈕碼全無權）slot 只剩註解 vnode，Vue renderSlot 判定內容無效即改渲染 **fallback**
+            （共用元件自帶的新增／批刪鈕，且本頁確有 @add／@delete 綁定＝綁定仍活）——寫端入口反而冒回來。
+            故外層容器 div 永遠渲染（保底非註解節點）、以 v-show 移出版面（空 div 不佔 NSpace 間距）；
+            內層 v-if 負責把互動入口自 DOM 誠實移除。
+            ★該 v-show 的條件**含兩個維度、不只 showDeleted**：回收桶維（新增／批刪隨 toggle 收起）**與授權維**
+            （三枚按鈕碼全無權即整塊移出版面，否則無權者看到空操作區）——授權那半不是冗餘、不得刪。
+            ★解鎖鈕刻意不隨 toggle 收起（故其條件是獨立的 or 項），理由寫在 script 區 unlockVisible 宣告處、此處不重述。
+            gap-12px＝NSpace medium 水平間距同值。
           -->
           <template #prefix>
             <div class="flex-center gap-8px">
@@ -356,14 +561,17 @@ function edit(id: number) {
             </div>
           </template>
           <template #default>
-            <div v-show="!showDeleted" class="flex-y-center gap-12px">
-              <NButton v-if="!showDeleted" size="small" ghost type="primary" @click="handleAdd">
+            <div
+              v-show="(!showDeleted && (hasAuth('user:add') || hasAuth('user:delete'))) || hasAuth('user:unlock')"
+              class="flex-y-center gap-12px"
+            >
+              <NButton v-if="!showDeleted && hasAuth('user:add')" size="small" ghost type="primary" @click="handleAdd">
                 <template #icon>
                   <icon-ic-round-plus class="text-icon" />
                 </template>
                 {{ $t('common.add') }}
               </NButton>
-              <NPopconfirm v-if="!showDeleted" @positive-click="handleBatchDelete">
+              <NPopconfirm v-if="!showDeleted && hasAuth('user:delete')" @positive-click="handleBatchDelete">
                 <template #trigger>
                   <NButton size="small" ghost type="error" :disabled="checkedRowKeys.length === 0">
                     <template #icon>
@@ -374,6 +582,12 @@ function edit(id: number) {
                 </template>
                 {{ $t('common.confirmDelete') }}
               </NPopconfirm>
+              <NButton v-if="hasAuth('user:unlock')" size="small" ghost @click="unlockVisible = true">
+                <template #icon>
+                  <icon-ic-round-lock-open class="text-icon" />
+                </template>
+                {{ $t('page.manage.user.unlockLogin') }}
+              </NButton>
             </div>
           </template>
           <!-- [rev5-inline BASE-WEB-MANAGE-PAGE-WIRING(v)+ 007-user-password-admin END] -->
@@ -383,6 +597,7 @@ function edit(id: number) {
         新增七欄（roles 140＋sessionPolicy 110＋userMemo 140＋createdAt 180＋createdBy 110＋updatedAt 180＋updatedBy 110＝+970）
         ⇒ scroll-x 隨欄寬總和 962+970＝1932（欄寬總和不變式：scroll-x＝Σ(width|minWidth)，增刪欄或調欄寬時本數字必須同批改；
         ★rev4 該頁 scroll-x 停在 962 未隨欄改＝瑕疵不抄，R2#19）。
+        ★本刀 U7 再改：operate 欄 130→200（多一顆維運動作下拉）⇒ 1932＋70＝**2002**。
         ★本註解刻意排成 multiline 形：singleline 形下 eslint（vue/html-comment-content-newline）的 fix 會把註解閉合符併回行尾、令行尾錨定的「原行」擷取值失真（fork-delta-lint 當場紅）；
         [rev5-inline BASE-WEB-MANAGE-PAGE-WIRING(v) 007-user-password-admin] 原行: :scroll-x="962"
       -->
@@ -392,7 +607,7 @@ function edit(id: number) {
         :data="data"
         size="small"
         :flex-height="!appStore.isMobile"
-        :scroll-x="1932"
+        :scroll-x="2002"
         :loading="loading"
         remote
         :row-key="row => row.id"
@@ -405,6 +620,60 @@ function edit(id: number) {
         :row-data="editingData"
         @submitted="getDataByPage"
       />
+      <!--
+        [rev5-inline BASE-WEB-MANAGE-PAGE-WIRING(v)+ 007-user-password-admin START] 本刀 U7 的三顆浮層。
+        ★踢除確認走 NModal 的 dialog preset、不走 NPopconfirm：觸發點在 NDropdown 的選項裡，
+        popconfirm 需要一個常駐的觸發節點，而下拉選中即收合、沒有那個節點可掛。
+        ★標的帳號名一律純文字插值（`{ userName }` 交 $t 代入、由 Vue 逸出）——本目錄禁一切原始標記注入
+        （FR-015；機器守＝tools/view-render-guard.py，該守門逐字掃本目錄原文、不解析註解，故此處刻意不寫出被禁字面）。
+      -->
+      <NModal
+        v-model:show="kickVisible"
+        preset="dialog"
+        type="warning"
+        :title="$t('page.manage.user.kick')"
+        :content="$t('page.manage.user.confirmKick')"
+        :positive-text="$t('common.confirm')"
+        :negative-text="$t('common.cancel')"
+        @positive-click="handleKick"
+      />
+      <NModal
+        v-model:show="resetPwdVisible"
+        preset="card"
+        :title="$t('page.manage.user.resetPwdTitle', { userName: operateTarget?.userName ?? '' })"
+        class="w-400px lt-sm:w-300px"
+      >
+        <NSpace vertical :size="12">
+          <span class="text-14px">{{ $t('page.manage.user.newPassword') }}</span>
+          <!--
+            前端只擋空值（送出鈕 disabled）：長度／字元類／不得同帳號名等政策細則為後端權威，
+            違規明細經攔截層以 `passwordPolicy{violations}` 渲染——此處不預判亦不自造規則文案。
+          -->
+          <NInput
+            v-model:value="resetPwdValue"
+            type="password"
+            show-password-on="click"
+            :placeholder="$t('page.manage.user.form.password')"
+          />
+        </NSpace>
+        <template #footer>
+          <NSpace justify="end">
+            <NButton @click="resetPwdVisible = false">{{ $t('common.cancel') }}</NButton>
+            <NButton type="primary" :disabled="resetPwdValue === ''" @click="handleResetPwd">
+              {{ $t('common.confirm') }}
+            </NButton>
+          </NSpace>
+        </template>
+      </NModal>
+      <PwdGenModal
+        v-model:visible="pwdGenVisible"
+        :policy="pwdPolicy"
+        :user-name="operateTarget?.userName ?? ''"
+        @apply="handlePwdGenApply"
+      />
+      <!-- 頁首解鎖浮層：雙維、送出處顯式帶 dimension（後端無預設維度、缺席即 2222） -->
+      <UserUnlockModal v-model:visible="unlockVisible" />
+      <!-- [rev5-inline BASE-WEB-MANAGE-PAGE-WIRING(v)+ 007-user-password-admin END] -->
     </NCard>
   </div>
 </template>

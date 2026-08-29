@@ -4,10 +4,21 @@ import { computed, ref, watch } from 'vue';
 import { enableStatusOptions, userGenderOptions } from '@/constants/business';
 // [rev5-inline BASE-WEB-MANAGE-PAGE-WIRING(v) 007-user-password-admin] 角色候選改打 rev5 wrapper 的 getAllRoles（★直接路徑、不經 barrel——沿 role 頁三顆 modal 之 rev5-role-admin 消費先例；回 `{id, roleCode, roleName}` 三欄白名單，本抽屜要的是 **id**：寫端契約收 roleIds、demo 殼那支的型不帶語意差別但走的是凍結的 demo 命名空間）；原行: import { fetchGetAllRoles } from '@/service/api';
 import { fetchGetAllRoles } from '@/service/api/rev5-role-admin';
-// [rev5-inline BASE-WEB-MANAGE-PAGE-WIRING(v)+ 007-user-password-admin] 新增／更新提交接真（同上，直接路徑）
-import { fetchAddUser, fetchUpdateUser } from '@/service/api/rev5-user-admin';
+// [rev5-inline BASE-WEB-MANAGE-PAGE-WIRING(v)+ 007-user-password-admin] 新增／更新提交接真（同上，直接路徑）；
+// 本刀 U7 併入 fetchUpdateUserSessionPolicy——會話政策是**另一支端點**（契約 §10、protected super-only），
+// 不在 updateUser 的 body 裡，故編輯模式改了它就得多發一支（發不發的守門見 handleSubmit）。
+import { fetchAddUser, fetchUpdateUser, fetchUpdateUserSessionPolicy } from '@/service/api/rev5-user-admin';
+// [rev5-inline BASE-WEB-MANAGE-PAGE-WIRING(v)+ 007-user-password-admin] 本刀 U7：判「操作者是否超管」與「這一列是不是自己」的唯一料源＝authStore.userInfo（roles＝DB-fresh 角色 code 集、userId＝字串）
+import { useAuthStore } from '@/store/modules/auth';
 import { useFormRules, useNaiveForm } from '@/hooks/common/form';
+// [rev5-inline BASE-WEB-MANAGE-PAGE-WIRING(v)+ 007-user-password-admin] 本刀 U7：產密浮層的構造資料源（政策七欄投影、Authed 讀端）＝共用 hook。
+// ★讀它是為了「產一組合規密碼」，**不是**在前端擋下不合規的輸入——後端仍是唯一裁判
+//   （FR-019；FR-031 末句逐字「抽屜設密欄只掛提示文字」＝本欄不掛即時政策規則）。
+// ★快取住在 hook 的模組層＝本抽屜與 user 頁 index.vue 共用同一份（FR-007 共用件零拷貝）。
+import { usePwdPolicy } from '@/hooks/business/pwd-policy';
 import { $t } from '@/locales';
+// [rev5-inline BASE-WEB-MANAGE-PAGE-WIRING(v)+ 007-user-password-admin] 本刀 U7：產密浮層（CSPRNG 依政策構造性產出、零網路請求；與 user 頁 index.vue 同一支共用元件）
+import PwdGenModal from '@/components/custom/pwd-gen-modal.vue';
 
 defineOptions({
   name: 'UserOperateDrawer'
@@ -22,6 +33,13 @@ interface Props {
 }
 
 const props = defineProps<Props>();
+
+// [rev5-inline BASE-WEB-MANAGE-PAGE-WIRING(v)+ 007-user-password-admin START] 本刀 U7：超管角色 code（後端 no-escalation
+// 之「A＝全集」判準用的就是這一枚；憲法 §I.7 島 I7 逐字具名）。
+const SUPER_ROLE_CODE = 'R_SUPER';
+
+const authStore = useAuthStore();
+// [rev5-inline BASE-WEB-MANAGE-PAGE-WIRING(v)+ 007-user-password-admin END]
 
 interface Emits {
   (e: 'submitted'): void;
@@ -46,6 +64,41 @@ const title = computed(() => {
 
 const isEdit = computed(() => props.operateType === 'edit');
 
+// [rev5-inline BASE-WEB-MANAGE-PAGE-WIRING(v)+ 007-user-password-admin START] 本刀 U7 的兩個身分判定。
+// ★`isSuper`＝操作者現役角色集含 R_SUPER（`userInfo.roles` 為 DB-fresh 角色 code 集）——**只用來決定
+// 會話政策欄能不能動**，不用來預判任何其他後端規則（FR-020／G8：no-escalation 的包含規則前端一律不預判）。
+// ★`isSelf`＝這一列就是操作者本人。`userInfo.userId` 是**字串**、列 wire 的 `id` 是 number，故以字串側對齊比較
+// （反向 Number() 轉換在 id 超出安全整數時會靜默失真）。
+const isSuper = computed(() => authStore.userInfo.roles.includes(SUPER_ROLE_CODE));
+
+const isSelf = computed(() => {
+  const rowId = props.rowData?.id;
+
+  return rowId !== undefined && String(rowId) === authStore.userInfo.userId;
+});
+
+/**
+ * 會話政策欄的停用態＝**非超管**（FR-019）：該端點是 006 結構性封死的 protected 端點、不可授非超管，
+ * 送出必得 5003／403。★停用不是「藏起來」——欄仍顯示**現值**並附提示鍵，讓非超管看得到這個帳號現在
+ * 是什麼政策、也知道為什麼改不動（spec US4 情境 5 逐字「顯示現值但 disabled＋提示」）。
+ */
+const sessionPolicyLocked = computed(() => !isSuper.value);
+
+/**
+ * self 之 `status`／`roleIds` 停用態（契約 §4 self 守門「出現即拒」`cannotEditSelfRoleOrStatus`）
+ *
+ * ★只在編輯模式成立：新增模式沒有「這一列是自己」這回事。停用而非隱藏，同上一則的理由。
+ */
+const selfFieldsLocked = computed(() => isEdit.value && isSelf.value);
+
+/** 會話政策三值下拉選項（值域＝契約 §共用型 `SessionPolicy`；標籤鍵與列表欄同一組、不另造字面） */
+const sessionPolicyOptions = computed<CommonType.Option<Api.UserAdmin.SessionPolicy>[]>(() => [
+  { label: $t('page.manage.user.sessionPolicyOption.inherit'), value: 'inherit' },
+  { label: $t('page.manage.user.sessionPolicyOption.single'), value: 'single' },
+  { label: $t('page.manage.user.sessionPolicyOption.multi'), value: 'multi' }
+]);
+// [rev5-inline BASE-WEB-MANAGE-PAGE-WIRING(v)+ 007-user-password-admin END]
+
 // [rev5-inline BASE-WEB-MANAGE-PAGE-WIRING(v) 007-user-password-admin] 表單模型改自持（demo 型 Pick 不敷用）：
 // ①`userRoles`（角色 code 集）換 `roleIds`（角色 id 集）＝寫端契約的指派載體（R2#25 期望全集拍板）
 // ②補 `password`（僅新增模式渲染＝契約 §3 必填欄的輸入載體）與 `userMemo`（FR-015 記事欄）
@@ -65,6 +118,9 @@ type Model = {
   userMemo: string;
   roleIds: number[];
   status: Api.Common.EnableStatus | null;
+  // [rev5-inline BASE-WEB-MANAGE-PAGE-WIRING(v)+ 007-user-password-admin] 本刀 U7：會話政策（★僅編輯模式渲染——
+  // 契約 §3 的 addUser body 無此欄，新建帳號一律由後端落 `inherit`；本欄的送出走另一支端點、見 handleSubmit）
+  sessionPolicy: Api.UserAdmin.SessionPolicy;
 };
 
 const model = ref(createDefaultModel());
@@ -82,7 +138,9 @@ function createDefaultModel(): Model {
     roleIds: [],
     // [rev5-inline BASE-WEB-MANAGE-PAGE-WIRING(v)+ 007-user-password-admin] 記事欄（FR-015）
     userMemo: '',
-    status: null
+    status: null,
+    // [rev5-inline BASE-WEB-MANAGE-PAGE-WIRING(v)+ 007-user-password-admin] 本刀 U7：三值之預設＝`inherit`（跟隨全域），與後端新建帳號的落值同義
+    sessionPolicy: 'inherit'
   };
 }
 
@@ -216,7 +274,8 @@ function handleInitModel() {
 
   if (props.operateType === 'edit' && props.rowData) {
     // [rev5-inline BASE-WEB-MANAGE-PAGE-WIRING(v) 007-user-password-admin] 逐欄顯式回填、不整包拷貝：UserRecord 另帶 id／roles／審計欄等，整包進 model 再散出去會把 userName 一併送進 updateUser——rev5 契約「出現即拒」（rev4 等值放行不帶回、R2#2）；四個可空欄以空字串進 NInput（送出時的還原見 handleSubmit）；roleIds 於候選到位後由 getRoleOptions 落值；原行: Object.assign(model.value, jsonClone(props.rowData));
-    const { userName, userGender, nickName, userPhone, userEmail, userMemo, status } = props.rowData;
+    // [rev5-inline BASE-WEB-MANAGE-PAGE-WIRING(v)+ 007-user-password-admin] 本刀 U7：sessionPolicy 一併回填（列 wire 恆帶三值之一、非 null）——**回填即 diff 基準**，handleSubmit 據此判「有沒有真的改」
+    const { userName, userGender, nickName, userPhone, userEmail, userMemo, status, sessionPolicy } = props.rowData;
 
     model.value = {
       userName,
@@ -227,7 +286,8 @@ function handleInitModel() {
       userEmail: userEmail ?? '',
       userMemo: userMemo ?? '',
       roleIds: [],
-      status
+      status,
+      sessionPolicy
     };
   }
 }
@@ -267,12 +327,19 @@ async function handleSubmit() {
       return;
     }
 
-    const statusChanged = status !== props.rowData?.status;
+    // ★`!selfFieldsLocked` 與稍後的 `sessionPolicyChanged` 同形：欄位已 disabled，但把不變式只寫在一個
+    //   `:disabled` 上，等於讓一個顯示屬性當唯一防線。現況雖不可達（回填值＋disabled ⇒ diff 恆 false），
+    //   但任何一次讓 self 的 status／roleIds 先可寫再復位的改動，都會讓抽屜發出後端必拒的請求
+    //   （契約 §4 之 `cannotEditSelfRoleOrStatus`），而前端無任何機器守會紅（base-web 無測試 runner）。
+    const statusChanged = !selfFieldsLocked.value && status !== props.rowData?.status;
     // [rev5-inline BASE-WEB-MANAGE-PAGE-WIRING(v)+ 007-user-password-admin] ★鎖定態**恆不送 roleIds**（缺席＝不動）：
     // 契約 §4 該欄是期望全集全量替換，而鎖定態下的 model.roleIds 結構性缺了解不出的那幾個角色——送出
     // 等同替使用者做了一次沒說出口的解除。下拉已 disabled、正常路徑本就不會變動，此處把該不變式寫進
     // 提交面本身，不倚賴一個 UI 屬性當唯一防線。
-    const rolesChanged = !roleAssignLocked.value && !sameRoleIdSet(initialRoleIds.value, model.value.roleIds);
+    const rolesChanged =
+      !selfFieldsLocked.value &&
+      !roleAssignLocked.value &&
+      !sameRoleIdSet(initialRoleIds.value, model.value.roleIds);
 
     const { error } = await fetchUpdateUser({
       id: rowId,
@@ -288,6 +355,31 @@ async function handleSubmit() {
     if (error) {
       return;
     }
+
+    // [rev5-inline BASE-WEB-MANAGE-PAGE-WIRING(v)+ 007-user-password-admin START] 本刀 U7：會話政策的第二支呼叫
+    // （契約 §10 `updateUserSessionPolicy`——它不在 updateUser 的 body 裡，是獨立端點）。
+    // ★★**兩道守門缺一不可，且都不是 UI 屬性**（G7「不發出必敗的第二支呼叫」）：
+    // ①`isSuper`——該端點為 006 結構性封死的 protected 端點（不可授非超管），非超管送出必得 5003／403；
+    //   欄位已 disabled，但把不變式只寫在一個 `:disabled` 上，等於讓一個顯示屬性當唯一防線。
+    // ②與現值 diff——契約 §10 對相同值是 no-op，但那是**後端**的 no-op：呼過去仍是一次來回、一次
+    //   授權判定；「沒改會話政策卻按了確定」不該產生任何請求（spec US5 情境 2 逐字「不發第二支呼叫」）。
+    const sessionPolicyChanged = isSuper.value && model.value.sessionPolicy !== props.rowData?.sessionPolicy;
+
+    if (sessionPolicyChanged) {
+      const { error: sessionPolicyError } = await fetchUpdateUserSessionPolicy({
+        id: rowId,
+        sessionPolicy: model.value.sessionPolicy
+      });
+
+      if (sessionPolicyError) {
+        // ★updateUser 那半**已經寫進去了**：先讓父層刷新列表把已生效的改動顯示出來，再把抽屜留在原地
+        // 供使用者只重試會話政策這一格。直接 return 會讓列表停在改動前的樣子，看起來像整批都沒生效。
+        // 拒因（sessionPolicyInvalid／notFound／5003）由共用攔截層 toast，此處不出成功訊息。
+        emit('submitted');
+        return;
+      }
+    }
+    // [rev5-inline BASE-WEB-MANAGE-PAGE-WIRING(v)+ 007-user-password-admin END]
   } else {
     const { error } = await fetchAddUser({
       userName: model.value.userName,
@@ -318,6 +410,33 @@ watch(visible, () => {
     getRoleOptions();
   }
 });
+
+// [rev5-inline BASE-WEB-MANAGE-PAGE-WIRING(v)+ 007-user-password-admin START] 本刀 U7：新增模式的隨機產密入口
+// （FR-035 逐字「密碼僅新增＋隨機產密鈕＋提示」——鈕與提示兩件，此前只有一顆光禿的輸入欄）。
+/** 產密浮層開關（★只有新增模式的密碼欄開得了它：編輯模式結構性無密碼欄） */
+const pwdGenVisible = ref(false);
+
+/** 密碼政策七欄投影（產密浮層的構造資料源；取得與快取皆在共用 hook，本檔只讀） */
+const { policy: pwdPolicy, ensureLoaded: ensurePwdPolicy } = usePwdPolicy();
+
+async function openPwdGen() {
+  // 取政策（已有快取即零請求）；讀失敗維持 null＝浮層以自帶預設界生成、不擋產密（見 hook 註）
+  await ensurePwdPolicy();
+
+  pwdGenVisible.value = true;
+}
+
+/**
+ * 產密浮層「帶入」→ 直接填進本抽屜的密碼欄。
+ *
+ * ★與 user 頁 index.vue 的同名處置**刻意不同**：那邊帶入後還要再開一次確認浮層，因為那是「重設他人
+ * 既有密碼」的不可逆破壞性動作；這邊只是把字填進一張**還沒送出**的新增表單，送出前本就有確定鈕把關，
+ * 再加一道確認只是多按一次。
+ */
+function handlePwdGenApply(password: string) {
+  model.value.password = password;
+}
+// [rev5-inline BASE-WEB-MANAGE-PAGE-WIRING(v)+ 007-user-password-admin END]
 
 // [rev5-inline BASE-WEB-MANAGE-PAGE-WIRING(v)+ 007-user-password-admin START] 關閉即清明文密碼（本刀 U6 碼品質輪補）：
 // 抽屜走 display-directive="show"、元件從不卸載，而 model 是模組級 ref ⇒ 新增模式打進去的明文密碼在按下確定或關閉
@@ -357,14 +476,24 @@ watch(visible, val => {
           [rev5-inline BASE-WEB-MANAGE-PAGE-WIRING(v)+ 007-user-password-admin START] 密碼欄＝**僅新增模式**（契約 §3 必填、
           §4 無此欄——改他人密碼走另一支端點）。★前端只驗必填：政策細則（長度／字元類／不得同帳號名）為後端權威，
           違規明細經攔截層以 `passwordPolicy{violations}` 渲染，前端不預判亦不自造規則文案。
+          ★本刀 U7 補齊 FR-035 逐字要求的另兩件——**隨機產密鈕**與**提示**：
+          ①產密鈕開共用浮層（CSPRNG 依當前政策構造性產出），帶入即填本欄；
+          ②提示文字取代不了 placeholder、也不是規則清單——FR-031 末句逐字「抽屜設密欄**只掛提示文字**」，
+            即本欄不掛即時政策規則（那是個人中心改密卡的事），只講明「規則由服務端裁判、可用右鈕產一組」。
         -->
         <NFormItem v-if="!isEdit" :label="$t('page.manage.user.password')" path="password">
-          <NInput
-            v-model:value="model.password"
-            type="password"
-            show-password-on="click"
-            :placeholder="$t('page.manage.user.form.password')"
-          />
+          <div class="w-full flex-col-stretch gap-4px">
+            <NInputGroup>
+              <NInput
+                v-model:value="model.password"
+                type="password"
+                show-password-on="click"
+                :placeholder="$t('page.manage.user.form.password')"
+              />
+              <NButton @click="openPwdGen">{{ $t('page.manage.user.randomPassword') }}</NButton>
+            </NInputGroup>
+            <span class="text-12px text-#999">{{ $t('page.manage.user.passwordHint') }}</span>
+          </div>
         </NFormItem>
         <!-- [rev5-inline BASE-WEB-MANAGE-PAGE-WIRING(v)+ 007-user-password-admin END] -->
         <NFormItem :label="$t('page.manage.user.userGender')" path="userGender">
@@ -387,7 +516,15 @@ watch(visible, val => {
           <NInput v-model:value="model.userEmail" :placeholder="$t('page.manage.user.form.userEmail')" />
         </NFormItem>
         <NFormItem :label="$t('page.manage.user.userStatus')" path="status">
-          <NRadioGroup v-model:value="model.status">
+          <!--
+            本刀 U7：self 之 `status` 停用——契約 §4 的 self 守門是「出現即拒」（`cannotEditSelfRoleOrStatus`），
+            自己改自己的狀態送出去必得 2222。停用而非隱藏：值仍看得到，只是動不了（誠實 UI）。
+            ★停用後這一欄結構性不會變 ⇒ handleSubmit 的 `statusChanged` 恆為 false ⇒ 該欄整個缺席送出（缺席＝不動），
+            自己的暱稱／手機／信箱／記事照樣改得動（FR-013 明寫 self 可改非角色欄）。
+            ★本註解刻意排成 multiline 形：singleline 形下 eslint（vue/html-comment-content-newline）的 fix 會把註解閉合符併回行尾、令行尾錨定的「原行」擷取值失真（fork-delta-lint 當場紅）；
+            [rev5-inline BASE-WEB-MANAGE-PAGE-WIRING(v) 007-user-password-admin] 原行: <NRadioGroup v-model:value="model.status">
+          -->
+          <NRadioGroup v-model:value="model.status" :disabled="selfFieldsLocked">
             <NRadio v-for="item in enableStatusOptions" :key="item.value" :value="item.value" :label="$t(item.label)" />
           </NRadioGroup>
         </NFormItem>
@@ -412,7 +549,7 @@ watch(visible, val => {
             <NSelect
               v-model:value="model.roleIds"
               multiple
-              :disabled="roleAssignLocked"
+              :disabled="roleAssignLocked || selfFieldsLocked"
               :options="roleOptions"
               :placeholder="$t('page.manage.user.form.userRole')"
             />
@@ -429,11 +566,44 @@ watch(visible, val => {
           </div>
           <!-- [rev5-inline BASE-WEB-MANAGE-PAGE-WIRING(v)+ 007-user-password-admin END] -->
         </NFormItem>
+        <!--
+          [rev5-inline BASE-WEB-MANAGE-PAGE-WIRING(v)+ 007-user-password-admin START] 本刀 U7：會話政策欄（契約 §10）。
+          ★**僅編輯模式渲染**：addUser 的 body 沒有這一欄（新建帳號由後端落 `inherit`），新增模式擺一個送不出去的欄
+          只會讓人以為建帳號時可以指定。
+          ★**非超管顯示現值但 disabled ＋逐字提示**（FR-019、spec US4 情境 5）：該端點是結構性封死的 protected 端點，
+          非超管改了送出必得 5003；把欄藏起來會讓人以為「這個帳號沒有會話政策」，停用＋提示才是誠實的呈現。
+          ★改 `single` **不**即時踢除既有登入（下次登入才生效）——這件事屬端點語意，不在本欄的提示裡重述。
+        -->
+        <NFormItem v-if="isEdit" :label="$t('page.manage.user.sessionPolicy')" path="sessionPolicy">
+          <div class="w-full flex-col-stretch gap-4px">
+            <NSelect
+              v-model:value="model.sessionPolicy"
+              :disabled="sessionPolicyLocked"
+              :options="sessionPolicyOptions"
+            />
+            <span v-if="sessionPolicyLocked" class="text-12px text-warning">
+              {{ $t('page.manage.user.sessionPolicyHint') }}
+            </span>
+          </div>
+        </NFormItem>
+        <!-- [rev5-inline BASE-WEB-MANAGE-PAGE-WIRING(v)+ 007-user-password-admin END] -->
         <!-- [rev5-inline BASE-WEB-MANAGE-PAGE-WIRING(v)+ 007-user-password-admin] 記事欄 textarea（FR-015；placeholder 逐字註明僅管理員可見；值的顯示端一律純文字插值） -->
         <NFormItem :label="$t('page.manage.user.userMemo')" path="userMemo">
           <NInput v-model:value="model.userMemo" type="textarea" :placeholder="$t('page.manage.user.form.userMemo')" />
         </NFormItem>
       </NForm>
+      <!--
+        [rev5-inline BASE-WEB-MANAGE-PAGE-WIRING(v)+ 007-user-password-admin START] 本刀 U7：產密浮層（僅新增模式的密碼欄開得了它）。
+        ★`user-name` 取**本表單正在建立的那個帳號名**（model.userName），不是登入者自己的帳號名：`forbidUsername`
+        比的是標的帳號，拿操作者自己的帳號去比會比錯人。
+      -->
+      <PwdGenModal
+        v-model:visible="pwdGenVisible"
+        :policy="pwdPolicy"
+        :user-name="model.userName"
+        @apply="handlePwdGenApply"
+      />
+      <!-- [rev5-inline BASE-WEB-MANAGE-PAGE-WIRING(v)+ 007-user-password-admin END] -->
       <template #footer>
         <NSpace :size="16">
           <NButton @click="closeDrawer">{{ $t('common.cancel') }}</NButton>

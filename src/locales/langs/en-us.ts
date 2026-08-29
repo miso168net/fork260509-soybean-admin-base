@@ -801,6 +801,37 @@ const local: App.I18n.Schema = {
           multi: 'Multiple Devices'
         },
         // [rev5-inline BASE-WEB-MANAGE-PAGE-WIRING(v)+ 007-user-password-admin END]
+        // [rev5-inline BASE-WEB-MANAGE-PAGE-WIRING(v)+ 007-user-password-admin START] 本刀 U7 補鍵（鍵集與 zh-cn 逐鍵相等；說明與權威見 zh-cn.ts 同段）
+        kick: 'Kick Out',
+        confirmKick: 'End all sessions of this user?',
+        kickSuccess: 'All sessions of this user have been ended',
+        resetPwd: 'Reset Password',
+        resetPwdTitle: 'Reset password: {userName}',
+        newPassword: 'New Password',
+        resetPwdSuccess: 'Password reset; all sessions of this user have been ended',
+        randomPassword: 'Random Password',
+        // ★本刀 U7 補：頁首解鎖浮層七鍵（鍵集與 zh-cn 逐鍵相等；說明見 zh-cn.ts 同段）
+        unlockLogin: 'Unlock Login',
+        unlock: {
+          dimension: 'Lock Dimension',
+          user: 'Account',
+          ip: 'Source IP',
+          userName: 'User Name',
+          ipAddress: 'IP Address',
+          success: 'Unlocked'
+        },
+        sessionPolicyHint: 'Only the super administrator can change the session policy',
+        passwordHint: 'Password rules are enforced by the server; use the button on the right to generate one that meets the current policy',
+        pwdGen: {
+          title: 'Generate Random Password',
+          length: 'Length',
+          generate: 'Regenerate',
+          copy: 'Copy',
+          copied: 'Copied to clipboard',
+          copyFailed: 'Copy failed, please select the password above and copy it manually',
+          apply: 'Apply'
+        },
+        // [rev5-inline BASE-WEB-MANAGE-PAGE-WIRING(v)+ 007-user-password-admin END]
         form: {
           userName: 'Please enter user name',
           userGender: 'Please select gender',
@@ -904,7 +935,21 @@ const local: App.I18n.Schema = {
           local: 'Local Icon'
         }
       }
+    },
+    // [rev5-inline BASE-WEB-MANAGE-PAGE-WIRING(vi)+ 007-user-password-admin START] `page:` 樹新 top-level 命名空間
+    // `userCenter`（鍵集與 zh-cn 逐鍵相等；說明與權威見 zh-cn.ts 同段）
+    userCenter: {
+      password: {
+        title: 'Change Password',
+        oldPassword: 'Old Password',
+        newPassword: 'New Password',
+        confirmPassword: 'Confirm New Password',
+        submit: 'Save',
+        success: 'Password changed; sessions on your other devices have been ended',
+        hint: 'Password rules come from the system settings and are enforced by the server. After a successful change this device stays signed in and your other devices must sign in again.'
+      }
     }
+    // [rev5-inline BASE-WEB-MANAGE-PAGE-WIRING(vi)+ 007-user-password-admin END]
   },
   form: {
     required: 'Cannot be empty',

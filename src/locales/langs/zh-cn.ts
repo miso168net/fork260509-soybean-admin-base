@@ -797,6 +797,46 @@ const local: App.I18n.Schema = {
           multi: '多设备'
         },
         // [rev5-inline BASE-WEB-MANAGE-PAGE-WIRING(v)+ 007-user-password-admin END]
+        // [rev5-inline BASE-WEB-MANAGE-PAGE-WIRING(v)+ 007-user-password-admin START] 本刀 U7 補鍵：列上操作下拉
+        // （踢除／重設密碼／隨機密碼）、抽屜之會話政策提示、產密浮層七鍵。
+        // ★譯文候選權威＝specs/007-user-password-admin/contracts/msg-keys.md；兩語鍵集 MUST 相等。
+        // ★`pwdGen.*` 落在 `page.manage.user` 之下（rev4 為 top-level `pwdGen.*`＝命名空間紀律差異、不帶回）：
+        // 元件雖住 components/custom/，其唯一掛載點在 user 管理頁，鍵跟著消費場景走。
+        kick: '踢除下线',
+        confirmKick: '确定踢除该用户的全部登录？',
+        kickSuccess: '已踢除该用户的全部登录',
+        resetPwd: '重置密码',
+        resetPwdTitle: '重置密码：{userName}',
+        newPassword: '新密码',
+        resetPwdSuccess: '密码已重置，该用户的全部登录已失效',
+        randomPassword: '随机密码',
+        // ★本刀 U7 補：頁首解鎖浮層七鍵（`unlockLogin` 為鈕標籤兼浮層標題、`unlock.*` 六枚為欄標籤／
+        // 維度選項／成功 toast）。★這七枚在解鎖浮層落地之前刻意未補、與 modal 同批進場，理由是
+        // **`page:` 樹的孤兒鍵沒有任何機器守**：App.I18n.Schema 只擋「用了但沒定義」（typecheck 紅），
+        // 擋不住「定義了但沒人用」；Lint24 的孤兒鍵偵測面只涵蓋 zh-tw.ts 的 `backend:` 樹
+        // （見本檔下方 (vi) 段自陳「zh-tw.ts 不動：該檔只有 backend 樹、無 page 樹」），從頭到尾
+        // 看不到住在本檔 `page:` 樹的這七枚。⇒ 只能靠紀律讓鍵與其消費者同批落地。
+        unlockLogin: '解锁登录',
+        unlock: {
+          dimension: '锁定维度',
+          user: '账号',
+          ip: '来源 IP',
+          userName: '用户名',
+          ipAddress: 'IP 地址',
+          success: '已解除锁定'
+        },
+        sessionPolicyHint: '仅超级管理员可修改会话策略',
+        passwordHint: '密码规则由服务端校验；可点右侧按钮按当前策略随机生成',
+        pwdGen: {
+          title: '随机生成密码',
+          length: '长度',
+          generate: '重新生成',
+          copy: '复制',
+          copied: '已复制到剪贴板',
+          copyFailed: '复制失败，请手动选取上方密码复制',
+          apply: '带入'
+        },
+        // [rev5-inline BASE-WEB-MANAGE-PAGE-WIRING(v)+ 007-user-password-admin END]
         form: {
           userName: '请输入用户名',
           userGender: '请选择性别',
@@ -900,7 +940,25 @@ const local: App.I18n.Schema = {
           local: '本地图标'
         }
       }
+    },
+    // [rev5-inline BASE-WEB-MANAGE-PAGE-WIRING(vi)+ 007-user-password-admin START] `page:` 樹新 top-level 命名空間
+    // `userCenter`（憲法 §III.2 (vi) 列逐字授權）——個人中心改密卡的欄名、鈕名、成功 toast 與副作用告知。
+    // ★譯文候選權威＝specs/007-user-password-admin/contracts/msg-keys.md；兩語鍵集 MUST 相等；型節見 typings/app.d.ts。
+    // ★該契約另列一枚 `title`（頁標題）——本刀**不設**：頁標題已由既有 `route['user-center']` 承載
+    // （麵包屑與分頁標籤皆讀該鍵），再開一枚同義鍵即製造第二份說法且零消費者。
+    // ★zh-tw.ts 不動：該檔只有 `backend` 樹、無 page 樹、非 App.I18n.Schema 標註。
+    userCenter: {
+      password: {
+        title: '修改密码',
+        oldPassword: '旧密码',
+        newPassword: '新密码',
+        confirmPassword: '确认新密码',
+        submit: '保存',
+        success: '密码已修改，其他设备的登录已失效',
+        hint: '密码规则由系统设置决定、以服务端校验为准；修改成功后本设备保持登录，其他设备需重新登录。'
+      }
     }
+    // [rev5-inline BASE-WEB-MANAGE-PAGE-WIRING(vi)+ 007-user-password-admin END]
   },
   form: {
     required: '不能为空',

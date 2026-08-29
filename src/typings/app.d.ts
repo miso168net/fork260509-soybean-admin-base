@@ -969,6 +969,39 @@ declare namespace App {
               multi: string;
             };
             // [rev5-inline BASE-WEB-MANAGE-PAGE-WIRING(v)+ 007-user-password-admin END]
+            // [rev5-inline BASE-WEB-MANAGE-PAGE-WIRING(v)+ 007-user-password-admin START] 本刀 U7 補鍵之型節：
+            // 列上操作下拉（踢除／重設密碼／隨機密碼）、抽屜之會話政策提示、產密浮層七鍵
+            kick: string;
+            confirmKick: string;
+            kickSuccess: string;
+            resetPwd: string;
+            /** ★攜參一鍵：resetPwdTitle 帶 {userName}（標的帳號名，純文字插值） */
+            resetPwdTitle: string;
+            newPassword: string;
+            resetPwdSuccess: string;
+            randomPassword: string;
+            /** 頁首解鎖鈕標籤兼浮層標題（本刀 U7 補；下方 `unlock` 子樹為該浮層的欄標籤／維度選項／成功 toast） */
+            unlockLogin: string;
+            unlock: {
+              dimension: string;
+              user: string;
+              ip: string;
+              userName: string;
+              ipAddress: string;
+              success: string;
+            };
+            sessionPolicyHint: string;
+            passwordHint: string;
+            pwdGen: {
+              title: string;
+              length: string;
+              generate: string;
+              copy: string;
+              copied: string;
+              copyFailed: string;
+              apply: string;
+            };
+            // [rev5-inline BASE-WEB-MANAGE-PAGE-WIRING(v)+ 007-user-password-admin END]
             form: {
               userName: string;
               userGender: string;
@@ -1072,6 +1105,21 @@ declare namespace App {
             };
           };
         };
+        // [rev5-inline BASE-WEB-MANAGE-PAGE-WIRING(vi)+ 007-user-password-admin START] `App.I18n.Schema.page` 之
+        // `userCenter` 型節（新 top-level 命名空間；憲法 §III.2 (vi) 列逐字授權）。與兩語 locale 同批、鍵集逐鍵相等。
+        // ★不含 `title`：頁標題由既有 `route['user-center']` 承載（成因見 zh-cn.ts 同段）。
+        userCenter: {
+          password: {
+            title: string;
+            oldPassword: string;
+            newPassword: string;
+            confirmPassword: string;
+            submit: string;
+            success: string;
+            hint: string;
+          };
+        };
+        // [rev5-inline BASE-WEB-MANAGE-PAGE-WIRING(vi)+ 007-user-password-admin END]
       };
       form: {
         required: string;

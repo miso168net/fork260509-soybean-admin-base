@@ -14,9 +14,17 @@
 // sessionPolicyInvalid／攜參之 passwordPolicy／pwdSetTooFrequent）與 `5003`（no-escalation）由
 // service/request 共用攔截層轉譯 `backend.biz.user.*` 後 toast，呼叫端只看 `error` 是否為真
 // （頁內零拒因專屬 UI＝FR-039）。
-// ★契約整套落齊、勿因暫無呼叫端而剪掉：本刀 U6 的 UI 只消費前七支，後三支（kick／resetUserPassword／
-// updateUserSessionPolicy）的端點自 U3～U5 起即在線、UI 消費者落在後續執行單元——剪掉它們，下一支
-// 單元就得回頭再改這支 WRAPPER 檔（同 rev5-role-admin.ts 之 fetchGetAllRoles 既有先例）。
+// ★契約整套落齊、勿因暫無呼叫端而剪掉：本刀 U6 as-shipped 時 UI 只消費前七支，後三支（kick／
+// resetUserPassword／updateUserSessionPolicy）的端點自 U3～U5 起即在線、UI 消費者當時尚缺。
+// ★as-built（本刀 U7 接線後）：契約十支**已全數有 UI 消費者**——kick／resetUserPassword 在
+// views/manage/user/index.vue、updateUserSessionPolicy 在 modules/user-operate-drawer.vue；
+// 三支皆為上線路徑，非無人呼叫的預留件。當初不剪是對的：剪掉它們，本刀就得回頭再改這支
+// WRAPPER 檔（同 rev5-role-admin.ts 之 fetchGetAllRoles 既有先例）。
+// ★★本檔自本刀 U7 起共 **11 支**：契約 §1~§10 之外，末尾另有 `fetchUnlockLogin`——它打的是 004 建的
+// **既有**端點 `POST /systemManage/unlockLogin`（契約末節「既有 …（004；本刀接 UI＋帳號維套規則）」）。
+// 端點雖非本刀新建，其前端 wrapper 與請求型在本刀之前全樹零命中，且該端點同屬 `/systemManage/*`、
+// 同為 `Protection::Policy` super-only、UI 掛載點同為 user 管理頁 ⇒ 家在本檔（★不入 rev5-user-center.*：
+// 那支的兩支端點皆 `Protection::Authed`、族不同）。
 import { request } from '../request';
 
 /**
@@ -136,7 +144,8 @@ export function fetchRestoreUser(id: number) {
  *
  * 守門序＝notFound→self（`cannotKickSelf`）→no-escalation；撤全 active 票（rotated 不動）、
  * 事件 `admin_kick`、denylist `admin_kick`（對方下一次請求得 7777）、稽核 `kick`。停用帳號可踢。
- * 成功回 `{revoked}`＝本次撤銷數。★本刀 U6 as-shipped 零 UI 消費者（列上操作下拉歸後續單元）。
+ * 成功回 `{revoked}`＝本次撤銷數。★UI 消費者＝views/manage/user/index.vue 之 handleKick
+ * （列上操作下拉；本刀 U7 接線）。
  * rev4: 承 rev4-user-admin.ts fetchKickUser 同名形。
  */
 export function fetchKickUser(id: number) {
@@ -153,7 +162,7 @@ export function fetchKickUser(id: number) {
  * 守門序＝notFound→self（`cannotResetSelfPassword`＝請走個人中心）→no-escalation→密碼政策
  * （攜參 `{violations}`）→冷卻（攜參 `{remainingSeconds}`）；通過即改密＋密碼經手時戳＋撤全
  * active 票（事件 `password_reset`）＋稽核 `reset_password`。★後端不回傳密碼。
- * ★本刀 U6 as-shipped 零 UI 消費者（歸後續單元）。
+ * ★UI 消費者＝views/manage/user/index.vue 之 handleResetPwd（本刀 U7 接線）。
  * rev4: 承 rev4-user-admin.ts fetchResetUserPassword 同名形。
  */
 export function fetchResetUserPassword(data: Api.UserAdmin.ResetPasswordReq) {
@@ -169,12 +178,35 @@ export function fetchResetUserPassword(data: Api.UserAdmin.ResetPasswordReq) {
  *
  * 三值收斂（值域外→`sessionPolicyInvalid`）；守門序＝notFound→no-escalation→與現值相同即 no-op。
  * ★改 `single` **不**即時踢除（下次登入才生效）；本端點為 protected（super-only、結構性）。
- * ★本刀 U6 as-shipped 零 UI 消費者（抽屜的會話政策欄歸後續單元）。
+ * ★UI 消費者＝modules/user-operate-drawer.vue 之 handleSubmit 內的第二呼叫（抽屜的會話政策欄；
+ * 本刀 U7 接線）。
  * rev4: 承 rev4-user-admin.ts fetchUpdateUserSessionPolicy 同名形。
  */
 export function fetchUpdateUserSessionPolicy(data: Api.UserAdmin.UpdateSessionPolicyReq) {
   return request<null>({
     url: '/systemManage/updateUserSessionPolicy',
+    method: 'post',
+    data
+  });
+}
+
+/**
+ * 手動解鎖登入（既有 `POST /systemManage/unlockLogin`；004 建、本刀 U7 接 UI——契約末節）
+ *
+ * 雙維、`dimension` **必給**（缺席→後端落空字串→維度不明→`2222`；rev5 拍板無預設維度、R2#17）：
+ * 帳號維帶 `userName`（標的存在時套 no-escalation `T ⊆ A`、違反 5003）、來源維帶 `target`
+ * （位址字面；該維**不套**包含規則——標的是計數桶不是使用者）。
+ * ★**解鎖冪等**：對未被鎖定（甚至不存在）的標的解鎖照回 `0000`——後端刻意不以異碼洩漏標的狀態，
+ * 否則本端點就成了「這個帳號在不在、有沒有被鎖」的枚舉面。⇒ 前端的成功 toast 語意是
+ * 「已解除鎖定」而非「原本有鎖」，呼叫端勿據回應推斷標的先前狀態。
+ * 拒因 `2222 biz.throttle.invalidUnlockTarget`（維度不明／該維標的缺席或不可解析）與 `5003`
+ * 由共用攔截層轉譯後 toast，本層零加工。
+ * rev4: 承 rev4-user-admin.ts fetchUnlockLogin 同名形；rev4 型取 `Api.SystemManage.UnlockLoginReq`
+ * ＝rev5 獨立命名空間差異點不帶回（R2#13）。
+ */
+export function fetchUnlockLogin(data: Api.UserAdmin.UnlockReq) {
+  return request<null>({
+    url: '/systemManage/unlockLogin',
     method: 'post',
     data
   });

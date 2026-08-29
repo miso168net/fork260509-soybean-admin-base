@@ -165,5 +165,36 @@ declare namespace Api {
       id: number;
       sessionPolicy: SessionPolicy;
     };
+
+    /**
+     * 解鎖登入請求（既有 `POST /systemManage/unlockLogin`；004 建、本刀 U7 只接 UI——
+     * contracts/wire-user-admin.md 末節「既有 `POST /systemManage/unlockLogin`（004；本刀接 UI＋帳號維套規則）」）
+     *
+     * ★`dimension` **必給**：後端該 DTO 走 `#[serde(default)]`，欄缺席不由 serde 判死、而是落成
+     * 空字串後由守門判「維度不明」→ `2222 biz.throttle.invalidUnlockTarget`（rev4 之「缺席預設帳號維」
+     * 為 rev5 拍板差異、不帶回——research R2#17）。故本型該欄**非選填**，呼叫端一律顯式帶。
+     * ★★**來源維的標的欄名是 `target`、不是 `ip`**：本刀契約末節的欄形速寫作 `ip?: string` 係轉抄之誤
+     * ——同節自陳「既有契約不變」，而既有契約（specs/004-ip-trust-anchor/contracts/wire-throttle-unlock.md
+     * 請求表三欄）與後端 DTO（`handler/throttle.rs` 之 `UnlockLoginReq`，`rename_all = "camelCase"`
+     * ⇒ 上 wire 為 `target`）兩者皆為 `target`。照 `ip` 落地會是一種**靜默**的錯：請求形制正確、
+     * 後端只看到「來源維標的缺席」⇒ 恆得 `2222`，畫面上看起來像「這個 IP 沒被鎖」。
+     * ★兩個標的欄刻意維持**選填的平坦形**（不做判別聯合）：與 004 契約的三欄請求表逐欄對齊、
+     * 亦與本命名空間其餘請求型同形；「哪一維帶哪一欄」由呼叫端在送出處分支
+     * （見 views/manage/user/modules/user-unlock-modal.vue）。
+     */
+    type UnlockReq = {
+      /** `'user'`＝帳號維（`userName` 必給、套 no-escalation）｜`'ip'`＝來源維（`target` 必給、不套） */
+      dimension: 'user' | 'ip';
+      /**
+       * 帳號維標的：★**帳號名原樣**（大小寫敏感、零 trim、零正規化）——鎖端以登入時送出的帳號名
+       * 逐字渲染快取鍵，標的在此只要被加工過，導出的就是一把沒有人寫過的鍵 ⇒ 解鎖靜默無效。
+       */
+      userName?: string;
+      /**
+       * 來源維標的：**位址字面**（v4／v6 皆可），由後端導出與計數側同粒度的桶
+       * （v4 `/32`、v6 聚合 `/64`、IPv4-mapped 先折 v4）——前端不自行換算粒度。
+       */
+      target?: string;
+    };
   }
 }
