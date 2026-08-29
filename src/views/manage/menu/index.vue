@@ -32,6 +32,12 @@ const wrapperRef = ref<HTMLElement | null>(null);
 // [rev5-inline BASE-WEB-MANAGE-PAGE-WIRING(ii) 005-role-menu-crud START] 「顯示已刪除」toggle
 // 狀態＋回收桶分頁參（rev4: (d) 010-menu-admin toggle 形重打；開＝資料源換打 getDeletedMenus、
 // 操作欄整欄換「復原」；已刪模式僅此頁消費 deletedSearchParams）
+// [rev5-inline BASE-WEB-MANAGE-PAGE-WIRING(ii) 007-user-password-admin] 回收桶分頁的每頁筆數歸位值
+// （B-132）：取 `hooks/common/table.ts` 之 `pagination` 預設 `pageSize: 10`＝`pageSizes` 首項，
+// 與使用者未曾調整過分頁時看到的值一致。★寫成具名常數而非裸 10：它與 hook 預設是**同一個約定**，
+// 日後 hook 改預設時這裡要跟著改，裸數字讀不出這層相依。
+const MENU_DEFAULT_PAGE_SIZE = 10;
+
 const showDeleted = ref(false);
 const deletedSearchParams = ref<Api.MenuAdmin.ListQuery>({ current: 1, size: 10 });
 // [rev5-inline BASE-WEB-MANAGE-PAGE-WIRING(ii) 005-role-menu-crud END]
@@ -231,8 +237,25 @@ const { checkedRowKeys, onBatchDeleted, onDeleted } = useTableOperate(data, 'id'
 // 回第一頁重取（兩資料源分頁語意不同：治理清單以頂層計、回收桶以已刪列計）；切換即清勾選
 // ——兩資料源的列不同族、跨源殘留勾選會把已軟刪 id 送進批刪（B-100：已刪模式亦有 selection
 // 欄可勾，勾完關 toggle 即解除批刪鈕的 disabled，送出後端整批拒 2222 notFound）
-watch(showDeleted, () => {
+watch(showDeleted, deleted => {
   checkedRowKeys.value = [];
+
+  // [rev5-inline BASE-WEB-MANAGE-PAGE-WIRING(ii) 007-user-password-admin] 切回收桶前先把 pageSize 歸位
+  // （B-132 修法①；★只動本頁、不動 hooks/common/table.ts）。
+  // 洩漏鏈路：治理清單走 `fetchGetMenuList()` 無參＝一次取全樹 → 後端回 size=100 → hook 的 `onFetched`
+  // 執行 `pagination.pageSize = data.pageSize` ⇒ 該值同時是**下拉顯示值**（100 不在 `pageSizes`
+  // [10,15,20,25,30] 內、顯示為空或異常項）與**回收桶請求的 size**（經 `onPaginationParamsChange`
+  // 寫進 `deletedSearchParams.size`）。回收桶走真分頁，故切過去之前必須歸位。
+  // ★**先判等再賦值＋早退**：`pagination` 的 `{page, pageSize}` 由 hook 的 `paginationParams` watch 監聽，
+  //   同 tick 內把兩值一起改只會合併觸發一次重取；若照原樣再呼一次 `getDataByPage(1)`，當 `page` 已是 1 時
+  //   它會直接 `getData()`，與 watch 那次疊成**同一次切換發兩個請求**（第一個還帶著舊的 size=100）。
+  //   值未變的路徑（例如自回收桶切回治理清單）則不觸發 watch，仍需下方 `getDataByPage(1)` 補一次重取。
+  if (deleted && pagination.pageSize !== MENU_DEFAULT_PAGE_SIZE) {
+    pagination.page = 1;
+    pagination.pageSize = MENU_DEFAULT_PAGE_SIZE;
+    return;
+  }
+
   getDataByPage(1);
 });
 // [rev5-inline BASE-WEB-MANAGE-PAGE-WIRING(ii) 005-role-menu-crud END]

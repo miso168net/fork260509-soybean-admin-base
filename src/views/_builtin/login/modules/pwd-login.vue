@@ -31,11 +31,22 @@ const model: FormModel = reactive({
 
 const rules = computed<Record<keyof FormModel, App.Global.FormRule[]>>(() => {
   // inside computed to make locale reactive, if not apply i18n, you can define it without computed
-  const { formRules } = useFormRules();
+  // ★登入表單降為**必填**規則（憲法 §III.2 之 ★軌道 BASE-WEB-LOGIN-CAPTCHA-WIRING 用途 (ii)）：
+  //   `formRules.userName` 是 `[required, patternRules.userName]`，那條正則要求 6~18 位英數底線——
+  //   而**設得進的密碼必須登得進**。本刀讓管理端設密、管理端重設、自助改密三入口共用後端的密碼政策
+  //   單一驗證點（憲法島 I5），政策鍵可由超管在運行期調整；前端若還按一組寫死的正則擋人，就會出現
+  //   「密碼照政策設好了、登入頁卻說格式不對」這種前後端各執一詞的死路。格式判定一律交後端，前端只擋「沒填」。
+  //   ★MUST NOT 改 `src/constants/reg.ts`（全域正則為 register／reset-pwd 等其他表單共用）；
+  //   ★兩支 stub 與用途 (i) 的 captcha 軟區條件渲染行為零變更。
+  //   rev4: 承 rev4 同處拍板（前端只驗必填），rev5 於本刀 U8 隨密碼政策上線一併兌現。
+  // [rev5-inline BASE-WEB-LOGIN-CAPTCHA-WIRING(ii) 007-user-password-admin] 改取 `createRequiredRule`；原行: const { formRules } = useFormRules();
+  const { createRequiredRule } = useFormRules();
 
   return {
-    userName: formRules.userName,
-    password: formRules.pwd
+    // [rev5-inline BASE-WEB-LOGIN-CAPTCHA-WIRING(ii) 007-user-password-admin] 帳號名只驗必填（見上方論證）；原行: userName: formRules.userName,
+    userName: [createRequiredRule($t('form.userName.required'))],
+    // [rev5-inline BASE-WEB-LOGIN-CAPTCHA-WIRING(ii) 007-user-password-admin] 密碼只驗必填（見上方論證）；原行: password: formRules.pwd
+    password: [createRequiredRule($t('form.pwd.required'))]
   };
 });
 
