@@ -134,6 +134,12 @@ const checksLoaded = shallowRef(false);
 async function getChecks() {
   const req = ++checksReq;
   checksLoaded.value = false;
+  // [rev5-inline BASE-WEB-MANAGE-PAGE-WIRING(iii)+ 007-user-password-admin START] B-129①：起手清上一角色的顯示狀態（形與 menu-auth-modal 逐字同）——
+  // 舊形只復位就緒守，換角色開 modal 時在自身回應落地前仍顯示上一角色的勾選集與鎖定狀態（純視覺誤導）。
+  // ★兩行次序不可反：先清 protected 集、再經 checks setter 落空集，反之 setter 會把舊葉鍵原樣補回。
+  protectedKeys.value = new Set();
+  checks.value = [];
+  // [rev5-inline BASE-WEB-MANAGE-PAGE-WIRING(iii)+ 007-user-password-admin END]
   const { error, data } = await fetchGetRoleEndpoints(props.roleId);
   // 過期回應一律丟棄（成功、失敗皆然；理由與就緒守的關係見 checksReq）
   if (req !== checksReq) {

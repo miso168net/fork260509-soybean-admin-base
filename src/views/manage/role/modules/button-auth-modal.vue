@@ -112,6 +112,12 @@ async function getChecks() {
   // [rev5-inline BASE-WEB-MANAGE-PAGE-WIRING(iii) 006-authz-governance] 寫死 1..5 移除、改讀現況（先落 protected 集、再經 setter 落勾選集；就緒守起手復位、成功才開閘）；原行: checks.value = [1, 2, 3, 4, 5];
   const req = ++checksReq;
   checksLoaded.value = false;
+  // [rev5-inline BASE-WEB-MANAGE-PAGE-WIRING(iii)+ 007-user-password-admin START] B-129①：起手清上一角色的顯示狀態（形與 menu-auth-modal 逐字同）——
+  // 舊形只復位就緒守，換角色開 modal 時在自身回應落地前仍顯示上一角色的勾選集與鎖定狀態（純視覺誤導）。
+  // ★兩行次序不可反：先清 protected 集、再經 checks setter 落空集，反之 setter 會把舊碼原樣補回。
+  protectedCodes.value = new Set();
+  checks.value = [];
+  // [rev5-inline BASE-WEB-MANAGE-PAGE-WIRING(iii)+ 007-user-password-admin END]
   const { error, data } = await fetchGetRoleButton(props.roleId);
   // 過期回應一律丟棄（成功、失敗皆然；理由與就緒守的關係見 checksReq）
   if (req !== checksReq) {

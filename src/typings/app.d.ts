@@ -944,6 +944,31 @@ declare namespace App {
             userEmail: string;
             userStatus: string;
             userRole: string;
+            // [rev5-inline BASE-WEB-MANAGE-PAGE-WIRING(v)+ 007-user-password-admin START] `App.I18n.Schema.page` 之 `manage.user` 對應型節：
+            // 接真後補的列表欄／抽屜欄／回收桶／確認框鍵（與 zh-cn.ts／en-us.ts 同批、鍵集逐鍵相等）
+            password: string;
+            roles: string;
+            sessionPolicy: string;
+            userMemo: string;
+            createdAt: string;
+            createdBy: string;
+            updatedAt: string;
+            updatedBy: string;
+            showDeleted: string;
+            restore: string;
+            confirmRestore: string;
+            restoreHint: string;
+            restoreSuccess: string;
+            // ★攜參一鍵：roleAssignLocked 帶 {roles}（候選集解不出的持有角色 code 串接）
+            roleAssignLocked: string;
+            // ★候選讀失敗態的告知（本刀 U6 碼品質輪補；不攜參）
+            roleOptionsUnavailable: string;
+            sessionPolicyOption: {
+              inherit: string;
+              single: string;
+              multi: string;
+            };
+            // [rev5-inline BASE-WEB-MANAGE-PAGE-WIRING(v)+ 007-user-password-admin END]
             form: {
               userName: string;
               userGender: string;
@@ -952,6 +977,10 @@ declare namespace App {
               userEmail: string;
               userStatus: string;
               userRole: string;
+              // [rev5-inline BASE-WEB-MANAGE-PAGE-WIRING(v)+ 007-user-password-admin START] 抽屜新增欄之 placeholder 兩鍵
+              password: string;
+              userMemo: string;
+              // [rev5-inline BASE-WEB-MANAGE-PAGE-WIRING(v)+ 007-user-password-admin END]
             };
             addUser: string;
             editUser: string;

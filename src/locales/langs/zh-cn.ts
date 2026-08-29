@@ -771,6 +771,32 @@ const local: App.I18n.Schema = {
         userEmail: '邮箱',
         userStatus: '用户状态',
         userRole: '用户角色',
+        // [rev5-inline BASE-WEB-MANAGE-PAGE-WIRING(v)+ 007-user-password-admin START] page: 樹之 `manage.user` 子命名空間補鍵（接真後的列表欄／
+        // 抽屜欄／回收桶／確認框；譯文候選權威＝specs/007-user-password-admin/contracts/msg-keys.md。
+        // ★兩語鍵集 MUST 相等；型節見 typings/app.d.ts。★zh-tw 只有 backend 樹、不補 page 樹。
+        // ★回收桶四鍵自備、不跨頁借 page.manage.menu／page.manage.policyArchive 的同義鍵〔R2#15〕）
+        password: '密码',
+        roles: '角色',
+        sessionPolicy: '会话策略',
+        userMemo: '备注',
+        createdAt: '创建时间',
+        createdBy: '创建者',
+        updatedAt: '更新时间',
+        updatedBy: '更新者',
+        showDeleted: '显示已删除',
+        restore: '复原',
+        confirmRestore: '确定复原此用户？',
+        restoreHint: '复原后该用户没有任何角色，需重新指派',
+        restoreSuccess: '复原成功',
+        roleAssignLocked: '本账号另持已停用角色（{roles}），角色下拉不含它们；请先到角色页启用后再调整角色指派。',
+        // ★讀失敗態自己的告知（本刀 U6 碼品質輪補）：與 roleAssignLocked 分鍵——兩者成因不同、去處也不同
+        roleOptionsUnavailable: '角色候选读取失败，暂时无法调整角色指派；请关闭抽屉后重试。',
+        sessionPolicyOption: {
+          inherit: '跟随全局',
+          single: '单一设备',
+          multi: '多设备'
+        },
+        // [rev5-inline BASE-WEB-MANAGE-PAGE-WIRING(v)+ 007-user-password-admin END]
         form: {
           userName: '请输入用户名',
           userGender: '请选择性别',
@@ -778,7 +804,11 @@ const local: App.I18n.Schema = {
           userPhone: '请输入手机号',
           userEmail: '请输入邮箱',
           userStatus: '请选择用户状态',
-          userRole: '请选择用户角色'
+          userRole: '请选择用户角色',
+          // [rev5-inline BASE-WEB-MANAGE-PAGE-WIRING(v)+ 007-user-password-admin START] 抽屜新增欄之 placeholder 兩鍵
+          password: '请输入密码',
+          userMemo: '请输入备注（仅管理员可见）'
+          // [rev5-inline BASE-WEB-MANAGE-PAGE-WIRING(v)+ 007-user-password-admin END]
         },
         addUser: '新增用户',
         editUser: '编辑用户',

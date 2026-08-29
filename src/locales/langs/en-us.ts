@@ -775,6 +775,32 @@ const local: App.I18n.Schema = {
         userEmail: 'Email',
         userStatus: 'User Status',
         userRole: 'User Role',
+        // [rev5-inline BASE-WEB-MANAGE-PAGE-WIRING(v)+ 007-user-password-admin START] page: 樹之 `manage.user` 子命名空間補鍵（鍵集與 zh-cn 逐鍵相等；
+        // 說明與權威見 zh-cn.ts 同段）
+        password: 'Password',
+        roles: 'Roles',
+        sessionPolicy: 'Session Policy',
+        userMemo: 'Memo',
+        createdAt: 'Created At',
+        createdBy: 'Created By',
+        updatedAt: 'Updated At',
+        updatedBy: 'Updated By',
+        showDeleted: 'Show Deleted',
+        restore: 'Restore',
+        confirmRestore: 'Restore this user?',
+        restoreHint: 'The restored account holds no role and must be reassigned',
+        restoreSuccess: 'Restored',
+        roleAssignLocked:
+          'This account also holds disabled roles ({roles}) that are absent from the dropdown. Enable them on the role page before changing role assignments.',
+        // ★讀失敗態自己的告知（本刀 U6 碼品質輪補）：與 roleAssignLocked 分鍵——兩者成因不同、去處也不同
+        roleOptionsUnavailable:
+          'Failed to load role options; role assignment is unavailable. Close the drawer and try again.',
+        sessionPolicyOption: {
+          inherit: 'Inherit',
+          single: 'Single Device',
+          multi: 'Multiple Devices'
+        },
+        // [rev5-inline BASE-WEB-MANAGE-PAGE-WIRING(v)+ 007-user-password-admin END]
         form: {
           userName: 'Please enter user name',
           userGender: 'Please select gender',
@@ -782,7 +808,11 @@ const local: App.I18n.Schema = {
           userPhone: 'Please enter phone number',
           userEmail: 'Please enter email',
           userStatus: 'Please select user status',
-          userRole: 'Please select user role'
+          userRole: 'Please select user role',
+          // [rev5-inline BASE-WEB-MANAGE-PAGE-WIRING(v)+ 007-user-password-admin START] 抽屜新增欄之 placeholder 兩鍵
+          password: 'Please enter password',
+          userMemo: 'Memo (visible to administrators only)'
+          // [rev5-inline BASE-WEB-MANAGE-PAGE-WIRING(v)+ 007-user-password-admin END]
         },
         addUser: 'Add User',
         editUser: 'Edit User',

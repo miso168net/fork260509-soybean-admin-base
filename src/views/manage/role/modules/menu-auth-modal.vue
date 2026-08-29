@@ -41,10 +41,32 @@ const title = computed(() => $t('common.edit') + $t('page.manage.role.menuAuth')
 // [rev5-inline BASE-WEB-MANAGE-PAGE-WIRING(iii) 006-authz-governance] roleHome 誠實 null（005 契約 §7 `{home: string|null}`、未設即 null、不摺疊空字串；rev4 裸 string／'' 初值＝R2#9 不帶回）；原行: const home = shallowRef('');
 const home = shallowRef<string | null>(null);
 
+// [rev5-inline BASE-WEB-MANAGE-PAGE-WIRING(iii)+ 007-user-password-admin START] getHome 的請求世代序號（B-129②）：`home` 與勾選集同為角色維狀態，
+// 卻不在 B-116 的射程內（該條文逐字只寫 getChecks）——角色 A 的首頁讀還在飛行中、使用者關掉本 modal
+// 改開角色 B 時，A 的遲到回應會覆蓋 B 的值，畫面自此顯示錯的角色首頁。危害低於勾選集（updateHome 只在
+// 使用者顯式改選時才寫、且恆帶當下 props.roleId，不會靜默寫錯角色），但顯示面誤導同樣真實。
+// 守法逐字比照 checksReq：起手遞增本序號、await 回來先比對，非最新一輪即整段丟棄（成功、失敗一律丟棄）。
+let homeReq = 0;
+// [rev5-inline BASE-WEB-MANAGE-PAGE-WIRING(iii)+ 007-user-password-admin END]
+
 async function getHome() {
   // [rev5-inline BASE-WEB-MANAGE-PAGE-WIRING(iii) 006-authz-governance] 接真 getRoleHome（query 鍵 id）；原行: console.log(props.roleId);
   // [rev5-inline BASE-WEB-MANAGE-PAGE-WIRING(iii) 006-authz-governance] 假值移除、改讀回應 `{home}`；原行: home.value = 'home';
+  // [rev5-inline BASE-WEB-MANAGE-PAGE-WIRING(iii)+ 007-user-password-admin] 世代守起手（見 homeReq）
+  const req = ++homeReq;
+  // [rev5-inline BASE-WEB-MANAGE-PAGE-WIRING(iii)+ 007-user-password-admin START] B-129① 的同型缺口補在 home 欄（本刀 U6 碼品質輪補）：
+  // 世代守擋的是「A 的遲到回應覆蓋 B 的值」，擋不到「B 的回應還沒到、畫面沿用 A 的值」——兩者是不同的失效路徑，
+  // 補了前者不會使後者消失。`home` 是模組級 shallowRef、modal 不卸載 ⇒ 換角色開 modal 時須起手復位，形逐字比照
+  // 同檔 getChecks 起手清上一角色的顯示狀態。★首頁 NSelect 沒有對應的就緒指示（不像確定鈕有 checksLoaded），
+  // 值看起來已載好、管理員更容易直接採信；下方 error 分支沿用上一角色值的同型問題亦由本行一併收掉。
+  home.value = null;
+  // [rev5-inline BASE-WEB-MANAGE-PAGE-WIRING(iii)+ 007-user-password-admin END]
   const { error, data } = await fetchGetRoleHome(props.roleId);
+  // [rev5-inline BASE-WEB-MANAGE-PAGE-WIRING(iii)+ 007-user-password-admin START] 過期回應一律丟棄（成功、失敗皆然）
+  if (req !== homeReq) {
+    return;
+  }
+  // [rev5-inline BASE-WEB-MANAGE-PAGE-WIRING(iii)+ 007-user-password-admin END]
   if (error) {
     return;
   }
@@ -156,6 +178,13 @@ async function getChecks() {
   // [rev5-inline BASE-WEB-MANAGE-PAGE-WIRING(iii) 006-authz-governance] 寫死 1..21 移除、改讀現況（先落 protected 集、再經 setter 落勾選集；就緒守起手復位、成功才開閘）；原行: checks.value = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21];
   const req = ++checksReq;
   checksLoaded.value = false;
+  // [rev5-inline BASE-WEB-MANAGE-PAGE-WIRING(iii)+ 007-user-password-admin START] B-129①：起手清上一角色的顯示狀態——舊形只復位就緒守，
+  // 換角色開 modal 時在自身回應落地前仍顯示上一角色的勾選集與鎖定狀態（確定鈕已由就緒守停用 ⇒ 純視覺誤導、
+  // 無資料風險）。★兩行次序不可反：先清 protected 集、再經 checks setter 落空集——反過來時 setter 會把
+  // 舊的 protected id 原樣補回，清了等於沒清。
+  protectedIds.value = new Set();
+  checks.value = [];
+  // [rev5-inline BASE-WEB-MANAGE-PAGE-WIRING(iii)+ 007-user-password-admin END]
   const { error, data } = await fetchGetRoleMenu(props.roleId);
   // 過期回應一律丟棄（成功、失敗皆然；理由與就緒守的關係見 checksReq）
   if (req !== checksReq) {
