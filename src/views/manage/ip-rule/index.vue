@@ -266,9 +266,11 @@ async function handleRestore(id: number) {
           </template>
         </TableHeaderOperation>
       </template>
-      <!-- ★scroll-x ＝上方 columns 的 Σ(width|minWidth) 逐位相等＝1414（本 repo 三支既有管理頁
+      <!--
+ ★scroll-x ＝上方 columns 的 Σ(width|minWidth) 逐位相等＝1414（本 repo 三支既有管理頁
            user／role／menu 皆守此不變式）：小於總和時視窗變窄，各欄宣告的 minWidth 無法全數兌現。
-           增刪欄或調欄寬時本數字必須同批改。 -->
+           增刪欄或調欄寬時本數字必須同批改。 
+-->
       <NDataTable
         :columns="columns"
         :data="data"
