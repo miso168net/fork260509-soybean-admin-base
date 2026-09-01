@@ -1113,6 +1113,53 @@ declare namespace App {
               local: string;
             };
           };
+          // [rev5-inline BASE-WEB-MANAGE-PAGE-WIRING(vii)+ 008-audit-settings-pages START]
+          // `page.manage.systemSettings` 型節（逐鍵鏡像兩語 locale）。★本節**必需、非「如需」**：
+          // `page:` 是顯式型樹，少一鍵就是 `$t('page.manage.systemSettings.…')` 型別檢查紅
+          // （對比 `route:` 樹型為 `Record<I18nRouteKey, string>`、鍵集自路由產物自動導出）。
+          systemSettings: {
+            passwordPolicyTitle: string;
+            sessionTitle: string;
+            ipLoginTitle: string;
+            accountLoginTitle: string;
+            items: {
+              passwordMinLength: string;
+              passwordMaxLength: string;
+              passwordRequireLowercase: string;
+              passwordRequireUppercase: string;
+              passwordRequireDigit: string;
+              passwordRequireSpecial: string;
+              passwordForbidUsername: string;
+              passwordChangeMinInterval: string;
+              singleSessionDefault: string;
+              sessionIdleTimeout: string;
+              ipWindowMinutes: string;
+              ipMaxFails: string;
+              ipCaptchaAfter: string;
+              loginThrottleWindowMinutes: string;
+              loginThrottleMaxFails: string;
+              loginThrottleCaptchaAfter: string;
+            };
+            help: {
+              passwordMinLength: string;
+              passwordMaxLength: string;
+              passwordRequireLowercase: string;
+              passwordRequireUppercase: string;
+              passwordRequireDigit: string;
+              passwordRequireSpecial: string;
+              passwordForbidUsername: string;
+              passwordChangeMinInterval: string;
+              singleSessionDefault: string;
+              sessionIdleTimeout: string;
+              ipWindowMinutes: string;
+              ipMaxFails: string;
+              ipCaptchaAfter: string;
+              loginThrottleWindowMinutes: string;
+              loginThrottleMaxFails: string;
+              loginThrottleCaptchaAfter: string;
+            };
+          };
+          // [rev5-inline BASE-WEB-MANAGE-PAGE-WIRING(vii)+ 008-audit-settings-pages END]
         };
         // [rev5-inline BASE-WEB-MANAGE-PAGE-WIRING(vi)+ 007-user-password-admin START] `App.I18n.Schema.page` 之
         // `userCenter` 型節（新 top-level 命名空間；憲法 §III.2 (vi) 列逐字授權）。與兩語 locale 同批、鍵集逐鍵相等。

@@ -416,6 +416,12 @@ const local: App.I18n.Schema = {
     // 路由外掛重算出該 RouteKey 後不補鍵即型別檢查紅——同 (i) 用途的既有論證）。
     'manage_policy-archive': '授权回收站',
     // [rev5-inline BASE-WEB-MANAGE-PAGE-WIRING(iv)+ 006-authz-governance END]
+    // [rev5-inline BASE-WEB-MANAGE-PAGE-WIRING(vii)+ 008-audit-settings-pages START] route: 樹補
+    // `manage_system-settings` 一鍵（upstream 不存在、頁進場型——憲法 §III.2 (vii) 列明文；
+    // 鍵名＝seed 選單列 9 的 route_name，逐字不可改；路由外掛重算出該 RouteKey 後不補鍵
+    // 即型別檢查紅——同 (i) 用途的既有論證。譯文以 rev4:zh-cn.ts route 樹同鍵為底重打）。
+    'manage_system-settings': '系统设置',
+    // [rev5-inline BASE-WEB-MANAGE-PAGE-WIRING(vii)+ 008-audit-settings-pages END]
     'multi-menu': '多级菜单',
     'multi-menu_first': '菜单一',
     'multi-menu_first_child': '菜单一子菜单',
@@ -947,7 +953,54 @@ const local: App.I18n.Schema = {
           iconify: 'iconify图标',
           local: '本地图标'
         }
+      },
+      // [rev5-inline BASE-WEB-MANAGE-PAGE-WIRING(vii)+ 008-audit-settings-pages START] 系統設定頁字串
+      // （4 組標題＋items 16 鍵＋help 16 鍵；鍵集＝後端 SEED_EXPECTED 16 鍵逐鍵對齊、兩語鍵集
+      // MUST 相等；譯文以 rev4:zh-cn.ts 之 manage.systemSettings 樹為底重打字消化；型節見
+      // typings/app.d.ts；help 樹＝IconTooltip 說明、未鍵化 fallback item.description）。
+      systemSettings: {
+        passwordPolicyTitle: '密码策略',
+        sessionTitle: '会话设置',
+        ipLoginTitle: 'IP源登录设置',
+        accountLoginTitle: '账号登录设置',
+        items: {
+          passwordMinLength: '密码最小长度',
+          passwordMaxLength: '密码最大长度',
+          passwordRequireLowercase: '需含小写字母',
+          passwordRequireUppercase: '需含大写字母',
+          passwordRequireDigit: '需含数字',
+          passwordRequireSpecial: '需含特殊符号',
+          passwordForbidUsername: '禁止密码与账号相同',
+          passwordChangeMinInterval: '密码设置冷却间隔（秒）',
+          singleSessionDefault: 'Session 单一在线（全站）',
+          sessionIdleTimeout: 'Session 空闲超时（分钟）',
+          ipWindowMinutes: 'IP源登录失败-计数窗口（分钟）',
+          ipMaxFails: 'IP源登录失败-计数最大值（次）',
+          ipCaptchaAfter: 'IP源登录失败-触发验证码（次）',
+          loginThrottleWindowMinutes: '账号登录失败-计数窗口（分钟）',
+          loginThrottleMaxFails: '账号登录失败-计数最大值（次）',
+          loginThrottleCaptchaAfter: '账号登录失败-触发验证码（次）'
+        },
+        help: {
+          passwordMinLength: '密码最小长度',
+          passwordMaxLength: '密码最大长度',
+          passwordRequireLowercase: '需含小写字母',
+          passwordRequireUppercase: '需含大写字母',
+          passwordRequireDigit: '需含数字',
+          passwordRequireSpecial: '需含特殊符号',
+          passwordForbidUsername: '禁止密码与账号相同',
+          passwordChangeMinInterval: '同一操作者对同一账号连续设置密码的最小间隔（秒）；0＝停用',
+          singleSessionDefault: '全站单一-session 默认',
+          sessionIdleTimeout: '会话闲置超时（分钟）',
+          ipWindowMinutes: '来源节流：来源维滑动窗长（分钟）',
+          ipMaxFails: '来源节流：来源桶滑动窗内失败达此数即硬锁',
+          ipCaptchaAfter: '来源节流：来源桶滑动窗内失败达此数即进验证码软区',
+          loginThrottleWindowMinutes: '登录节流：滑动窗长（分钟）＝锁定的最长存续',
+          loginThrottleMaxFails: '登录节流：滑动窗内失败达此数即锁定',
+          loginThrottleCaptchaAfter: '登录节流：滑动窗内失败达此数即进验证码软区'
+        }
       }
+      // [rev5-inline BASE-WEB-MANAGE-PAGE-WIRING(vii)+ 008-audit-settings-pages END]
     },
     // [rev5-inline BASE-WEB-MANAGE-PAGE-WIRING(vi)+ 007-user-password-admin START] `page:` 樹新 top-level 命名空間
     // `userCenter`（憲法 §III.2 (vi) 列逐字授權）——個人中心改密卡的欄名、鈕名、成功 toast 與副作用告知。

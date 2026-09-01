@@ -420,6 +420,10 @@ const local: App.I18n.Schema = {
     // 路由外掛重算出該 RouteKey 後不補鍵即型別檢查紅——同 (i) 用途的既有論證）。
     'manage_policy-archive': 'Policy Recycle Bin',
     // [rev5-inline BASE-WEB-MANAGE-PAGE-WIRING(iv)+ 006-authz-governance END]
+    // [rev5-inline BASE-WEB-MANAGE-PAGE-WIRING(vii)+ 008-audit-settings-pages START] route: 樹補
+    // `manage_system-settings` 一鍵（鍵集與 zh-cn 相等；說明與權威見 zh-cn.ts 同段）。
+    'manage_system-settings': 'System Settings',
+    // [rev5-inline BASE-WEB-MANAGE-PAGE-WIRING(vii)+ 008-audit-settings-pages END]
     'multi-menu': 'Multi Menu',
     'multi-menu_first': 'Menu One',
     'multi-menu_first_child': 'Menu One Child',
@@ -942,7 +946,52 @@ const local: App.I18n.Schema = {
           iconify: 'Iconify Icon',
           local: 'Local Icon'
         }
+      },
+      // [rev5-inline BASE-WEB-MANAGE-PAGE-WIRING(vii)+ 008-audit-settings-pages START] 系統設定頁字串
+      // （鍵集與 zh-cn 逐鍵相等；說明與權威見 zh-cn.ts 同段；譯文以 rev4:en-us.ts 同樹為底重打）。
+      systemSettings: {
+        passwordPolicyTitle: 'Password Policy',
+        sessionTitle: 'Session Settings',
+        ipLoginTitle: 'IP-source login settings',
+        accountLoginTitle: 'Account login settings',
+        items: {
+          passwordMinLength: 'Minimum password length',
+          passwordMaxLength: 'Maximum password length',
+          passwordRequireLowercase: 'Require lowercase letter',
+          passwordRequireUppercase: 'Require uppercase letter',
+          passwordRequireDigit: 'Require digit',
+          passwordRequireSpecial: 'Require special character',
+          passwordForbidUsername: 'Forbid password same as username',
+          passwordChangeMinInterval: 'Password set cooldown (seconds)',
+          singleSessionDefault: 'Single session (global)',
+          sessionIdleTimeout: 'Session idle timeout (min)',
+          ipWindowMinutes: 'IP-source login failure - counting window (min)',
+          ipMaxFails: 'IP-source login failure - max count (times)',
+          ipCaptchaAfter: 'IP-source login failure - trigger captcha (times)',
+          loginThrottleWindowMinutes: 'Account login failure - counting window (min)',
+          loginThrottleMaxFails: 'Account login failure - max count (times)',
+          loginThrottleCaptchaAfter: 'Account login failure - trigger captcha (times)'
+        },
+        help: {
+          passwordMinLength: 'Minimum password length',
+          passwordMaxLength: 'Maximum password length',
+          passwordRequireLowercase: 'Must contain a lowercase letter',
+          passwordRequireUppercase: 'Must contain an uppercase letter',
+          passwordRequireDigit: 'Must contain a digit',
+          passwordRequireSpecial: 'Must contain a special character',
+          passwordForbidUsername: 'Forbid password identical to username',
+          passwordChangeMinInterval: 'Minimum interval in seconds between password sets by the same operator on the same account; 0 disables',
+          singleSessionDefault: 'Site-wide single-session default',
+          sessionIdleTimeout: 'Session idle timeout (minutes)',
+          ipWindowMinutes: 'Source throttle: source-dimension sliding window length (minutes)',
+          ipMaxFails: 'Source throttle: hard lock once failures in the source-bucket sliding window reach this count',
+          ipCaptchaAfter: 'Source throttle: enter the captcha soft zone once failures in the source-bucket sliding window reach this count',
+          loginThrottleWindowMinutes: 'Login throttle: sliding window length (minutes) = maximum lockout duration',
+          loginThrottleMaxFails: 'Login throttle: lockout once failures in the sliding window reach this count',
+          loginThrottleCaptchaAfter: 'Login throttle: enter the captcha soft zone once failures in the sliding window reach this count'
+        }
       }
+      // [rev5-inline BASE-WEB-MANAGE-PAGE-WIRING(vii)+ 008-audit-settings-pages END]
     },
     // [rev5-inline BASE-WEB-MANAGE-PAGE-WIRING(vi)+ 007-user-password-admin START] `page:` 樹新 top-level 命名空間
     // `userCenter`（鍵集與 zh-cn 逐鍵相等；說明與權威見 zh-cn.ts 同段）
