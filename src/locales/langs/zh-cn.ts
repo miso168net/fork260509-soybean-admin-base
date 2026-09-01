@@ -1,8 +1,10 @@
 const local: App.I18n.Schema = {
   // [rev5-inline BASE-WEB-I18N-WIRING(ii)+ 003-auth-session START] backend 命名空間（wire msg
-  // key → 在地化顯示；**53 鍵**＝003-auth-session 之 22 鍵＋004-ip-trust-anchor 之
+  // key → 在地化顯示；**76 鍵**＝003-auth-session 之 22 鍵＋004-ip-trust-anchor 之
   // biz.ipRule.* 五鍵與 biz.throttle.* 一鍵＋005-role-menu-crud 之 biz.role.* 十鍵與
-  // biz.menu.* 十二鍵＋006-authz-governance 之 biz.role.* 兩鍵與 biz.policy.* 一鍵；
+  // biz.menu.* 十二鍵＋006-authz-governance 之 biz.role.* 兩鍵與 biz.policy.* 一鍵＋
+  // 007-user-password-admin 之 auth.session.kickedByAdmin 一鍵與 biz.user.* 二十鍵＋
+  // 008-audit-settings-pages 之 biz.audit.* 二鍵；
   // 各刀新鍵的譯文單一權威＝該刀 contracts/msg-keys.md，
   // 其餘鍵照 rev4 鏡像重打字消化）。★下一行 `  backend: {` 須獨佔一行——本檔不在
   // MSG_DICT_LOCALES 字典鏈射程（B-030 子項）、結構由 App.I18n.Schema 必填型節＋typecheck 守。
@@ -31,6 +33,12 @@ const local: App.I18n.Schema = {
       }
     },
     biz: {
+      // 008-audit-settings-pages T015 二鍵（譯文逐字＝
+      // specs/008-audit-settings-pages/contracts/msg-keys.md；zh-cn 譯文＝rev4 逐字）
+      audit: {
+        invalidTable: '清理目标不在允许清单内',
+        purgeBelowFloor: '清理保留天数不可低于 {minDays} 天'
+      },
       auth: {
         notSupported: '该功能暂未开放',
         captchaRequired: '请完成验证码后再试',

@@ -55,6 +55,22 @@ const backendMessages = {
       },
     },
     biz: {
+      // 008-audit-settings-pages T015 二鍵（皆 2222）：構造點恰二、皆在
+      // server/src/handler/audit.rs purge 守門固定序（①invalidTable＝AppError::Biz
+      // 直書 Cow::Borrowed 字面＝Lint24 抽取面①；②purgeBelowFloor＝AppError::BizData
+      // 攜 {minDays}——ADR 0078 授權的第三攜參鍵）。譯文逐字＝
+      // specs/008-audit-settings-pages/contracts/msg-keys.md（zh-tw＝該刀新譯）。
+      audit: {
+        // purge table 值域外（wire 四值白名單之外；含缺席／抽取器 rejection 收斂形）。
+        // ★刻意不攜參——值域外字面是操作者送出的原文回聲、對他零修正價值
+        //（ADR 0078 決定一末句；純 key、與下鍵的 BizData 形恰成對照）。
+        invalidTable: '清理目標不在允許清單內',
+        // beforeDays 低於下限（缺席／畸形→視同缺席、亦此鍵）。★佔位符 {minDays} MUST
+        // 逐字＝後端 BizData data 頂層鍵（三語一致；Lint24 第三腿〔T021〕對賬面）——
+        // 名字對不上時 vue-i18n 把該參數渲染成空字串、全樹零紅點（機轉詳
+        // biz.user.passwordPolicy 同型註）。
+        purgeBelowFloor: '清理保留天數不可低於 {minDays} 天',
+      },
       auth: {
         // 構造點四處（003 U-L／T051、皆 2222）：server/src/throttle/mod.rs 之
         // captcha_gate()——缺／無效題、重放、used 標記 SET NX 瞬斷、答錯一律此鍵
