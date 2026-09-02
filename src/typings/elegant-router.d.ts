@@ -53,6 +53,7 @@ declare module "@elegant-router/types" {
     "iframe-page": "/iframe-page/:url";
     "login": "/login/:module(pwd-login|code-login|register|reset-pwd|bind-wechat)?";
     "manage": "/manage";
+    "manage_audit": "/manage/audit";
     "manage_ip-rule": "/manage/ip-rule";
     "manage_menu": "/manage/menu";
     "manage_policy-archive": "/manage/policy-archive";
@@ -194,6 +195,7 @@ declare module "@elegant-router/types" {
     | "function_tab"
     | "function_toggle-auth"
     | "home"
+    | "manage_audit"
     | "manage_ip-rule"
     | "manage_menu"
     | "manage_policy-archive"

@@ -424,6 +424,10 @@ const local: App.I18n.Schema = {
     // `manage_system-settings` 一鍵（鍵集與 zh-cn 相等；說明與權威見 zh-cn.ts 同段）。
     'manage_system-settings': 'System Settings',
     // [rev5-inline BASE-WEB-MANAGE-PAGE-WIRING(vii)+ 008-audit-settings-pages END]
+    // [rev5-inline BASE-WEB-MANAGE-PAGE-WIRING(viii)+ 008-audit-settings-pages START] route: 樹補
+    // `manage_audit` 一鍵（鍵集與 zh-cn 相等；說明與權威見 zh-cn.ts 同段）。
+    manage_audit: 'Audit Center',
+    // [rev5-inline BASE-WEB-MANAGE-PAGE-WIRING(viii)+ 008-audit-settings-pages END]
     'multi-menu': 'Multi Menu',
     'multi-menu_first': 'Menu One',
     'multi-menu_first_child': 'Menu One Child',
@@ -947,6 +951,90 @@ const local: App.I18n.Schema = {
           local: 'Local Icon'
         }
       },
+      // [rev5-inline BASE-WEB-MANAGE-PAGE-WIRING(viii)+ 008-audit-settings-pages START] 稽核中心頁字串
+      // （鍵集與 zh-cn 逐鍵相等、共 58 葉；說明與權威見 zh-cn.ts 同段；譯文以 rev4:en-us.ts
+      // 同樹為底重打；★rev5 新增鍵恰一枚＝common.xForwardedFor、ADR 0076）。
+      audit: {
+        title: 'Audit Center',
+        tab: {
+          operation: 'Operation Log',
+          access: 'Access Log',
+          login: 'Login Attempts',
+          session: 'Session Events'
+        },
+        common: {
+          createTime: 'Time',
+          operator: 'Operator',
+          operatorId: 'Operator ID',
+          operatorName: 'Operator Name',
+          realIp: 'Source IP',
+          xForwardedFor: 'X-Forwarded-For',
+          region: 'Region',
+          traceId: 'Trace ID',
+          timeRange: 'Time Range'
+        },
+        operation: {
+          entityTable: 'Entity Table',
+          operation: 'Action',
+          entityId: 'Entity ID',
+          payload: 'Snapshot',
+          viewPayload: 'View',
+          emptyPayload: '(no snapshot)',
+          payloadBefore: 'Before',
+          payloadAfter: 'After'
+        },
+        access: {
+          httpMethod: 'Method',
+          httpStatus: 'Status',
+          httpPath: 'Path'
+        },
+        login: {
+          attemptedUserName: 'Attempted Account',
+          success: 'Result',
+          successOption: {
+            true: 'Success',
+            false: 'Failure'
+          },
+          throttleNote:
+            'Login attempts rejected by throttle short-circuit are not recorded in this table; only attempts with an actual success/failure verdict are shown here.'
+        },
+        session: {
+          userId: 'User ID',
+          userName: 'User',
+          sid: 'Session ID',
+          eventType: 'Event Type',
+          reason: 'Reason',
+          sourceIp: 'Source IP'
+        },
+        form: {
+          entityTable: 'Enter entity table',
+          operation: 'Enter action (e.g. UPDATE, KICK)',
+          operatorId: 'Enter operator ID',
+          operatorName: 'Enter operator name',
+          httpMethod: 'Enter method (e.g. GET)',
+          httpStatus: 'Enter status code',
+          httpPath: 'Enter path (fuzzy match)',
+          attemptedUserName: 'Enter account name (fuzzy match)',
+          success: 'Select result',
+          realIp: 'Enter source IP (exact match)',
+          userId: 'Enter user ID',
+          userName: 'Enter user name',
+          eventType: 'Enter event type (e.g. kicked, idle)',
+          reason: 'Enter reason',
+          timeRange: 'Select time range'
+        },
+        purge: {
+          title: 'Purge Logs',
+          entry: 'Purge',
+          beforeDays: 'Retention Days',
+          beforeDaysHint: 'Records older than the given number of days will be deleted; minimum 30 days.',
+          warning:
+            'This permanently deletes records older than the retention days and cannot be undone; the purge action itself is recorded in the operation log.',
+          confirm: 'Confirm purge? This action cannot be undone.',
+          success: 'Purge complete, {count} records deleted'
+        }
+      },
+      // [rev5-inline BASE-WEB-MANAGE-PAGE-WIRING(viii)+ 008-audit-settings-pages END]
       // [rev5-inline BASE-WEB-MANAGE-PAGE-WIRING(vii)+ 008-audit-settings-pages START] 系統設定頁字串
       // （鍵集與 zh-cn 逐鍵相等；說明與權威見 zh-cn.ts 同段；譯文以 rev4:en-us.ts 同樹為底重打）。
       systemSettings: {

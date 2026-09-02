@@ -422,6 +422,12 @@ const local: App.I18n.Schema = {
     // 即型別檢查紅——同 (i) 用途的既有論證。譯文以 rev4:zh-cn.ts route 樹同鍵為底重打）。
     'manage_system-settings': '系统设置',
     // [rev5-inline BASE-WEB-MANAGE-PAGE-WIRING(vii)+ 008-audit-settings-pages END]
+    // [rev5-inline BASE-WEB-MANAGE-PAGE-WIRING(viii)+ 008-audit-settings-pages START] route: 樹補
+    // `manage_audit` 一鍵（upstream 不存在、頁進場型——憲法 §III.2 (viii) 列明文；
+    // 鍵名＝seed 選單列 77 的 route_name，逐字不可改；路由外掛重算出該 RouteKey 後不補鍵
+    // 即型別檢查紅——同 (i) 用途的既有論證。譯文以 rev4:zh-cn.ts route 樹同鍵為底重打）。
+    manage_audit: '审计中心',
+    // [rev5-inline BASE-WEB-MANAGE-PAGE-WIRING(viii)+ 008-audit-settings-pages END]
     'multi-menu': '多级菜单',
     'multi-menu_first': '菜单一',
     'multi-menu_first_child': '菜单一子菜单',
@@ -954,6 +960,91 @@ const local: App.I18n.Schema = {
           local: '本地图标'
         }
       },
+      // [rev5-inline BASE-WEB-MANAGE-PAGE-WIRING(viii)+ 008-audit-settings-pages START] 稽核中心頁字串
+      // （title＋四分頁 tab＋跨分頁共用欄 common＋各分頁欄名＋搜尋 placeholder form＋清理對話框
+      // purge，共 58 葉；兩語鍵集 MUST 相等；型節見 typings/app.d.ts；譯文以 rev4:zh-cn.ts 之
+      // manage.audit 樹為底重打字消化。★rev5 新增鍵恰一枚＝common.xForwardedFor（ADR 0076：
+      // XFF 欄三分頁渲染＝UI 對照 rev4 唯一例外、rev4 樹無此鍵）；其餘 57 葉鍵集與 rev4 樹逐鍵
+      // 相等。purge.success 攜 {count} 前端插值（$t 第二參）。
+      audit: {
+        title: '审计中心',
+        tab: {
+          operation: '操作日志',
+          access: '访问日志',
+          login: '登录尝试',
+          session: '会话事件'
+        },
+        common: {
+          createTime: '时间',
+          operator: '操作者',
+          operatorId: '操作者 ID',
+          operatorName: '操作者名称',
+          realIp: '来源 IP',
+          xForwardedFor: 'XFF 转发链',
+          region: '地域',
+          traceId: '追踪 ID',
+          timeRange: '时间区间'
+        },
+        operation: {
+          entityTable: '目标数据表',
+          operation: '动作',
+          entityId: '目标 ID',
+          payload: '变更快照',
+          viewPayload: '查看',
+          emptyPayload: '（无快照）',
+          payloadBefore: '变更前',
+          payloadAfter: '变更后'
+        },
+        access: {
+          httpMethod: '请求方法',
+          httpStatus: '状态码',
+          httpPath: '请求路径'
+        },
+        login: {
+          attemptedUserName: '尝试账号',
+          success: '结果',
+          successOption: {
+            true: '成功',
+            false: '失败'
+          },
+          throttleNote: '因登录节流短路而被拒的尝试不会记录于此表；此处仅呈现实际判定成败的登录尝试。'
+        },
+        session: {
+          userId: '用户 ID',
+          userName: '用户',
+          sid: '会话 ID',
+          eventType: '事件类型',
+          reason: '原因',
+          sourceIp: '来源 IP'
+        },
+        form: {
+          entityTable: '请输入目标数据表',
+          operation: '请输入动作（如 UPDATE、KICK）',
+          operatorId: '请输入操作者 ID',
+          operatorName: '请输入操作者名称',
+          httpMethod: '请输入请求方法（如 GET）',
+          httpStatus: '请输入状态码',
+          httpPath: '请输入请求路径（模糊匹配）',
+          attemptedUserName: '请输入账号名称（模糊匹配）',
+          success: '请选择结果',
+          realIp: '请输入来源 IP（精确匹配）',
+          userId: '请输入用户 ID',
+          userName: '请输入用户名称',
+          eventType: '请输入事件类型（如 kicked、idle）',
+          reason: '请输入原因',
+          timeRange: '请选择时间区间'
+        },
+        purge: {
+          title: '清理日志',
+          entry: '清理',
+          beforeDays: '保留天数',
+          beforeDaysHint: '将删除早于指定天数的记录；下限为 30 天。',
+          warning: '此操作会永久删除早于保留天数的记录且无法恢复；清理动作本身将记入操作日志。',
+          confirm: '确定执行清理？此操作无法恢复。',
+          success: '清理完成，共删除 {count} 条记录'
+        }
+      },
+      // [rev5-inline BASE-WEB-MANAGE-PAGE-WIRING(viii)+ 008-audit-settings-pages END]
       // [rev5-inline BASE-WEB-MANAGE-PAGE-WIRING(vii)+ 008-audit-settings-pages START] 系統設定頁字串
       // （4 組標題＋items 16 鍵＋help 16 鍵；鍵集＝後端 SEED_EXPECTED 16 鍵逐鍵對齊、兩語鍵集
       // MUST 相等；譯文以 rev4:zh-cn.ts 之 manage.systemSettings 樹為底重打字消化；型節見

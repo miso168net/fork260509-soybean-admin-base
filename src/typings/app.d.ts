@@ -1160,6 +1160,90 @@ declare namespace App {
             };
           };
           // [rev5-inline BASE-WEB-MANAGE-PAGE-WIRING(vii)+ 008-audit-settings-pages END]
+          // [rev5-inline BASE-WEB-MANAGE-PAGE-WIRING(viii)+ 008-audit-settings-pages START]
+          // `page.manage.audit` 型節（逐鍵鏡像兩語 locale、共 58 葉）。★本節**必需、非「如需」**：
+          // `page:` 是顯式型樹，少一鍵就是 `$t('page.manage.audit.…')` 型別檢查紅（論證同 (vii) 節）。
+          // ★含 rev5 新增鍵 common.xForwardedFor（ADR 0076；rev4:app.d.ts 同節無此鍵）；
+          // purge.success 攜 {count} 前端插值、型仍 string（插值由 $t 第二參承載）。
+          audit: {
+            title: string;
+            tab: {
+              operation: string;
+              access: string;
+              login: string;
+              session: string;
+            };
+            common: {
+              createTime: string;
+              operator: string;
+              operatorId: string;
+              operatorName: string;
+              realIp: string;
+              xForwardedFor: string;
+              region: string;
+              traceId: string;
+              timeRange: string;
+            };
+            operation: {
+              entityTable: string;
+              operation: string;
+              entityId: string;
+              payload: string;
+              viewPayload: string;
+              emptyPayload: string;
+              payloadBefore: string;
+              payloadAfter: string;
+            };
+            access: {
+              httpMethod: string;
+              httpStatus: string;
+              httpPath: string;
+            };
+            login: {
+              attemptedUserName: string;
+              success: string;
+              successOption: {
+                true: string;
+                false: string;
+              };
+              throttleNote: string;
+            };
+            session: {
+              userId: string;
+              userName: string;
+              sid: string;
+              eventType: string;
+              reason: string;
+              sourceIp: string;
+            };
+            form: {
+              entityTable: string;
+              operation: string;
+              operatorId: string;
+              operatorName: string;
+              httpMethod: string;
+              httpStatus: string;
+              httpPath: string;
+              attemptedUserName: string;
+              success: string;
+              realIp: string;
+              userId: string;
+              userName: string;
+              eventType: string;
+              reason: string;
+              timeRange: string;
+            };
+            purge: {
+              title: string;
+              entry: string;
+              beforeDays: string;
+              beforeDaysHint: string;
+              warning: string;
+              confirm: string;
+              success: string;
+            };
+          };
+          // [rev5-inline BASE-WEB-MANAGE-PAGE-WIRING(viii)+ 008-audit-settings-pages END]
         };
         // [rev5-inline BASE-WEB-MANAGE-PAGE-WIRING(vi)+ 007-user-password-admin START] `App.I18n.Schema.page` 之
         // `userCenter` 型節（新 top-level 命名空間；憲法 §III.2 (vi) 列逐字授權）。與兩語 locale 同批、鍵集逐鍵相等。
