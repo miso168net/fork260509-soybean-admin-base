@@ -20,7 +20,7 @@
 - `rev6-admin-base-web` 自 `example` HEAD `8be6f9ba` 拉出——upstream example 自 rev3 建分支起零新 commit，故與 rev3／rev4／rev5 工作分支為同一起點 commit、各自獨立演進。
 - 過程中沒有 squash、rebase 或改寫任何 commit 歷史。
 - rev6 期本機源倉＝`fork260509-rev6/fork260509-soybean-admin-base/`（gitignored；由 `tools/bootstrap.sh` 自 GitHub clone、`upstream` remote push URL 鎖 `no_push`）；worktree 的 `.git` 檔指向它，源倉目錄必須保留。
-- fork 差異一律走 `rev6-inline` 標記紀律（修改型帶 `原行:` 註解、新增型圈界、新檔僅檔頭一行標記；規則見傘狀 repo constitution §III）；機器強制（fork-delta-lint）隨子庫刀進場。本檔即首個帶標記的新檔、非程式邏輯。
+- fork 差異一律走 `rev6-inline` 標記紀律（修改型帶 `原行:` 註解、新增型圈界、新檔僅檔頭一行標記；規則見傘狀 repo constitution §III）；機器強制＝傘狀 repo `tools/fork-delta-lint.py`（pre-commit fork-delta 段、名冊 RUNBOOK §12；002 刀 U0 進場、程式碼新檔自 002 刀 U3 起受檢）。本檔＝首個帶標記的新檔（非程式邏輯、根層不在掃描面）。
 - 應用碼實作以 rev5 為藍本（`../fork260509-rev5/base-web/`、唯讀、凍結 SHA `9833308`）：讀允許、拷貝禁止、註解重寫、rev6 拍板已推翻的行為不帶回（傘狀 repo constitution §I.5、CLAUDE.md §1）。
 
 ## 如何比對 rev6-admin-base-web 與來源的差異
