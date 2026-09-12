@@ -1,9 +1,14 @@
 <script setup lang="ts">
-import { computed, reactive } from 'vue';
+// [rev6-inline BASE-WEB-LOGIN-CAPTCHA-WIRING(i) 003-auth-session] 軟區狀態需 ref／watch；原行: import { computed, reactive } from 'vue';
+import { computed, reactive, ref, watch } from 'vue';
+// [rev6-inline BASE-WEB-LOGIN-CAPTCHA-WIRING+ 003-auth-session] 下一行為純新增：帳號名連續輸入時節流取題（@vueuse/core 為 base-web 既有依賴、零新依賴）
+import { useDebounceFn } from '@vueuse/core';
 import { loginModuleRecord } from '@/constants/app';
 import { useAuthStore } from '@/store/modules/auth';
 import { useRouterPush } from '@/hooks/common/router';
 import { useFormRules, useNaiveForm } from '@/hooks/common/form';
+// [rev6-inline BASE-WEB-LOGIN-CAPTCHA-WIRING+ 003-auth-session] 下一行為純新增：取題 wrapper 以直接路徑 import（避 barrel 於 vite HMR 殘留舊 export）
+import { fetchLoginCaptcha } from '@/service/api/rev6-auth';
 import { $t } from '@/locales';
 
 defineOptions({
@@ -34,9 +39,67 @@ const rules = computed<Record<keyof FormModel, App.Global.FormRule[]>>(() => {
   };
 });
 
+// [rev6-inline BASE-WEB-LOGIN-CAPTCHA-WIRING+ 003-auth-session START] 軟區狀態＋取題（★(ii) formRules 放寬不在授權內、不動；rev5:pwd-login.vue 同形接線、msg key 同名）
+const captchaVisible = ref(false);
+const captchaId = ref('');
+const captchaCode = ref('');
+const captchaImg = ref('');
+/** 取題失敗旗標：true＝圖的位置改渲染可點的重試提示（與「首次取題尚未回來」的空圖分得開） */
+const captchaError = ref(false);
+
+/** 取（換）題：題目綁帳號名；換題即清空舊輸入——舊題已作廢（後端提交即消耗） */
+async function refreshCaptcha() {
+  const { data } = await fetchLoginCaptcha(model.userName);
+  if (data) {
+    captchaId.value = data.captchaId;
+    captchaImg.value = data.captchaImg;
+    captchaCode.value = '';
+    captchaError.value = false;
+    return;
+  }
+  // ★取題失敗（後端 5000 產圖／簽章失敗、或網路瞬斷）→ 三欄一律清空、絕不留失效題：
+  // 留著的 captchaId 已被後端消耗，下一發必判重放（2222 captchaRequired）→ handleSubmit 又呼叫本函式
+  // → 故障持續即無限迴圈；而 service/request 對同一 message 的 toast 去重，第二輪起連訊息都不出現＝
+  // 使用者卡在「圖看得到、永遠登不進、且無提示」。清空後圖消失、改渲染可點的重試提示＝失敗在 UI 上可見。
+  captchaId.value = '';
+  captchaImg.value = '';
+  captchaCode.value = '';
+  captchaError.value = true;
+}
+
+// 帳號名連續輸入時 debounce 取題（300ms、沿 search-modal 的 useDebounceFn 慣例），不每個鍵擊打一發
+const debouncedRefreshCaptcha = useDebounceFn(refreshCaptcha, 300);
+
+// 帳號名一變就換題：題目綁定帳號名、跨帳號呈遞後端必拒
+watch(
+  () => model.userName,
+  () => {
+    if (captchaVisible.value) {
+      debouncedRefreshCaptcha();
+    }
+  }
+);
+// [rev6-inline BASE-WEB-LOGIN-CAPTCHA-WIRING+ 003-auth-session END]
+
 async function handleSubmit() {
   await validate();
-  await authStore.login(model.userName, model.password);
+  // [rev6-inline BASE-WEB-LOGIN-CAPTCHA-WIRING(i) 003-auth-session] 軟區接線：驗證碼欄可見才附掛 captchaId／captchaCode、非軟區送出形與原行全等；原行: await authStore.login(model.userName, model.password);
+  const msg = await authStore.login(
+    model.userName,
+    model.password,
+    true,
+    captchaVisible.value ? { captchaId: captchaId.value, captchaCode: captchaCode.value } : undefined
+  );
+  if (msg === 'biz.auth.captchaRequired') {
+    // 首次收到＝進軟區、顯欄並自動取題；已附題仍收到＝答錯／過期／重放（提交即消耗）→ 自動換新題
+    captchaVisible.value = true;
+    await refreshCaptcha();
+  } else if (captchaVisible.value && msg) {
+    // 軟區換題契約（contracts/wire-auth.md）：軟區內任何其他失敗一律換題並清輸入。主案＝答對題但密碼錯（1000）：
+    // 後端提交即消耗、舊 captchaId 已作廢，不換則下一發必判重放（2222、零計數）空轉一輪。鎖定（locked）那路
+    // 題其實未耗（後端鎖定判定早於 captcha gate），一併換題只是多取一張、無副作用。
+    await refreshCaptcha();
+  }
 }
 
 type AccountKey = 'super' | 'admin' | 'user';
@@ -87,6 +150,34 @@ async function handleAccountLogin(account: Account) {
         :placeholder="$t('page.login.common.passwordPlaceholder')"
       />
     </NFormItem>
+    <!-- [rev6-inline BASE-WEB-LOGIN-CAPTCHA-WIRING+ 003-auth-session START] 軟區條件渲染：驗證碼圖（原尺寸 220×120、點圖換題）在上、輸入欄在下（w-220px wrapper 約束 NInput 寬）；文案沿用 upstream 既有 i18n 鍵、零新 page.* 鍵 -->
+    <NFormItem v-if="captchaVisible">
+      <div class="w-full flex-col items-start gap-10px">
+        <img
+          v-if="captchaImg"
+          :src="captchaImg"
+          :alt="$t('page.login.codeLogin.imageCodePlaceholder')"
+          class="h-120px w-220px cursor-pointer"
+          @click="refreshCaptcha"
+        />
+        <!--
+          取題失敗時圖為空：改渲染可點的重試提示（沿用既有 common.error／common.refresh 鍵），否則圖消失後
+          使用者只剩一個沒有圖的輸入欄、也沒有手動重取的入口。★以 captchaError 為條件而非 v-else：首次取題
+          尚未回來時圖也是空的、v-else 會在載入中先閃一次錯誤字樣
+        -->
+        <div
+          v-else-if="captchaError"
+          class="h-120px w-220px flex-center cursor-pointer border border-#e5e5e5 rounded text-14px text-#999"
+          @click="refreshCaptcha"
+        >
+          {{ $t('common.error') }} - {{ $t('common.refresh') }}
+        </div>
+        <div class="w-220px">
+          <NInput v-model:value="captchaCode" :placeholder="$t('page.login.codeLogin.imageCodePlaceholder')" />
+        </div>
+      </div>
+    </NFormItem>
+    <!-- [rev6-inline BASE-WEB-LOGIN-CAPTCHA-WIRING+ 003-auth-session END] -->
     <NSpace vertical :size="24">
       <div class="flex-y-center justify-between">
         <NCheckbox>{{ $t('page.login.pwdLogin.rememberMe') }}</NCheckbox>
