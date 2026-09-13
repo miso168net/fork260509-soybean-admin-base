@@ -1,4 +1,30 @@
 const local: App.I18n.Schema = {
+  // [rev6-inline BASE-WEB-I18N-WIRING(ii)+ 003-auth-session START] backend 樹 13 鍵（譯文＝contracts/msg-keys.md；★下一行 backend: { 須獨佔一行＝跨端閘右源錨）
+  backend: {
+    common: { success: 'Operation successful' },
+    system: {
+      internal: 'An internal error occurred. Please try again later',
+      notFound: 'The requested resource was not found',
+      forbidden: 'You do not have permission to perform this action'
+    },
+    auth: {
+      login: { failed: 'Incorrect username or password' },
+      session: { reLogin: 'Please log in again', kicked: 'Your account signed in elsewhere; this session ended' },
+      token: { expired: 'Session expired, refreshing' }
+    },
+    biz: {
+      systemSettings: {
+        invalidValue: 'Invalid setting value (wrong type, out of range or not an allowed option)',
+        notFound: 'The specified setting key was not found'
+      },
+      auth: {
+        notSupported: 'This feature is not available yet',
+        captchaRequired: 'Please complete the captcha and try again',
+        locked: 'Too many attempts; please try again later'
+      }
+    }
+  },
+  // [rev6-inline BASE-WEB-I18N-WIRING(ii)+ 003-auth-session END]
   system: {
     title: 'SoybeanAdmin',
     updateTitle: 'System Version Update Notification',

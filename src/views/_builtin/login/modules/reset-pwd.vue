@@ -3,6 +3,8 @@ import { computed, reactive } from 'vue';
 import { useRouterPush } from '@/hooks/common/router';
 import { useFormRules, useNaiveForm } from '@/hooks/common/form';
 import { $t } from '@/locales';
+// [rev6-inline BASE-WEB-AUTH-WIRING(b)+ 003-auth-session] 下一行為純新增：替代登入 stub wrapper 以直接路徑 import（避 barrel 於 vite HMR 殘留舊 export、沿 rev6-auth.ts 檔頭自陳）。
+import { fetchResetPwdStub } from '@/service/api/rev6-auth';
 
 defineOptions({
   name: 'ResetPwd'
@@ -40,7 +42,13 @@ const rules = computed<RuleRecord>(() => {
 async function handleSubmit() {
   await validate();
   // request to reset password
-  window.$message?.success($t('page.login.common.validateSuccess'));
+  // [rev6-inline BASE-WEB-AUTH-WIRING(b) 003-auth-session] 送出改打後端誠實 stub（恆 2222、攔截器經 backend.* 轉譯後顯「該功能尚未開放」）、upstream 的假成功 toast 就此消滅；原行: window.$message?.success($t('page.login.common.validateSuccess'));
+  await fetchResetPwdStub({
+    phone: model.phone,
+    code: model.code,
+    password: model.password,
+    confirmPassword: model.confirmPassword
+  });
 }
 </script>
 

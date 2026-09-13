@@ -1,4 +1,19 @@
 const local: App.I18n.Schema = {
+  // [rev6-inline BASE-WEB-I18N-WIRING(ii)+ 003-auth-session START] backend 樹 13 鍵（譯文＝contracts/msg-keys.md；★下一行 backend: { 須獨佔一行＝跨端閘右源錨）
+  backend: {
+    common: { success: '操作成功' },
+    system: { internal: '系统发生内部错误，请稍后再试', notFound: '找不到请求的资源', forbidden: '没有权限执行此操作' },
+    auth: {
+      login: { failed: '用户名或密码错误' },
+      session: { reLogin: '请重新登录', kicked: '您的账号已在其他设备登录，当前会话已结束' },
+      token: { expired: '登录已过期，正在重新获取授权' }
+    },
+    biz: {
+      systemSettings: { invalidValue: '设置值无效', notFound: '设置项不存在' },
+      auth: { notSupported: '该功能暂未开放', captchaRequired: '请完成验证码后再试', locked: '尝试次数过多，请稍后再试' }
+    }
+  },
+  // [rev6-inline BASE-WEB-I18N-WIRING(ii)+ 003-auth-session END]
   system: {
     title: 'Soybean 管理系统',
     updateTitle: '系统版本更新通知',

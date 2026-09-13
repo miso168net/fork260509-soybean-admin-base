@@ -1,5 +1,5 @@
-// [rev6-inline BASE-WEB-WRAPPER+ 003-auth-session] auth service 接線層新檔（§III.1 WRAPPER；contracts/wire-auth.md §login／§loginCaptcha／§logout）——不改既有 service 檔、不入 barrel
-// ★消費端（auth store 登入接線、pwd-login.vue 取題、user-avatar.vue 登出接線）以直接路徑 import 本模組、不經 src/service/api/index.ts——
+// [rev6-inline BASE-WEB-WRAPPER+ 003-auth-session] auth service 接線層新檔（§III.1 WRAPPER；contracts/wire-auth.md §login／§loginCaptcha／§logout／§替代登入 stub）——不改既有 service 檔、不入 barrel
+// ★消費端（auth store 登入接線、pwd-login.vue 取題、user-avatar.vue 登出接線、三張替代登入表單與 captcha hook 之 stub 接線）以直接路徑 import 本模組、不經 src/service/api/index.ts——
 //   與 rev6-settings.ts 同一先例（barrel 重匯出在 vite HMR 下會殘留舊 export；rev5:rev5-auth.ts 同判）。
 //   `from '../request'` 則是既有 service 檔（auth.ts／system-manage.ts）的共同入口、與 barrel 無涉。
 import { request } from '../request';
@@ -74,5 +74,57 @@ export function fetchLoginWithCaptcha(
       captchaId: captcha?.captchaId,
       captchaCode: captcha?.captchaCode
     }
+  });
+}
+
+// ── 替代登入四流程的誠實 stub 出口（契約＝contracts/wire-auth.md §替代登入 stub；後端＝003 刀 U9 T059） ──
+// 後端四端點共用 alt_stub::not_supported_stub：不解析 body、零副作用、恆回 `2222 biz.auth.notSupported`（data null）——
+// 「尚未開放」自此是 wire 上可觀測的真話，取代 upstream 的假成功 toast（spec US5／FR-022）。四支共通約定：
+// ①呼叫端不看結果、也不自行顯錯：`createFlatRequest` 恆以 `{ data, error }` 回，錯誤 toast 由 request 攔截器的
+//   showErrorMsg 鏈經 backend.* i18n 轉譯自動顯示（憲法 §III.2 I18N-WIRING(i)）；成功腿現階段不存在、故亦無成功 toast。
+// ②不增 Api.Auth 請求型別：register／resetPwd 各吃四個同型 string，positional 形相鄰兩欄對調時 typecheck 全綠、stub 又不讀
+//   body ⇒ 錯位在本刀整個可觀測面靜默，故此二支吃行內具名物件、讓錯位由 typecheck 當場擋下；型別不出本檔＝wire-schema
+//   快照零擴（其抽取面只涵 src/typings）。sendCaptcha／codeLogin 沿本檔純量參數慣例。
+// ③wire req 照各表單 model 欄位 camelCase 直送——日後真做時 wire 形不變、表單端零改動。
+// rev5:rev5-auth.ts 四支同形（rev6 加 `Stub` 尾綴＝名字即說明它現階段不會成功）。
+
+/** 發送簡訊驗證碼（`POST /auth/sendCaptcha`；恆 2222——captcha hook getCaptcha 消費、成功才倒數） */
+export function fetchSendCaptchaStub(phone: string) {
+  return request<null>({
+    url: '/auth/sendCaptcha',
+    method: 'post',
+    data: { phone }
+  });
+}
+
+/** 驗證碼登入（`POST /auth/codeLogin`；恆 2222——code-login.vue 消費） */
+export function fetchCodeLoginStub(phone: string, code: string) {
+  return request<null>({
+    url: '/auth/codeLogin',
+    method: 'post',
+    data: { phone, code }
+  });
+}
+
+/** 註冊（`POST /auth/register`；恆 2222——register.vue 消費；欄型＝該表單 FormModel） */
+export function fetchRegisterStub(data: { phone: string; code: string; password: string; confirmPassword: string }) {
+  return request<null>({
+    url: '/auth/register',
+    method: 'post',
+    data
+  });
+}
+
+/**
+ * 重設密碼（`POST /auth/resetPwd`；恆 2222——reset-pwd.vue 消費；欄型＝該表單 FormModel）
+ *
+ * 該表單的 code 欄沒有送碼入口（upstream 未掛 useCaptcha）＝既有 UX 態、本刀不補：端點恆 2222 之下補入口只是把同一句
+ * 「該功能尚未開放」多鋪一條到達路徑。
+ */
+export function fetchResetPwdStub(data: { phone: string; code: string; password: string; confirmPassword: string }) {
+  return request<null>({
+    url: '/auth/resetPwd',
+    method: 'post',
+    data
   });
 }

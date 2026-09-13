@@ -311,6 +311,21 @@ declare namespace App {
     };
 
     type Schema = {
+      // [rev6-inline BASE-WEB-I18N-WIRING(iii)+ 003-auth-session START] backend 必填型節（逐鍵鏡像 locale backend 樹 13 鍵＝contracts/msg-keys.md；必填＝兩語缺樹即 typecheck 紅；★LangType 擴充／locale 註冊／zh-tw.ts 標型不在授權內、不動）
+      backend: {
+        common: { success: string };
+        system: { internal: string; notFound: string; forbidden: string };
+        auth: {
+          login: { failed: string };
+          session: { reLogin: string; kicked: string };
+          token: { expired: string };
+        };
+        biz: {
+          systemSettings: { invalidValue: string; notFound: string };
+          auth: { notSupported: string; captchaRequired: string; locked: string };
+        };
+      };
+      // [rev6-inline BASE-WEB-I18N-WIRING(iii)+ 003-auth-session END]
       system: {
         title: string;
         updateTitle: string;
