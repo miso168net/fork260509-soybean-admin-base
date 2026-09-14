@@ -161,8 +161,8 @@ export const useRouteStore = defineStore(SetupStoreId.Route, () => {
 
       if (!error) {
         // [rev6-inline BASE-WEB-AUTH-WIRING(a) 003-auth-session] 原行: addConstantRoutes(data);
-        // 併入 static 常量集而非取代：seed constant=TRUE 為 0 列、後端回 []，
-        // 取代會清空 login／403／404／500／iframe-page 五條 builtin 常量路由（連登入頁都不可達）
+        // 後端常量路由併入 static 常量集（接在其後）而非整批取代：seed 裡 constant=TRUE 的列數是 0，後端因此回空陣列 []；
+        // 若整批取代，login／403／404／500／iframe-page 這五條 builtin 常量路由會跟著消失，連登入頁都進不去
         addConstantRoutes([...staticRoute.constantRoutes, ...data]);
       } else {
         // if fetch constant routes failed, use static constant routes

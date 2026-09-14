@@ -1,4 +1,4 @@
-// [rev6-inline BASE-WEB-ADAPT+ 002-system-settings] wire 契約錨點新檔——declaration merging 併入 Api.SystemManage、不改既有 system-manage.d.ts（contracts/wire-settings.md §5）
+// [rev6-inline BASE-WEB-ADAPT+ 002-system-settings] wire 契約錨點新檔——經 declaration merging 把本檔型別掛進 Api.SystemManage，既有 system-manage.d.ts 一字未動（contracts/wire-settings.md §5）
 declare namespace Api {
   namespace SystemManage {
     /**
@@ -28,9 +28,9 @@ declare namespace Api {
      * rev5:rev5-settings.d.ts 同名 interface、三欄形不變。
      */
     interface UpdateSystemSettingReq {
-      /** 定位鍵（必填；不在 registry 宣告集→2222 biz.systemSettings.notFound——contracts/wire-settings.md §2） */
+      /** 定位鍵（必填；鍵不在 registry 宣告集內＝回 2222 biz.systemSettings.notFound，契約見 contracts/wire-settings.md §2） */
       settingKey: string;
-      /** 新值（必填；經 registry 驗證＋正規化落 canonical 形；顯式 JSON null＝清空 NOT NULL 欄→2222 拒收，故型別不含 null） */
+      /** 新值（必填；registry 驗證後正規化成 canonical 形再寫入；送顯式 JSON null＝等同清空 NOT NULL 欄→回 2222 拒收，因此型別不收 null） */
       settingValue: string;
       /**
        * 用途說明——三態欄（data-model §2／§8）：缺席＝不動；JSON null＝清空落 NULL；有值＝設值（空字串亦為設值、不經 registry）。

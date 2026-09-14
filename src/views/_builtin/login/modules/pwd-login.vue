@@ -59,7 +59,7 @@ async function refreshCaptcha() {
   }
   // ★取題失敗（後端 5000 產圖／簽章失敗、或網路瞬斷）→ 三欄一律清空、絕不留失效題：
   // 留著的 captchaId 已被後端消耗，下一發必判重放（2222 captchaRequired）→ handleSubmit 又呼叫本函式
-  // → 故障持續即無限迴圈；而 service/request 對同一 message 的 toast 去重，第二輪起連訊息都不出現＝
+  // → 只要故障不退就會陷入無限迴圈；再加上 service/request 會把相同 message 的 toast 去重，第二輪起連訊息都不出現＝
   // 使用者卡在「圖看得到、永遠登不進、且無提示」。清空後圖消失、改渲染可點的重試提示＝失敗在 UI 上可見。
   captchaId.value = '';
   captchaImg.value = '';
@@ -150,7 +150,7 @@ async function handleAccountLogin(account: Account) {
         :placeholder="$t('page.login.common.passwordPlaceholder')"
       />
     </NFormItem>
-    <!-- [rev6-inline BASE-WEB-LOGIN-CAPTCHA-WIRING+ 003-auth-session START] 軟區條件渲染：驗證碼圖（原尺寸 220×120、點圖換題）在上、輸入欄在下（w-220px wrapper 約束 NInput 寬）；文案沿用 upstream 既有 i18n 鍵、零新 page.* 鍵 -->
+    <!-- [rev6-inline BASE-WEB-LOGIN-CAPTCHA-WIRING+ 003-auth-session START] 軟區條件渲染：上方為驗證碼圖（保持原尺寸 220×120、點圖即換題），下方為輸入欄（外層以 w-220px wrapper 包住、約束 NInput 寬度）；文案沿用 upstream 既有 i18n 鍵、零新 page.* 鍵 -->
     <NFormItem v-if="captchaVisible">
       <div class="w-full flex-col items-start gap-10px">
         <img
@@ -161,9 +161,9 @@ async function handleAccountLogin(account: Account) {
           @click="refreshCaptcha"
         />
         <!--
-          取題失敗時圖為空：改渲染可點的重試提示（沿用既有 common.error／common.refresh 鍵），否則圖消失後
-          使用者只剩一個沒有圖的輸入欄、也沒有手動重取的入口。★以 captchaError 為條件而非 v-else：首次取題
-          尚未回來時圖也是空的、v-else 會在載入中先閃一次錯誤字樣
+          取題失敗時沒有圖可顯示：這裡改渲染一個可點擊的重試提示（沿用既有 common.error／common.refresh 鍵）；少了它，
+          圖一消失畫面就只剩孤零零的輸入欄，使用者也找不到手動重新取題的入口。★判斷條件用 captchaError、不用
+          v-else：第一次取題的回應還沒到時圖同樣是空的，若用 v-else，載入期間會先閃過一次錯誤字樣
         -->
         <div
           v-else-if="captchaError"

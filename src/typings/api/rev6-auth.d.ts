@@ -1,4 +1,4 @@
-// [rev6-inline BASE-WEB-ADAPT+ 003-auth-session] wire 契約錨點新檔——declaration merging 併入 Api.Auth、不改既有 auth.d.ts（contracts/wire-auth.md §loginCaptcha）
+// [rev6-inline BASE-WEB-ADAPT+ 003-auth-session] wire 契約錨點新檔——經 declaration merging 把本型掛進 Api.Auth，既有 auth.d.ts 一字未動（contracts/wire-auth.md §loginCaptcha）
 declare namespace Api {
   namespace Auth {
     /**
