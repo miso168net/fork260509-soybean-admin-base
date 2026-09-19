@@ -323,6 +323,13 @@ declare namespace App {
         biz: {
           systemSettings: { invalidValue: string; notFound: string };
           auth: { notSupported: string; captchaRequired: string; locked: string };
+          ipRule: {
+            invalidRuleType: string;
+            invalidCidr: string;
+            conflict: string;
+            notFound: string;
+            selfLock: string;
+          };
         };
       };
       // [rev6-inline BASE-WEB-I18N-WIRING(iii)+ 003-auth-session END]

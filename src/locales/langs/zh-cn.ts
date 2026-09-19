@@ -10,7 +10,14 @@ const local: App.I18n.Schema = {
     },
     biz: {
       systemSettings: { invalidValue: '设置值无效', notFound: '设置项不存在' },
-      auth: { notSupported: '该功能暂未开放', captchaRequired: '请完成验证码后再试', locked: '尝试次数过多，请稍后再试' }
+      auth: { notSupported: '该功能暂未开放', captchaRequired: '请完成验证码后再试', locked: '尝试次数过多，请稍后再试' },
+      ipRule: {
+        invalidRuleType: '规则类型不正确',
+        invalidCidr: '网段格式不正确',
+        conflict: '相同网段与类型的规则已存在',
+        notFound: '找不到指定的规则，或其状态不允许此操作',
+        selfLock: '此规则会使你当前的连接被阻断，已拒绝写入'
+      }
     }
   },
   // [rev6-inline BASE-WEB-I18N-WIRING(ii)+ 003-auth-session END]

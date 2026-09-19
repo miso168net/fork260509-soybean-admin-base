@@ -12,7 +12,14 @@ export default {
     },
     biz: {
       systemSettings: { invalidValue: '設定值不合法（型別不符、超出範圍或非允許選項）', notFound: '找不到指定的設定鍵' },
-      auth: { notSupported: '該功能尚未開放', captchaRequired: '請完成圖形驗證碼後再試', locked: '嘗試次數過多，請稍後再試' }
+      auth: { notSupported: '該功能尚未開放', captchaRequired: '請完成圖形驗證碼後再試', locked: '嘗試次數過多，請稍後再試' },
+      ipRule: {
+        invalidRuleType: '規則類型不合法',
+        invalidCidr: '網段格式不合法',
+        conflict: '已有相同網段與類型的規則',
+        notFound: '找不到指定的規則，或其目前狀態不允許此操作',
+        selfLock: '此變更會擋住您目前的連線，已拒絕寫入'
+      }
     }
   }
 };

@@ -21,6 +21,13 @@ const local: App.I18n.Schema = {
         notSupported: 'This feature is not available yet',
         captchaRequired: 'Please complete the captcha and try again',
         locked: 'Too many attempts; please try again later'
+      },
+      ipRule: {
+        invalidRuleType: 'Invalid rule type',
+        invalidCidr: 'Invalid network address format',
+        conflict: 'A rule with the same network and type already exists',
+        notFound: 'The rule was not found, or its state does not allow this action',
+        selfLock: 'This rule would block your current connection; the change was rejected'
       }
     }
   },
