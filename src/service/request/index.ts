@@ -122,6 +122,17 @@ export const request = createFlatRequest(
         backendErrorCode = String(error.response?.data?.code || '');
       }
 
+      // [rev6-inline BASE-WEB-I18N-WIRING(i)+ 004-ip-trust-anchor START] HTTP 層錯誤（真 4xx／5xx，例：IP 存取閘的 403、查無路由的 404）若回應仍帶信封 msg，同樣先轉譯再顯示；
+      // 否則 toast 只會是 axios 的「Request failed with status code …」、locale 裡備好的譯文永遠用不到。回應不帶信封者（斷網／逾時／非 JSON）維持 axios 原文。
+      // 只改 message、不碰 backendErrorCode：下方被踢 modal 與過期換發兩道判斷看的是業務碼分支的值，行為不變（出處＝rev5:B-117）。
+      if (error.code !== BACKEND_ERROR_CODE) {
+        const envelopeMsg = error.response?.data?.msg;
+        if (typeof envelopeMsg === 'string' && envelopeMsg) {
+          message = translateBackendMsg(envelopeMsg);
+        }
+      }
+      // [rev6-inline BASE-WEB-I18N-WIRING(i)+ 004-ip-trust-anchor END]
+
       // the error message is displayed in the modal
       const modalLogoutCodes = import.meta.env.VITE_SERVICE_MODAL_LOGOUT_CODES?.split(',') || [];
       if (modalLogoutCodes.includes(backendErrorCode)) {

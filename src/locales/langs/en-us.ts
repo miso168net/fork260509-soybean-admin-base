@@ -302,6 +302,10 @@ const local: App.I18n.Schema = {
     'manage_user-detail': 'User Detail',
     manage_role: 'Role Manage',
     manage_menu: 'Menu Manage',
+    // [rev6-inline BASE-WEB-MANAGE-PAGE-WIRING(i)+ 004-ip-trust-anchor START] IP 規則管理頁的路由標題鍵。鍵名須逐字等於後端選單列的 route name；
+    // 本樹型別由路由產物的 RouteKey 推得——view 目錄進場、外掛重算出此鍵後，這裡缺譯文即 typecheck 紅、側邊欄也只會顯裸鍵。
+    'manage_ip-rule': 'IP Rule Manage',
+    // [rev6-inline BASE-WEB-MANAGE-PAGE-WIRING(i)+ 004-ip-trust-anchor END]
     'multi-menu': 'Multi Menu',
     'multi-menu_first': 'Menu One',
     'multi-menu_first_child': 'Menu One Child',
@@ -562,6 +566,43 @@ const local: App.I18n.Schema = {
           disable: 'Disable'
         }
       },
+      // [rev6-inline BASE-WEB-MANAGE-PAGE-WIRING(i)+ 004-ip-trust-anchor START] IP 規則管理頁文案（鍵集＝rev5:src/locales/langs 同名子樹逐鍵、零增減；
+      // 兩語鍵集須相等、型節住 typings/app.d.ts）。`order` 的譯文刻意避開「優先」語意：規則判定是 any-match、該欄只管清單顯示排序（憲法 §I.7 島 F）。
+      ipRule: {
+        title: 'IP Rule List',
+        wbipCidr: 'CIDR',
+        wbipType: 'Rule Type',
+        wbipMemo: 'Memo',
+        order: 'Display Order',
+        status: 'Status',
+        createdAt: 'Created At',
+        updatedAt: 'Updated At',
+        createdBy: 'Created By',
+        updatedBy: 'Updated By',
+        statusActive: 'Active',
+        statusDeleted: 'Deleted',
+        statusAll: 'All',
+        addIpRule: 'Add IP Rule',
+        editIpRule: 'Edit IP Rule',
+        restore: 'Restore',
+        confirmRestore: 'Restore this rule?',
+        restoreSuccess: 'Restored',
+        ruleTypeMap: {
+          allow: 'Allow',
+          deny: 'Deny'
+        },
+        form: {
+          wbipCidr: 'CIDR fragment (fuzzy match)',
+          wbipType: 'Select a rule type',
+          status: 'Select a status',
+          cidr: 'CIDR, IPv4 or IPv6 (e.g. 192.168.1.0/24)',
+          type: 'Select a rule type',
+          memo: 'Memo (optional)',
+          order: 'Display order (optional)'
+        },
+        empty: '—'
+      },
+      // [rev6-inline BASE-WEB-MANAGE-PAGE-WIRING(i)+ 004-ip-trust-anchor END]
       role: {
         title: 'Role List',
         roleName: 'Role Name',

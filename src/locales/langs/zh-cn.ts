@@ -287,6 +287,10 @@ const local: App.I18n.Schema = {
     'manage_user-detail': '用户详情',
     manage_role: '角色管理',
     manage_menu: '菜单管理',
+    // [rev6-inline BASE-WEB-MANAGE-PAGE-WIRING(i)+ 004-ip-trust-anchor START] IP 規則管理頁的路由標題鍵。鍵名須逐字等於後端選單列的 route name；
+    // 本樹型別由路由產物的 RouteKey 推得——view 目錄進場、外掛重算出此鍵後，這裡缺譯文即 typecheck 紅、側邊欄也只會顯裸鍵。
+    'manage_ip-rule': 'IP 规则管理',
+    // [rev6-inline BASE-WEB-MANAGE-PAGE-WIRING(i)+ 004-ip-trust-anchor END]
     'multi-menu': '多级菜单',
     'multi-menu_first': '菜单一',
     'multi-menu_first_child': '菜单一子菜单',
@@ -547,6 +551,43 @@ const local: App.I18n.Schema = {
           disable: '禁用'
         }
       },
+      // [rev6-inline BASE-WEB-MANAGE-PAGE-WIRING(i)+ 004-ip-trust-anchor START] IP 規則管理頁文案（鍵集＝rev5:src/locales/langs 同名子樹逐鍵、零增減；
+      // 兩語鍵集須相等、型節住 typings/app.d.ts）。`order` 的譯文刻意避開「優先」語意：規則判定是 any-match、該欄只管清單顯示排序（憲法 §I.7 島 F）。
+      ipRule: {
+        title: 'IP 规则列表',
+        wbipCidr: '网段',
+        wbipType: '规则类型',
+        wbipMemo: '备注',
+        order: '排序值',
+        status: '状态',
+        createdAt: '创建时间',
+        updatedAt: '更新时间',
+        createdBy: '创建者',
+        updatedBy: '更新者',
+        statusActive: '现役',
+        statusDeleted: '已删除',
+        statusAll: '全部',
+        addIpRule: '新增 IP 规则',
+        editIpRule: '编辑 IP 规则',
+        restore: '恢复',
+        confirmRestore: '确定恢复此规则？',
+        restoreSuccess: '恢复成功',
+        ruleTypeMap: {
+          allow: '放行',
+          deny: '阻挡'
+        },
+        form: {
+          wbipCidr: '请输入网段片段（模糊匹配）',
+          wbipType: '请选择规则类型',
+          status: '请选择状态',
+          cidr: '请输入网段，IPv4 或 IPv6（如 192.168.1.0/24）',
+          type: '请选择规则类型',
+          memo: '请输入备注（选填）',
+          order: '请输入排序值（选填）'
+        },
+        empty: '—'
+      },
+      // [rev6-inline BASE-WEB-MANAGE-PAGE-WIRING(i)+ 004-ip-trust-anchor END]
       role: {
         title: '角色列表',
         roleName: '角色名称',
