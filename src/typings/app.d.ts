@@ -330,6 +330,7 @@ declare namespace App {
             notFound: string;
             selfLock: string;
           };
+          throttle: { invalidUnlockTarget: string };
         };
       };
       // [rev6-inline BASE-WEB-I18N-WIRING(iii)+ 003-auth-session END]

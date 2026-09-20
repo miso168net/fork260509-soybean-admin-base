@@ -28,7 +28,8 @@ const local: App.I18n.Schema = {
         conflict: 'A rule with the same network and type already exists',
         notFound: 'The rule was not found, or its state does not allow this action',
         selfLock: 'This rule would block your current connection; the change was rejected'
-      }
+      },
+      throttle: { invalidUnlockTarget: 'Invalid unlock target' }
     }
   },
   // [rev6-inline BASE-WEB-I18N-WIRING(ii)+ 003-auth-session END]

@@ -17,7 +17,8 @@ const local: App.I18n.Schema = {
         conflict: '相同网段与类型的规则已存在',
         notFound: '找不到指定的规则，或其状态不允许此操作',
         selfLock: '此规则会使你当前的连接被阻断，已拒绝写入'
-      }
+      },
+      throttle: { invalidUnlockTarget: '解锁对象不正确' }
     }
   },
   // [rev6-inline BASE-WEB-I18N-WIRING(ii)+ 003-auth-session END]

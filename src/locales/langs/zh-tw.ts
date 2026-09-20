@@ -19,7 +19,8 @@ export default {
         conflict: '已有相同網段與類型的規則',
         notFound: '找不到指定的規則，或其目前狀態不允許此操作',
         selfLock: '此變更會擋住您目前的連線，已拒絕寫入'
-      }
+      },
+      throttle: { invalidUnlockTarget: '解鎖對象不合法' }
     }
   }
 };
