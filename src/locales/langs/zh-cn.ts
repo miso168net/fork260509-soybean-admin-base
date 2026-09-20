@@ -1,5 +1,5 @@
 const local: App.I18n.Schema = {
-  // [rev6-inline BASE-WEB-I18N-WIRING(ii)+ 003-auth-session START] backend 樹 13 鍵（譯文＝contracts/msg-keys.md；★下一行 backend: { 須獨佔一行＝跨端閘右源錨）
+  // [rev6-inline BASE-WEB-I18N-WIRING(ii)+ 003-auth-session START] backend 樹（本子樹即 zh-CN 譯文的權威＝ADR-00039；鍵集與鍵數以跨端閘 `python3 tools/msg-key-gate.py check` 對賬為準；首批鍵的史料出處＝`specs/003-auth-session/contracts/msg-keys.md`；★下一行 backend: { 須獨佔一行＝跨端閘右源錨）
   backend: {
     common: { success: '操作成功' },
     system: { internal: '系统发生内部错误，请稍后再试', notFound: '找不到请求的资源', forbidden: '没有权限执行此操作' },
@@ -10,7 +10,11 @@ const local: App.I18n.Schema = {
     },
     biz: {
       systemSettings: { invalidValue: '设置值无效', notFound: '设置项不存在' },
-      auth: { notSupported: '该功能暂未开放', captchaRequired: '请完成验证码后再试', locked: '尝试次数过多，请稍后再试' },
+      auth: {
+        notSupported: '该功能暂未开放',
+        captchaRequired: '请完成验证码后再试',
+        locked: '尝试次数过多，请稍后再试'
+      },
       ipRule: {
         invalidRuleType: '规则类型不正确',
         invalidCidr: '网段格式不正确',

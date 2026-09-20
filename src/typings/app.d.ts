@@ -311,7 +311,7 @@ declare namespace App {
     };
 
     type Schema = {
-      // [rev6-inline BASE-WEB-I18N-WIRING(iii)+ 003-auth-session START] backend 必填型節（逐鍵鏡像 locale backend 樹 13 鍵＝contracts/msg-keys.md；必填＝兩語缺樹即 typecheck 紅；★LangType 擴充／locale 註冊／zh-tw.ts 標型不在授權內、不動）
+      // [rev6-inline BASE-WEB-I18N-WIRING(iii)+ 003-auth-session START] backend 必填型節（逐鍵鏡像 locale backend 樹；譯文權威＝三檔 locale 各自的 backend 子樹＝ADR-00039、鍵集與鍵數以跨端閘對賬為準、首批鍵的史料出處＝`specs/003-auth-session/contracts/msg-keys.md`；必填＝兩語缺樹即 typecheck 紅；★LangType 擴充／locale 註冊／zh-tw.ts 標型不在授權內、不動）
       backend: {
         common: { success: string };
         system: { internal: string; notFound: string; forbidden: string };
