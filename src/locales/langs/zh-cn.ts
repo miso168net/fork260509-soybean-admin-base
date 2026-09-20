@@ -20,7 +20,7 @@ const local: App.I18n.Schema = {
         invalidCidr: '网段格式不正确',
         conflict: '相同网段与类型的规则已存在',
         notFound: '找不到指定的规则，或其状态不允许此操作',
-        selfLock: '此规则会使你当前的连接被阻断，已拒绝写入'
+        selfLock: '此变更会使你当前的连接被阻断，已拒绝写入'
       },
       throttle: { invalidUnlockTarget: '解锁对象不正确' }
     }

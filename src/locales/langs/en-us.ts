@@ -27,7 +27,7 @@ const local: App.I18n.Schema = {
         invalidCidr: 'Invalid network address format',
         conflict: 'A rule with the same network and type already exists',
         notFound: 'The rule was not found, or its state does not allow this action',
-        selfLock: 'This rule would block your current connection; the change was rejected'
+        selfLock: 'This change would block your current connection and was rejected'
       },
       throttle: { invalidUnlockTarget: 'Invalid unlock target' }
     }
