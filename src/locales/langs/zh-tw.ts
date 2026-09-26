@@ -27,7 +27,19 @@ export default {
         notFound: '找不到指定的規則，或其目前狀態不允許此操作',
         selfLock: '此變更會擋住您目前的連線，已拒絕寫入'
       },
-      throttle: { invalidUnlockTarget: '解鎖對象不合法' }
+      throttle: { invalidUnlockTarget: '解鎖對象不合法' },
+      role: {
+        codeInvalid: '角色代碼格式不合法：僅允許字母、數字與底線，最長 64 個字元',
+        codeExists: '此角色代碼已被現有角色使用',
+        codeImmutable: '角色代碼建立後不可修改',
+        notFound: '角色不存在或已刪除',
+        seededProtected: '系統內建角色不可刪除',
+        inUse: '此角色仍有使用者掛載（含已停用或已刪除的帳號），不可刪除',
+        cannotDeleteSelfRole: '不可刪除您自己帳號所屬的角色',
+        cannotDisableSelfRole: '不可停用您自己帳號所屬的角色',
+        superCannotDisable: '超級管理員角色不可停用',
+        nameRequired: '角色名稱為必填，不可為空'
+      }
     }
   }
 };

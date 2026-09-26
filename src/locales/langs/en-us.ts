@@ -29,7 +29,19 @@ const local: App.I18n.Schema = {
         notFound: 'The rule was not found, or its state does not allow this action',
         selfLock: 'This change would block your current connection and was rejected'
       },
-      throttle: { invalidUnlockTarget: 'Invalid unlock target' }
+      throttle: { invalidUnlockTarget: 'Invalid unlock target' },
+      role: {
+        codeInvalid: 'Invalid role code: only letters, digits and underscores are allowed, up to 64 characters',
+        codeExists: 'This role code is already used by an existing role',
+        codeImmutable: 'A role code cannot be changed once the role is created',
+        notFound: 'The role does not exist or has been deleted',
+        seededProtected: 'Built-in system roles cannot be deleted',
+        inUse: 'This role is still assigned to user accounts (disabled or deleted ones included) and cannot be deleted',
+        cannotDeleteSelfRole: 'You cannot delete a role that your own account belongs to',
+        cannotDisableSelfRole: 'You cannot disable a role that your own account belongs to',
+        superCannotDisable: 'The super administrator role cannot be disabled',
+        nameRequired: 'Role name is required and cannot be empty'
+      }
     }
   },
   // [rev6-inline BASE-WEB-I18N-WIRING(ii)+ 003-auth-session END]

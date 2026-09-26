@@ -331,6 +331,18 @@ declare namespace App {
             selfLock: string;
           };
           throttle: { invalidUnlockTarget: string };
+          role: {
+            codeInvalid: string;
+            codeExists: string;
+            codeImmutable: string;
+            notFound: string;
+            seededProtected: string;
+            inUse: string;
+            cannotDeleteSelfRole: string;
+            cannotDisableSelfRole: string;
+            superCannotDisable: string;
+            nameRequired: string;
+          };
         };
       };
       // [rev6-inline BASE-WEB-I18N-WIRING(iii)+ 003-auth-session END]

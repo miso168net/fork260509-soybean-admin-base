@@ -22,7 +22,19 @@ const local: App.I18n.Schema = {
         notFound: '找不到指定的规则，或其状态不允许此操作',
         selfLock: '此变更会使你当前的连接被阻断，已拒绝写入'
       },
-      throttle: { invalidUnlockTarget: '解锁对象不正确' }
+      throttle: { invalidUnlockTarget: '解锁对象不正确' },
+      role: {
+        codeInvalid: '角色编码格式不正确：仅允许字母、数字和下划线，最长 64 个字符',
+        codeExists: '该角色编码已被现有角色使用',
+        codeImmutable: '角色编码创建后不可修改',
+        notFound: '角色不存在或已被删除',
+        seededProtected: '系统内置角色不可删除',
+        inUse: '该角色仍有用户挂载（含已停用或已删除的账号），不可删除',
+        cannotDeleteSelfRole: '不能删除你自己账号所属的角色',
+        cannotDisableSelfRole: '不能停用你自己账号所属的角色',
+        superCannotDisable: '超级管理员角色不可停用',
+        nameRequired: '角色名称为必填项，不能为空'
+      }
     }
   },
   // [rev6-inline BASE-WEB-I18N-WIRING(ii)+ 003-auth-session END]
