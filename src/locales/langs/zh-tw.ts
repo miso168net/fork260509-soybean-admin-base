@@ -39,6 +39,20 @@ export default {
         cannotDisableSelfRole: '不可停用您自己帳號所屬的角色',
         superCannotDisable: '超級管理員角色不可停用',
         nameRequired: '角色名稱為必填，不可為空'
+      },
+      menu: {
+        notFound: '找不到指定的選單，或其目前狀態不允許此操作',
+        routeNameExists: '此路由名稱已被現有選單使用，或為系統保留的路由名稱',
+        routeNameImmutable: '路由名稱建立後不可修改',
+        menuTypeImmutable: '選單類型建立後不可修改',
+        parentNotFound: '父選單不存在或已刪除',
+        cycleDetected: '不可將選單移到其自身或其子孫選單之下',
+        protectedMenu: '受保護的選單不可刪除、不可停用，也不可變更其父選單',
+        constantParent: '常量選單只能掛在常量父選單之下；其下仍有常量子孫選單時，也不可取消本身的常量設定',
+        nameRequired: '選單名稱為必填，不可為空',
+        routeNameInvalid: '路由名稱格式不合法：僅允許字母、數字、底線與連字號，最長 100 個字元',
+        hrefInvalid: '外部連結須以 http:// 或 https:// 開頭',
+        buttonsInvalid: '按鈕清單格式不合法：每個按鈕須有不為空且不重複的代碼，最長 100 個字元'
       }
     }
   }

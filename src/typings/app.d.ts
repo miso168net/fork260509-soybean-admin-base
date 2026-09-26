@@ -343,6 +343,20 @@ declare namespace App {
             superCannotDisable: string;
             nameRequired: string;
           };
+          menu: {
+            notFound: string;
+            routeNameExists: string;
+            routeNameImmutable: string;
+            menuTypeImmutable: string;
+            parentNotFound: string;
+            cycleDetected: string;
+            protectedMenu: string;
+            constantParent: string;
+            nameRequired: string;
+            routeNameInvalid: string;
+            hrefInvalid: string;
+            buttonsInvalid: string;
+          };
         };
       };
       // [rev6-inline BASE-WEB-I18N-WIRING(iii)+ 003-auth-session END]

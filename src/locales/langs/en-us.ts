@@ -41,6 +41,22 @@ const local: App.I18n.Schema = {
         cannotDisableSelfRole: 'You cannot disable a role that your own account belongs to',
         superCannotDisable: 'The super administrator role cannot be disabled',
         nameRequired: 'Role name is required and cannot be empty'
+      },
+      menu: {
+        notFound: 'The menu was not found, or its state does not allow this action',
+        routeNameExists: 'This route name is already used by an existing menu or is reserved by the system',
+        routeNameImmutable: 'A route name cannot be changed once the menu is created',
+        menuTypeImmutable: 'A menu type cannot be changed once the menu is created',
+        parentNotFound: 'The parent menu does not exist or has been deleted',
+        cycleDetected: 'A menu cannot be moved under itself or any of its descendants',
+        protectedMenu: 'A protected menu cannot be deleted, disabled or moved under a different parent menu',
+        constantParent:
+          'A constant menu can only be placed under constant parent menus; a menu with constant descendants cannot stop being constant',
+        nameRequired: 'Menu name is required and cannot be empty',
+        routeNameInvalid:
+          'Invalid route name: only letters, digits, underscores and hyphens are allowed, up to 100 characters',
+        hrefInvalid: 'The external link must start with http:// or https://',
+        buttonsInvalid: 'Invalid button list: every button needs a non-empty, unique code of up to 100 characters'
       }
     }
   },
