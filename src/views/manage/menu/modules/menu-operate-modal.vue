@@ -179,6 +179,7 @@ const layoutOptions: CommonType.Option[] = [
 // [rev6-inline BASE-WEB-MANAGE-PAGE-WIRING(ii) 005-role-menu-crud] 原行: const options = data.map(item => ({
 // [rev6-inline BASE-WEB-MANAGE-PAGE-WIRING(ii) 005-role-menu-crud] 原行: label: item.roleName,
 // [rev6-inline BASE-WEB-MANAGE-PAGE-WIRING(ii) 005-role-menu-crud] 原行: value: item.roleCode
+// [rev6-inline BASE-WEB-MANAGE-PAGE-WIRING(ii) 005-role-menu-crud] 原行: }));
 // [rev6-inline BASE-WEB-MANAGE-PAGE-WIRING(ii) 005-role-menu-crud] 原行: roleOptions.value = [...options];
 // 選項以 upstream 同形樹型 `Api.SystemManage.MenuTree` 承載（wire 形相同）：它是型別別名、可隱式滿足 naive-ui 樹選項型要求的
 // 字串索引簽章；wrapper 回傳的 `Api.MenuAdmin.MenuTreeRecord` 是 interface、直接交給 NTreeSelect 會被型檢拒收
