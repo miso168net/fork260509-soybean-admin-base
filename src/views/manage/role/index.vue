@@ -2,7 +2,8 @@
 import { ref } from 'vue';
 import { NButton, NPopconfirm, NTag } from 'naive-ui';
 import { enableStatusRecord } from '@/constants/business';
-import { fetchGetRoleList } from '@/service/api';
+// [rev6-inline BASE-WEB-MANAGE-PAGE-WIRING(ii) 005-role-menu-crud] 清單、單刪、批刪改打角色管理 wrapper（直接路徑、不經 barrel；barrel 的同名 demo 版一行不動）；原行: import { fetchGetRoleList } from '@/service/api';
+import { fetchBatchDeleteRole, fetchDeleteRole, fetchGetRoleList } from '@/service/api/rev6-role-admin';
 import { useAppStore } from '@/store/modules/app';
 import { defaultTransform, useNaivePaginatedTable, useTableOperate } from '@/hooks/common/table';
 import { $t } from '@/locales';
@@ -11,7 +12,8 @@ import RoleSearch from './modules/role-search.vue';
 
 const appStore = useAppStore();
 
-const searchParams = ref<Api.SystemManage.RoleSearchParams>({
+// [rev6-inline BASE-WEB-MANAGE-PAGE-WIRING(ii) 005-role-menu-crud] 型改角色管理清單的 wire 查詢型（狀態為字串形）；首屏物件字面不動＝首屏查詢串照舊三個篩選欄皆空值；原行: const searchParams = ref<Api.SystemManage.RoleSearchParams>({
+const searchParams = ref<Api.RoleAdmin.RoleListQuery>({
   current: 1,
   size: 10,
   roleName: null,
@@ -56,6 +58,13 @@ const { columns, columnChecks, data, loading, getData, getDataByPage, mobilePagi
       title: $t('page.manage.role.roleDesc'),
       minWidth: 120
     },
+    // [rev6-inline BASE-WEB-MANAGE-PAGE-WIRING(ii)+ 005-role-menu-crud START] 備註欄：超管自由輸入的文字，不設 render、交表格預設輸出成純文字節點（null 即留白）
+    {
+      key: 'roleMemo',
+      title: $t('page.manage.role.roleMemo'),
+      minWidth: 120
+    },
+    // [rev6-inline BASE-WEB-MANAGE-PAGE-WIRING(ii)+ 005-role-menu-crud END]
     {
       key: 'status',
       title: $t('page.manage.role.roleStatus'),
@@ -115,16 +124,26 @@ const {
 } = useTableOperate(data, 'id', getData);
 
 async function handleBatchDelete() {
-  // request
-  console.log(checkedRowKeys.value);
+  // [rev6-inline BASE-WEB-MANAGE-PAGE-WIRING(ii) 005-role-menu-crud] 批刪接真：任一標的被拒即整批不動；拒因提示由共用攔截層轉譯、本頁只看成敗（勾選鍵實為列 id、逐一轉數值）；原行: console.log(checkedRowKeys.value);
+  const { error } = await fetchBatchDeleteRole(checkedRowKeys.value.map(Number));
+  if (error) {
+    return;
+  }
 
   onBatchDeleted();
 }
 
-function handleDelete(id: number) {
-  // request
-  console.log(id);
+// [rev6-inline BASE-WEB-MANAGE-PAGE-WIRING(ii) 005-role-menu-crud] 改 async：要等刪除回應定成敗；原行: function handleDelete(id: number) {
+async function handleDelete(id: number) {
+  // [rev6-inline BASE-WEB-MANAGE-PAGE-WIRING(ii) 005-role-menu-crud] 單刪接真：拒因提示由共用攔截層轉譯、本頁只看成敗；原行: console.log(id);
+  const { error } = await fetchDeleteRole(id);
+  if (error) {
+    return;
+  }
 
+  // [rev6-inline BASE-WEB-MANAGE-PAGE-WIRING(ii)+ 005-role-menu-crud START] 清掉已刪列的勾選：勾選鍵跨刷新保留，已刪 id 若留著、下一次批刪會因查無而整批被拒
+  checkedRowKeys.value = checkedRowKeys.value.filter(key => Number(key) !== id);
+  // [rev6-inline BASE-WEB-MANAGE-PAGE-WIRING(ii)+ 005-role-menu-crud END]
   onDeleted();
 }
 
@@ -147,13 +166,14 @@ function edit(id: number) {
           @refresh="getData"
         />
       </template>
+      <!-- [rev6-inline BASE-WEB-MANAGE-PAGE-WIRING(ii) 005-role-menu-crud] 下方 :scroll-x 隨新增備註欄（minWidth 120）改 822＝各欄 width／minWidth 之和；標記無法置於標籤屬性之間、故緊鄰本元件之上；原行: :scroll-x="702" -->
       <NDataTable
         v-model:checked-row-keys="checkedRowKeys"
         :columns="columns"
         :data="data"
         size="small"
         :flex-height="!appStore.isMobile"
-        :scroll-x="702"
+        :scroll-x="822"
         :loading="loading"
         remote
         :row-key="row => row.id"

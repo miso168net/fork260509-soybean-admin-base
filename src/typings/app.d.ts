@@ -798,10 +798,17 @@ declare namespace App {
             roleCode: string;
             roleStatus: string;
             roleDesc: string;
+            // [rev6-inline BASE-WEB-MANAGE-PAGE-WIRING(ii)+ 005-role-menu-crud START] `page.manage.role.roleMemo` 型節（逐鍵鏡像兩語 locale）；
+            // 兩語 locale 皆以本型標註，任一檔多出或缺少此鍵即 typecheck 紅
+            roleMemo: string;
+            // [rev6-inline BASE-WEB-MANAGE-PAGE-WIRING(ii)+ 005-role-menu-crud END]
             form: {
               roleName: string;
               roleCode: string;
               roleStatus: string;
+              // [rev6-inline BASE-WEB-MANAGE-PAGE-WIRING(ii)+ 005-role-menu-crud START] `page.manage.role.form.roleMemo` 型節（同上）
+              roleMemo: string;
+              // [rev6-inline BASE-WEB-MANAGE-PAGE-WIRING(ii)+ 005-role-menu-crud END]
               roleDesc: string;
             };
             addRole: string;

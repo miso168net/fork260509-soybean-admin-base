@@ -640,12 +640,20 @@ const local: App.I18n.Schema = {
         roleCode: 'Role Code',
         roleStatus: 'Role Status',
         roleDesc: 'Role Description',
+        // [rev6-inline BASE-WEB-MANAGE-PAGE-WIRING(ii)+ 005-role-menu-crud START] 角色備註欄的欄標籤（鍵名與譯文承 rev5:src/locales/langs 同名鍵；
+        // 兩語鍵集須相等、型節住 typings/app.d.ts）。刻意插在物件非末項之間：塊內零移除行、拔標記即被 fork-delta-lint 報為未圈界新增
+        roleMemo: 'Role Memo',
+        // [rev6-inline BASE-WEB-MANAGE-PAGE-WIRING(ii)+ 005-role-menu-crud END]
         menuAuth: 'Menu Auth',
         buttonAuth: 'Button Auth',
         form: {
           roleName: 'Please enter role name',
           roleCode: 'Please enter role code',
           roleStatus: 'Please select role status',
+          // [rev6-inline BASE-WEB-MANAGE-PAGE-WIRING(ii)+ 005-role-menu-crud START] 角色備註欄的輸入提示：文案須註明僅管理員可見（該欄只上管理清單）；
+          // 插位理由同上方欄標籤塊（非末項之間）
+          roleMemo: 'Role memo (visible to administrators only)',
+          // [rev6-inline BASE-WEB-MANAGE-PAGE-WIRING(ii)+ 005-role-menu-crud END]
           roleDesc: 'Please enter role description'
         },
         addRole: 'Add Role',

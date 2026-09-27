@@ -15,12 +15,16 @@ interface Emits {
 
 const emit = defineEmits<Emits>();
 
-const model = defineModel<Api.SystemManage.RoleSearchParams>('model', { required: true });
+// [rev6-inline BASE-WEB-MANAGE-PAGE-WIRING(ii) 005-role-menu-crud] 型改角色管理清單的 wire 查詢型（名稱／代碼／狀態三欄同名；狀態取字串形、清空即 null）；原行: const model = defineModel<Api.SystemManage.RoleSearchParams>('model', { required: true });
+const model = defineModel<Api.RoleAdmin.RoleListQuery>('model', { required: true });
 
 const defaultModel = jsonClone(toRaw(model.value));
 
 function resetModel() {
   Object.assign(model.value, defaultModel);
+  // [rev6-inline BASE-WEB-MANAGE-PAGE-WIRING(ii)+ 005-role-menu-crud START] 重置後即重查——否則列表仍停在舊條件的結果、與已清空的篩選欄對不上（rev5:role-search.vue 同形）
+  emit('search');
+  // [rev6-inline BASE-WEB-MANAGE-PAGE-WIRING(ii)+ 005-role-menu-crud END]
 }
 
 function search() {
