@@ -700,6 +700,14 @@ const local: App.I18n.Schema = {
         buttonCode: '按钮编码',
         buttonDesc: '按钮描述',
         menuStatus: '菜单状态',
+        // [rev6-inline BASE-WEB-MANAGE-PAGE-WIRING(ii)+ 005-role-menu-crud START] 選單頁的備註欄標籤與回收桶四鍵（顯示已刪除開關、確認復原、復原鈕、復原成功提示；鍵名與譯文承
+        // rev5:src/locales/langs 同名鍵；兩語鍵集須相等、型節住 typings/app.d.ts）。插在物件非末項之間：塊內零移除行、拔標記即被 fork-delta-lint 報為未圈界新增
+        menuMemo: '菜单备注',
+        showDeleted: '显示已删除',
+        restore: '恢复',
+        confirmRestore: '确定恢复此菜单？',
+        restoreSuccess: '恢复成功',
+        // [rev6-inline BASE-WEB-MANAGE-PAGE-WIRING(ii)+ 005-role-menu-crud END]
         form: {
           home: '请选择首页',
           menuType: '请选择菜单类型',
@@ -725,6 +733,11 @@ const local: App.I18n.Schema = {
           button: '请选择是否按钮',
           buttonCode: '请输入按钮编码',
           buttonDesc: '请输入按钮描述',
+          // [rev6-inline BASE-WEB-MANAGE-PAGE-WIRING(ii)+ 005-role-menu-crud START] 選單備註欄的輸入提示（文案須註明僅管理員可見）與父選擇器首項「頂層」節點的標籤
+          // （鍵名與譯文承 rev5:src/locales/langs 同名鍵）；插在 form 非末項之間：塊內零移除行、拔標記即被 fork-delta-lint 報為未圈界新增
+          menuMemo: '请输入菜单备注（仅管理员可见）',
+          parentRoot: '顶层（无父级）',
+          // [rev6-inline BASE-WEB-MANAGE-PAGE-WIRING(ii)+ 005-role-menu-crud END]
           menuStatus: '请选择菜单状态'
         },
         addMenu: '新增菜单',

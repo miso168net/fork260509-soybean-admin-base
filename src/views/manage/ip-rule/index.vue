@@ -41,6 +41,14 @@ const ruleTypeLabelMap: Record<Api.IpRule.RuleType, App.I18n.I18nKey> = {
   deny: 'page.manage.ipRule.ruleTypeMap.deny'
 };
 
+/**
+ * 清單可能帶回兩值以外的類型：寫端只產兩值，未知值只能源自直改庫，而清單端點照原樣回傳（ADR-00046 款 7）。
+ * 判定只看映射表的自有鍵，`toString` 這類原型鏈上的名字不算已知。
+ */
+function isKnownRuleType(value: string): value is Api.IpRule.RuleType {
+  return Object.hasOwn(ruleTypeLabelMap, value);
+}
+
 /** 可空欄的顯示降級：null 顯破折號。本頁一列有五格可能同時為 null，留白會分不出「沒有值」與「沒載到」。 */
 function renderNullable(value: string | number | null) {
   return value ?? $t('page.manage.ipRule.empty');
@@ -80,7 +88,13 @@ const { columns, columnChecks, data, getData, getDataByPage, loading, mobilePagi
       title: $t('page.manage.ipRule.wbipType'),
       align: 'center',
       width: 110,
-      render: row => <NTag type={ruleTypeTagMap[row.wbipType]}>{$t(ruleTypeLabelMap[row.wbipType])}</NTag>
+      // 未知類型在查映射、呼叫翻譯之前就改顯原字串：不崩、也不把該列藏起來
+      render: row =>
+        isKnownRuleType(row.wbipType) ? (
+          <NTag type={ruleTypeTagMap[row.wbipType]}>{$t(ruleTypeLabelMap[row.wbipType])}</NTag>
+        ) : (
+          <NTag>{row.wbipType}</NTag>
+        )
     },
     {
       // 混排清單靠這一欄分辨現役列與回收桶列
@@ -216,24 +230,18 @@ async function handleRestore(id: number) {
     <IpRuleSearch v-model:model="searchParams" @search="getDataByPage" />
     <NCard :title="$t('page.manage.ipRule.title')" :bordered="false" size="small" class="card-wrapper sm:flex-1-hidden">
       <template #header-extra>
-        <TableHeaderOperation v-model:columns="columnChecks" :loading="loading" @refresh="getData">
-          <!--
-            覆寫 default 插槽＝只留新增鈕（本頁無批次刪除）。外層 div 恆渲染、內層按鈕才掛 v-if：
-            若把 v-if 直接掛在按鈕上，無權時插槽只剩註解節點，Vue 會判插槽為空而改渲染共用元件自帶的
-            備援內容（新增鈕＋批次刪除鈕）——無權者反而看見兩顆寫入口（出處＝rev5:1597a671）。
-            外層以 v-show 在無權時移出版面、不佔間距；gap-12px 同 NSpace 預設水平間距。
-          -->
-          <template #default>
-            <div v-show="hasAuth('ipRule:add')" class="flex-y-center gap-12px">
-              <NButton v-if="hasAuth('ipRule:add')" size="small" ghost type="primary" @click="handleAdd">
-                <template #icon>
-                  <icon-ic-round-plus class="text-icon" />
-                </template>
-                {{ $t('common.add') }}
-              </NButton>
-            </div>
-          </template>
-        </TableHeaderOperation>
+        <!--
+          寫入口只經共用表頭的兩布林 prop 控制：新增鈕綁新增權限碼、批次刪除恆關（本頁無批刪）。標籤保持自閉合、
+          不覆寫預設插槽——覆寫的內容不受這兩個 prop 控制。機器守＝tools/view-render-guard.py 表頭錨。
+        -->
+        <TableHeaderOperation
+          v-model:columns="columnChecks"
+          :loading="loading"
+          :show-add="hasAuth('ipRule:add')"
+          :show-delete="false"
+          @add="handleAdd"
+          @refresh="getData"
+        />
       </template>
       <!-- scroll-x 1414＝上方各欄 width／minWidth 之和；增刪欄或調欄寬須同批改，否則窄視窗下 minWidth 兌現不了 -->
       <NDataTable

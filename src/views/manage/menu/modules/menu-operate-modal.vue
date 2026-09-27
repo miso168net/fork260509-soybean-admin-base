@@ -2,7 +2,8 @@
 import { computed, ref, watch } from 'vue';
 import type { SelectOption } from 'naive-ui';
 import { enableStatusOptions, menuIconTypeOptions, menuTypeOptions } from '@/constants/business';
-import { fetchGetAllRoles } from '@/service/api';
+// [rev6-inline BASE-WEB-MANAGE-PAGE-WIRING(ii) 005-role-menu-crud] 改打選單管理 wrapper（直接路徑、不經 barrel）：父選擇器的樹、新增、更新；upstream 在此取角色清單卻無任何欄位消費，不帶入；原行: import { fetchGetAllRoles } from '@/service/api';
+import { fetchAddMenu, fetchGetMenuTree, fetchUpdateMenu } from '@/service/api/rev6-menu-admin';
 import { useFormRules, useNaiveForm } from '@/hooks/common/form';
 import { getLocalIcons } from '@/utils/icon';
 import { $t } from '@/locales';
@@ -25,7 +26,8 @@ interface Props {
   /** the type of operation */
   operateType: OperateType;
   /** the edit menu data or the parent menu data when adding a child menu */
-  rowData?: Api.SystemManage.Menu | null;
+  // [rev6-inline BASE-WEB-MANAGE-PAGE-WIRING(ii) 005-role-menu-crud] 列型改選單管理清單的 wire 列型（清單頁傳入的即此型）；原行: rowData?: Api.SystemManage.Menu | null;
+  rowData?: Api.MenuAdmin.MenuRecord | null;
   /** all pages */
   allPages: string[];
 }
@@ -80,6 +82,9 @@ type Model = Pick<
   layout: string;
   page: string;
   pathParam: string;
+  // [rev6-inline BASE-WEB-MANAGE-PAGE-WIRING(ii)+ 005-role-menu-crud START] 備註欄：表單內一律以字串承載（沒填＝空字串，送出後由後端落 NULL）
+  menuMemo: string;
+  // [rev6-inline BASE-WEB-MANAGE-PAGE-WIRING(ii)+ 005-role-menu-crud END]
 };
 
 const model = ref(createDefaultModel());
@@ -108,6 +113,9 @@ function createDefaultModel(): Model {
     multiTab: false,
     fixedIndexInTab: null,
     query: [],
+    // [rev6-inline BASE-WEB-MANAGE-PAGE-WIRING(ii)+ 005-role-menu-crud START] 備註欄起始值（插在物件非末項之間：塊內零移除行、拔標記即被 fork-delta-lint 報為未圈界新增）
+    menuMemo: '',
+    // [rev6-inline BASE-WEB-MANAGE-PAGE-WIRING(ii)+ 005-role-menu-crud END]
     buttons: []
   };
 }
@@ -164,19 +172,23 @@ const layoutOptions: CommonType.Option[] = [
   }
 ];
 
-/** the enabled role options */
-const roleOptions = ref<CommonType.Option<string>[]>([]);
+// [rev6-inline BASE-WEB-MANAGE-PAGE-WIRING(ii) 005-role-menu-crud] upstream 的角色選項整段移除（模板無任何消費處），換成父選擇器的選項源＝治理域輕量樹；被移除的碼行逐行記錄如下
+// [rev6-inline BASE-WEB-MANAGE-PAGE-WIRING(ii) 005-role-menu-crud] 原行: const roleOptions = ref<CommonType.Option<string>[]>([]);
+// [rev6-inline BASE-WEB-MANAGE-PAGE-WIRING(ii) 005-role-menu-crud] 原行: async function getRoleOptions() {
+// [rev6-inline BASE-WEB-MANAGE-PAGE-WIRING(ii) 005-role-menu-crud] 原行: const { error, data } = await fetchGetAllRoles();
+// [rev6-inline BASE-WEB-MANAGE-PAGE-WIRING(ii) 005-role-menu-crud] 原行: const options = data.map(item => ({
+// [rev6-inline BASE-WEB-MANAGE-PAGE-WIRING(ii) 005-role-menu-crud] 原行: label: item.roleName,
+// [rev6-inline BASE-WEB-MANAGE-PAGE-WIRING(ii) 005-role-menu-crud] 原行: value: item.roleCode
+// [rev6-inline BASE-WEB-MANAGE-PAGE-WIRING(ii) 005-role-menu-crud] 原行: roleOptions.value = [...options];
+// 選項以 upstream 同形樹型 `Api.SystemManage.MenuTree` 承載（wire 形相同）：它是型別別名、可隱式滿足 naive-ui 樹選項型要求的
+// 字串索引簽章；wrapper 回傳的 `Api.MenuAdmin.MenuTreeRecord` 是 interface、直接交給 NTreeSelect 會被型檢拒收
+const menuTreeOptions = ref<Api.SystemManage.MenuTree[]>([]);
 
-async function getRoleOptions() {
-  const { error, data } = await fetchGetAllRoles();
+async function getMenuTreeOptions() {
+  const { error, data } = await fetchGetMenuTree();
 
   if (!error) {
-    const options = data.map(item => ({
-      label: item.roleName,
-      value: item.roleCode
-    }));
-
-    roleOptions.value = [...options];
+    menuTreeOptions.value = data;
   }
 }
 
@@ -195,7 +207,8 @@ function handleInitModel() {
     const { component, ...rest } = props.rowData;
 
     const { layout, page } = getLayoutAndPage(component);
-    const { path, param } = getPathParamFromRoutePath(rest.routePath);
+    // [rev6-inline BASE-WEB-MANAGE-PAGE-WIRING(ii) 005-role-menu-crud] wire 的路由路徑可為 null，拆路徑參數前先收斂成空字串；原行: const { path, param } = getPathParamFromRoutePath(rest.routePath);
+    const { path, param } = getPathParamFromRoutePath(rest.routePath ?? '');
 
     Object.assign(model.value, rest, { layout, page, routePath: path, pathParam: param });
   }
@@ -206,6 +219,11 @@ function handleInitModel() {
   if (!model.value.buttons) {
     model.value.buttons = [];
   }
+  // [rev6-inline BASE-WEB-MANAGE-PAGE-WIRING(ii)+ 005-role-menu-crud START] 編輯回填時備註的 null（沒填）轉空字串進輸入框，與表單模型的字串型一致
+  if (!model.value.menuMemo) {
+    model.value.menuMemo = '';
+  }
+  // [rev6-inline BASE-WEB-MANAGE-PAGE-WIRING(ii)+ 005-role-menu-crud END]
 }
 
 function closeDrawer() {
@@ -254,19 +272,55 @@ async function handleSubmit() {
 
   const params = getSubmitParams();
 
-  console.log('params: ', params);
-
-  // request
+  // [rev6-inline BASE-WEB-MANAGE-PAGE-WIRING(ii) 005-role-menu-crud] 送出接真。更新逐欄列出、絕不展開表單物件：路由名與選單型別建立後不可變、請求一出現即被拒（不比對值），而編輯回填把整列併入了表單模型、一展開就夾帶；新增展開表單模型（新增態模型只有預設欄與父 id）。狀態 `?? undefined` 只為收窄型別；拒因提示由共用攔截層轉譯、本頁只看成敗；原行: console.log('params: ', params);
+  const { error } =
+    props.operateType === 'edit'
+      ? await fetchUpdateMenu({
+          id: props.rowData?.id ?? -1,
+          menuName: params.menuName,
+          parentId: params.parentId,
+          routePath: params.routePath,
+          component: params.component,
+          status: params.status ?? undefined,
+          hideInMenu: params.hideInMenu,
+          keepAlive: params.keepAlive,
+          multiTab: params.multiTab,
+          constant: params.constant,
+          order: params.order,
+          icon: params.icon,
+          iconType: params.iconType,
+          i18nKey: params.i18nKey,
+          href: params.href,
+          activeMenu: params.activeMenu,
+          fixedIndexInTab: params.fixedIndexInTab,
+          query: params.query,
+          buttons: params.buttons,
+          menuMemo: params.menuMemo
+        })
+      : await fetchAddMenu({ ...params, status: params.status ?? undefined });
+  if (error) {
+    return;
+  }
   window.$message?.success($t('common.updateSuccess'));
   closeDrawer();
   emit('submitted');
 }
 
+// [rev6-inline BASE-WEB-MANAGE-PAGE-WIRING(ii)+ 005-role-menu-crud START] 父選擇器選項＝首項合成的「頂層」節點（id 0＝頂層：新增與更新皆以 parentId 0 表頂層）＋治理域全樹（源＝上方 `menuTreeOptions`）
+// 任一節點皆可選、前端不擋環——父存在性、防環、常量父鏈一律由後端守門判定。
+// 塊位刻意不緊貼 `getMenuTreeOptions`：那裡與上方角色選項替換段之間只隔 `}` 與空行，fork-delta-lint 會把本塊併入替換段、拔標記不紅
+const parentTreeOptions = computed<Api.SystemManage.MenuTree[]>(() => [
+  { id: 0, label: $t('page.manage.menu.form.parentRoot'), pId: 0 },
+  ...menuTreeOptions.value
+]);
+// [rev6-inline BASE-WEB-MANAGE-PAGE-WIRING(ii)+ 005-role-menu-crud END]
+
 watch(visible, () => {
   if (visible.value) {
     handleInitModel();
     restoreValidation();
-    getRoleOptions();
+    // [rev6-inline BASE-WEB-MANAGE-PAGE-WIRING(ii) 005-role-menu-crud] 開啟時改取父選擇器的樹（沿用原角色選項的取數時點）；原行: getRoleOptions();
+    getMenuTreeOptions();
   }
 });
 
@@ -289,11 +343,26 @@ watch(
               <NRadio v-for="item in menuTypeOptions" :key="item.value" :value="item.value" :label="$t(item.label)" />
             </NRadioGroup>
           </NFormItemGi>
+          <!-- [rev6-inline BASE-WEB-MANAGE-PAGE-WIRING(ii)+ 005-role-menu-crud START] 父選擇器：新增、新增子項、編輯三種模式都顯示；選項首項為合成的「頂層」節點 -->
+          <NFormItemGi span="24 m:12" :label="$t('page.manage.menu.parentId')" path="parentId">
+            <NTreeSelect
+              v-model:value="model.parentId"
+              :options="parentTreeOptions"
+              key-field="id"
+              label-field="label"
+            />
+          </NFormItemGi>
+          <!-- [rev6-inline BASE-WEB-MANAGE-PAGE-WIRING(ii)+ 005-role-menu-crud END] -->
           <NFormItemGi span="24 m:12" :label="$t('page.manage.menu.menuName')" path="menuName">
             <NInput v-model:value="model.menuName" :placeholder="$t('page.manage.menu.form.menuName')" />
           </NFormItemGi>
           <NFormItemGi span="24 m:12" :label="$t('page.manage.menu.routeName')" path="routeName">
-            <NInput v-model:value="model.routeName" :placeholder="$t('page.manage.menu.form.routeName')" />
+            <!-- [rev6-inline BASE-WEB-MANAGE-PAGE-WIRING(ii) 005-role-menu-crud] 編輯態鎖定路由名（與上方選單型別同一個編輯態條件）：路由名建立後不可變、更新請求也不帶此欄，鎖住免得可打字卻不生效；原行: <NInput v-model:value="model.routeName" :placeholder="$t('page.manage.menu.form.routeName')" /> -->
+            <NInput
+              v-model:value="model.routeName"
+              :disabled="disabledMenuType"
+              :placeholder="$t('page.manage.menu.form.routeName')"
+            />
           </NFormItemGi>
           <NFormItemGi span="24 m:12" :label="$t('page.manage.menu.routePath')" path="routePath">
             <NInput v-model:value="model.routePath" disabled :placeholder="$t('page.manage.menu.form.routePath')" />
@@ -452,6 +521,15 @@ watch(
               </template>
             </NDynamicInput>
           </NFormItemGi>
+          <!-- [rev6-inline BASE-WEB-MANAGE-PAGE-WIRING(ii)+ 005-role-menu-crud START] 備註輸入：多行文字框、提示語註明僅管理員可見 -->
+          <NFormItemGi span="24" :label="$t('page.manage.menu.menuMemo')" path="menuMemo">
+            <NInput
+              v-model:value="model.menuMemo"
+              type="textarea"
+              :placeholder="$t('page.manage.menu.form.menuMemo')"
+            />
+          </NFormItemGi>
+          <!-- [rev6-inline BASE-WEB-MANAGE-PAGE-WIRING(ii)+ 005-role-menu-crud END] -->
         </NGrid>
       </NForm>
     </NScrollbar>

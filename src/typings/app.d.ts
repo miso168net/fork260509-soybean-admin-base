@@ -870,6 +870,14 @@ declare namespace App {
             buttonCode: string;
             buttonDesc: string;
             menuStatus: string;
+            // [rev6-inline BASE-WEB-MANAGE-PAGE-WIRING(ii)+ 005-role-menu-crud START] `page.manage.menu` 備註欄標籤與回收桶四鍵的型節（逐鍵鏡像兩語 locale）；
+            // 兩語 locale 皆以本型標註，任一檔多出或缺少這些鍵即 typecheck 紅
+            menuMemo: string;
+            showDeleted: string;
+            restore: string;
+            confirmRestore: string;
+            restoreSuccess: string;
+            // [rev6-inline BASE-WEB-MANAGE-PAGE-WIRING(ii)+ 005-role-menu-crud END]
             form: {
               home: string;
               menuType: string;
@@ -895,6 +903,10 @@ declare namespace App {
               button: string;
               buttonCode: string;
               buttonDesc: string;
+              // [rev6-inline BASE-WEB-MANAGE-PAGE-WIRING(ii)+ 005-role-menu-crud START] `page.manage.menu.form` 備註輸入提示與父選擇器頂層標籤的型節（同上）
+              menuMemo: string;
+              parentRoot: string;
+              // [rev6-inline BASE-WEB-MANAGE-PAGE-WIRING(ii)+ 005-role-menu-crud END]
               menuStatus: string;
             };
             addMenu: string;
