@@ -52,7 +52,9 @@ export default {
         nameRequired: '選單名稱為必填，不可為空',
         routeNameInvalid: '路由名稱格式不合法：僅允許字母、數字、底線與連字號，最長 100 個字元',
         hrefInvalid: '外部連結須以 http:// 或 https:// 開頭',
-        buttonsInvalid: '按鈕清單格式不合法：每個按鈕須有不為空且不重複的代碼，最長 100 個字元'
+        buttonsInvalid: '按鈕清單格式不合法：每個按鈕須有不為空且不重複的代碼，最長 100 個字元',
+        hasChildren: '此選單下仍有子選單（含已停用者），請先處理其子選單',
+        restoreConflict: '此選單的路由名稱已被現有選單使用，無法復原'
       }
     }
   }

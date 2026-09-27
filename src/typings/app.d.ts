@@ -356,6 +356,8 @@ declare namespace App {
             routeNameInvalid: string;
             hrefInvalid: string;
             buttonsInvalid: string;
+            hasChildren: string;
+            restoreConflict: string;
           };
         };
       };

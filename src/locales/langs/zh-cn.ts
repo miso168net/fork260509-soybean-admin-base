@@ -47,7 +47,9 @@ const local: App.I18n.Schema = {
         nameRequired: '菜单名称为必填项，不能为空',
         routeNameInvalid: '路由名称格式不正确：仅允许字母、数字、下划线和连字符，最长 100 个字符',
         hrefInvalid: '外部链接须以 http:// 或 https:// 开头',
-        buttonsInvalid: '按钮列表格式不正确：每个按钮须有不为空且不重复的编码，最长 100 个字符'
+        buttonsInvalid: '按钮列表格式不正确：每个按钮须有不为空且不重复的编码，最长 100 个字符',
+        hasChildren: '该菜单下仍有子菜单（含已停用的），请先处理其子菜单',
+        restoreConflict: '该菜单的路由名称已被现有菜单使用，无法恢复'
       }
     }
   },
