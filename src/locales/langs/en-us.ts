@@ -40,7 +40,7 @@ const local: App.I18n.Schema = {
         cannotDeleteSelfRole: 'You cannot delete a role assigned to your own account',
         cannotDisableSelfRole: 'You cannot disable a role assigned to your own account',
         superCannotDisable: 'The super administrator role cannot be disabled',
-        nameRequired: 'Role name must not be null'
+        nameRequired: 'Role name is required and cannot be empty'
       },
       menu: {
         notFound: 'The menu was not found, or its state does not allow this action',
@@ -52,7 +52,7 @@ const local: App.I18n.Schema = {
         protectedMenu: 'A protected menu cannot be deleted, disabled or moved under a different parent menu',
         constantParent:
           'A constant menu can only be placed under constant parent menus; a menu with constant descendants cannot stop being constant',
-        nameRequired: 'Menu name must not be null',
+        nameRequired: 'Menu name is required and cannot be empty',
         routeNameInvalid: 'Invalid route name (letters, digits, underscore and hyphen only, up to 100 characters)',
         hrefInvalid: 'The external link must start with http:// or https://',
         buttonsInvalid: 'Invalid button list: every button needs a non-empty, unique code of up to 100 characters',

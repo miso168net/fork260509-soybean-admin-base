@@ -389,7 +389,13 @@ watch(
             <NInput v-model:value="model.i18nKey" :placeholder="$t('page.manage.menu.form.i18nKey')" />
           </NFormItemGi>
           <NFormItemGi span="24 m:12" :label="$t('page.manage.menu.order')" path="order">
-            <NInputNumber v-model:value="model.order" class="w-full" :placeholder="$t('page.manage.menu.form.order')" />
+            <!-- [rev6-inline BASE-WEB-MANAGE-PAGE-WIRING(ii) 005-role-menu-crud] 排序欄限整數：後端為 i32、小數會令整包請求收斂為空（更新假成功零變更、新增誤報拒因）；原行: <NInputNumber v-model:value="model.order" class="w-full" :placeholder="$t('page.manage.menu.form.order')" /> -->
+            <NInputNumber
+              v-model:value="model.order"
+              class="w-full"
+              :precision="0"
+              :placeholder="$t('page.manage.menu.form.order')"
+            />
           </NFormItemGi>
           <NFormItemGi span="24 m:12" :label="$t('page.manage.menu.iconTypeTitle')" path="iconType">
             <NRadioGroup v-model:value="model.iconType">
@@ -468,10 +474,11 @@ watch(
             </NRadioGroup>
           </NFormItemGi>
           <NFormItemGi span="24 m:12" :label="$t('page.manage.menu.fixedIndexInTab')" path="fixedIndexInTab">
+            <!-- [rev6-inline BASE-WEB-MANAGE-PAGE-WIRING(ii) 005-role-menu-crud] 頁籤固定序號限整數（理由同排序欄）；原行: clearable -->
             <NInputNumber
               v-model:value="model.fixedIndexInTab"
               class="w-full"
-              clearable
+              clearable :precision="0"
               :placeholder="$t('page.manage.menu.form.fixedIndexInTab')"
             />
           </NFormItemGi>
