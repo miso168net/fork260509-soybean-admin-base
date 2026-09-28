@@ -31,34 +31,33 @@ const local: App.I18n.Schema = {
       },
       throttle: { invalidUnlockTarget: 'Invalid unlock target' },
       role: {
-        codeInvalid: 'Invalid role code: only letters, digits and underscores are allowed, up to 64 characters',
-        codeExists: 'This role code is already used by an existing role',
-        codeImmutable: 'A role code cannot be changed once the role is created',
-        notFound: 'The role does not exist or has been deleted',
+        codeInvalid: 'Invalid role code (letters, digits and underscore only, up to 64 characters)',
+        codeExists: 'The role code already exists',
+        codeImmutable: 'The role code cannot be changed after creation',
+        notFound: 'The role was not found',
         seededProtected: 'Built-in system roles cannot be deleted',
         inUse: 'This role is still assigned to user accounts (disabled or deleted ones included) and cannot be deleted',
-        cannotDeleteSelfRole: 'You cannot delete a role that your own account belongs to',
-        cannotDisableSelfRole: 'You cannot disable a role that your own account belongs to',
+        cannotDeleteSelfRole: 'You cannot delete a role assigned to your own account',
+        cannotDisableSelfRole: 'You cannot disable a role assigned to your own account',
         superCannotDisable: 'The super administrator role cannot be disabled',
-        nameRequired: 'Role name is required and cannot be empty'
+        nameRequired: 'Role name must not be null'
       },
       menu: {
         notFound: 'The menu was not found, or its state does not allow this action',
         routeNameExists: 'This route name is already used by an existing menu or is reserved by the system',
-        routeNameImmutable: 'A route name cannot be changed once the menu is created',
-        menuTypeImmutable: 'A menu type cannot be changed once the menu is created',
-        parentNotFound: 'The parent menu does not exist or has been deleted',
-        cycleDetected: 'A menu cannot be moved under itself or any of its descendants',
+        routeNameImmutable: 'Route name cannot be changed after creation',
+        menuTypeImmutable: 'Menu type cannot be changed after creation',
+        parentNotFound: 'Parent menu does not exist or has been deleted',
+        cycleDetected: 'A menu cannot be moved under itself or its descendants',
         protectedMenu: 'A protected menu cannot be deleted, disabled or moved under a different parent menu',
         constantParent:
           'A constant menu can only be placed under constant parent menus; a menu with constant descendants cannot stop being constant',
-        nameRequired: 'Menu name is required and cannot be empty',
-        routeNameInvalid:
-          'Invalid route name: only letters, digits, underscores and hyphens are allowed, up to 100 characters',
+        nameRequired: 'Menu name must not be null',
+        routeNameInvalid: 'Invalid route name (letters, digits, underscore and hyphen only, up to 100 characters)',
         hrefInvalid: 'The external link must start with http:// or https://',
         buttonsInvalid: 'Invalid button list: every button needs a non-empty, unique code of up to 100 characters',
         hasChildren: 'This menu still has child menus (including disabled ones); handle its child menus first',
-        restoreConflict: "This menu's route name is already used by an existing menu, so it cannot be restored"
+        restoreConflict: 'An active menu with the same route name already exists; cannot restore'
       }
     }
   },

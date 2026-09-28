@@ -24,32 +24,32 @@ const local: App.I18n.Schema = {
       },
       throttle: { invalidUnlockTarget: '解锁对象不正确' },
       role: {
-        codeInvalid: '角色编码格式不正确：仅允许字母、数字和下划线，最长 64 个字符',
-        codeExists: '该角色编码已被现有角色使用',
+        codeInvalid: '角色编码格式不正确（仅允许字母、数字、下划线，最长 64 位）',
+        codeExists: '角色编码已存在',
         codeImmutable: '角色编码创建后不可修改',
-        notFound: '角色不存在或已被删除',
-        seededProtected: '系统内置角色不可删除',
+        notFound: '角色不存在',
+        seededProtected: '系统内置角色，不可删除',
         inUse: '该角色仍有用户挂载（含已停用或已删除的账号），不可删除',
-        cannotDeleteSelfRole: '不能删除你自己账号所属的角色',
-        cannotDisableSelfRole: '不能停用你自己账号所属的角色',
+        cannotDeleteSelfRole: '不能删除当前登录用户所属的角色',
+        cannotDisableSelfRole: '不能停用当前登录用户所属的角色',
         superCannotDisable: '超级管理员角色不可停用',
-        nameRequired: '角色名称为必填项，不能为空'
+        nameRequired: '角色名称不能为空'
       },
       menu: {
         notFound: '找不到指定的菜单，或其状态不允许此操作',
         routeNameExists: '该路由名称已被现有菜单使用，或为系统保留的路由名称',
         routeNameImmutable: '路由名称创建后不可修改',
         menuTypeImmutable: '菜单类型创建后不可修改',
-        parentNotFound: '父级菜单不存在或已被删除',
-        cycleDetected: '不能将菜单移到其自身或其子孙菜单之下',
+        parentNotFound: '父级菜单不存在或已删除',
+        cycleDetected: '不可将菜单移至自身或其子孙之下',
         protectedMenu: '受保护的菜单不可删除、不可停用，也不可变更其父级菜单',
         constantParent: '常量菜单只能挂在常量父级菜单之下；其下仍有常量子孙菜单时，也不能取消本身的常量设置',
-        nameRequired: '菜单名称为必填项，不能为空',
-        routeNameInvalid: '路由名称格式不正确：仅允许字母、数字、下划线和连字符，最长 100 个字符',
+        nameRequired: '菜单名称不能为空',
+        routeNameInvalid: '路由名称格式不正确（仅允许字母、数字、下划线、连字符，最长 100 位）',
         hrefInvalid: '外部链接须以 http:// 或 https:// 开头',
         buttonsInvalid: '按钮列表格式不正确：每个按钮须有不为空且不重复的编码，最长 100 个字符',
         hasChildren: '该菜单下仍有子菜单（含已停用的），请先处理其子菜单',
-        restoreConflict: '该菜单的路由名称已被现有菜单使用，无法恢复'
+        restoreConflict: '同名路由已有生效菜单，无法恢复'
       }
     }
   },
