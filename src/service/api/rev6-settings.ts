@@ -8,7 +8,7 @@ import { request } from '../request';
 /**
  * 讀全部系統設定（`GET /systemManage/getSystemSettings`；讀端契約＝contracts/wire-settings.md §1）
  *
- * 成功回 `{data: SystemSetting[], code:"0000", msg:"common.success"}`——registry 16 鍵固定集、
+ * 成功回 `{data: SystemSetting[], code:"0000", msg:"common.success"}`——常態為 registry 16 鍵（宣告集外、型別合法之列照樣上 wire、寫回得 2222＝ADR-00057）、
  * settingKey 升冪穩定序、僅未刪列、非分頁（spec FR-003）；description 為 NULL 者該欄缺席、不回 null（clarify Q2）。
  * 授權＝Policy（R_SUPER）：越權 5003 system.forbidden、未認證 8888 auth.session.reLogin（契約 §1 錯誤矩陣）。
  * 回傳型取自 rev6-settings.d.ts（declaration merging 併入 Api.SystemManage）——後續 view 刀接上即用、不需回頭補型別。
