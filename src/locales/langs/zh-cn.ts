@@ -33,7 +33,8 @@ const local: App.I18n.Schema = {
         cannotDeleteSelfRole: '不能删除当前登录用户所属的角色',
         cannotDisableSelfRole: '不能停用当前登录用户所属的角色',
         superCannotDisable: '超级管理员角色不可停用',
-        nameRequired: '角色名称不能为空'
+        nameRequired: '角色名称不能为空',
+        protectedRevoke: '存在受保护的授权，无法撤销'
       },
       menu: {
         notFound: '找不到指定的菜单，或其状态不允许此操作',

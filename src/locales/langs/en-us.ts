@@ -40,7 +40,8 @@ const local: App.I18n.Schema = {
         cannotDeleteSelfRole: 'You cannot delete a role assigned to your own account',
         cannotDisableSelfRole: 'You cannot disable a role assigned to your own account',
         superCannotDisable: 'The super administrator role cannot be disabled',
-        nameRequired: 'Role name is required and cannot be empty'
+        nameRequired: 'Role name is required and cannot be empty',
+        protectedRevoke: 'Protected policies cannot be revoked'
       },
       menu: {
         notFound: 'The menu was not found, or its state does not allow this action',

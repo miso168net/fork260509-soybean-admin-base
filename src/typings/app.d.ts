@@ -342,6 +342,7 @@ declare namespace App {
             cannotDisableSelfRole: string;
             superCannotDisable: string;
             nameRequired: string;
+            protectedRevoke: string;
           };
           menu: {
             notFound: string;
