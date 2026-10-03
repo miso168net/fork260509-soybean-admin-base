@@ -851,6 +851,31 @@ declare namespace App {
               female: string;
             };
           };
+          // [rev6-inline BASE-WEB-MANAGE-PAGE-WIRING(iv)+ 006-authz-governance START] `page.manage.policyArchive` 的型節（逐鍵鏡像兩語 locale 同名子樹）。
+          // 本節必需：`page` 是逐鍵手寫的型樹，缺此節則回收桶頁每一處 `$t('page.manage.policyArchive.…')` 都過不了 typecheck、兩語多插的子樹也成多餘屬性。
+          // 落在 `user` 與 `menu` 之間：若接在 `role` 之後，與上方端點權限型那塊只隔一行 `};`（檔逾 200 行時這類高頻行不當對齊錨），會併成同一變更塊而拔標記不紅
+          policyArchive: {
+            title: string;
+            sourceRole: string;
+            dimension: string;
+            target: string;
+            archiveReason: string;
+            archivedAt: string;
+            archivedBy: string;
+            restore: string;
+            confirmRestore: string;
+            restoreSuccess: string;
+            form: {
+              sourceRole: string;
+              dimension: string;
+            };
+            dimensionLabel: {
+              menu: string;
+              button: string;
+              endpoint: string;
+            };
+          };
+          // [rev6-inline BASE-WEB-MANAGE-PAGE-WIRING(iv)+ 006-authz-governance END]
           menu: {
             home: string;
             title: string;

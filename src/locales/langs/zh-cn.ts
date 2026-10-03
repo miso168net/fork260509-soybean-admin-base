@@ -324,6 +324,11 @@ const local: App.I18n.Schema = {
     manage_user: '用户管理',
     'manage_user-detail': '用户详情',
     manage_role: '角色管理',
+    // [rev6-inline BASE-WEB-MANAGE-PAGE-WIRING(iv)+ 006-authz-governance START] 授權回收桶頁的路由標題鍵，鍵名逐字取自 seed 選單列 10 之路由名。
+    // 回收桶頁 view 目錄進場後外掛把此名重算進 RouteKey，本樹缺這一鍵即 typecheck 紅（另一語同插）。刻意放在 `manage_role` 與 `manage_menu`
+    // 之間而不貼著 ip-rule 那塊：兩塊相連就落進同一個變更塊，拔掉本塊標記仍被鄰塊標記蓋住、lint 照綠
+    'manage_policy-archive': '授权回收站',
+    // [rev6-inline BASE-WEB-MANAGE-PAGE-WIRING(iv)+ 006-authz-governance END]
     manage_menu: '菜单管理',
     // [rev6-inline BASE-WEB-MANAGE-PAGE-WIRING(i)+ 004-ip-trust-anchor START] IP 規則管理頁的路由標題鍵。鍵名須逐字等於後端選單列的 route name；
     // 本樹型別由路由產物的 RouteKey 推得——view 目錄進場、外掛重算出此鍵後，這裡缺譯文即 typecheck 紅、側邊欄也只會顯裸鍵。
@@ -681,6 +686,31 @@ const local: App.I18n.Schema = {
           female: '女'
         }
       },
+      // [rev6-inline BASE-WEB-MANAGE-PAGE-WIRING(iv)+ 006-authz-governance START] 授權回收桶頁（含搜尋卡）的文案子樹：鍵集照 rev5:src/locales/langs 同名子樹，
+      // 每一鍵都有頁面消費處（主檔或搜尋卡）；另一語同插、型節住 typings/app.d.ts。歸檔原因欄照封閉詞彙原字面顯示，故不設其譯文；復原相關鍵本頁自備、
+      // 不借選單回收桶的同義鍵。落在 `user` 與 `menu` 之間：前後都是未改的基線行、塊內零移除行，拔掉圈界即被 fork-delta-lint 報為未圈界新增
+      policyArchive: {
+        title: '授权回收站',
+        sourceRole: '来源角色',
+        dimension: '授权维度',
+        target: '授权标的',
+        archiveReason: '归档原因',
+        archivedAt: '归档时间',
+        archivedBy: '归档者',
+        restore: '复原',
+        confirmRestore: '确定复原此授权？',
+        restoreSuccess: '复原成功',
+        form: {
+          sourceRole: '请输入来源角色编码',
+          dimension: '请选择授权维度'
+        },
+        dimensionLabel: {
+          menu: '菜单',
+          button: '按钮',
+          endpoint: '端点'
+        }
+      },
+      // [rev6-inline BASE-WEB-MANAGE-PAGE-WIRING(iv)+ 006-authz-governance END]
       menu: {
         home: '首页',
         title: '菜单列表',
