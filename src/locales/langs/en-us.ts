@@ -41,7 +41,8 @@ const local: App.I18n.Schema = {
         cannotDisableSelfRole: 'You cannot disable a role assigned to your own account',
         superCannotDisable: 'The super administrator role cannot be disabled',
         nameRequired: 'Role name is required and cannot be empty',
-        protectedRevoke: 'Protected policies cannot be revoked'
+        protectedRevoke: 'Protected policies cannot be revoked',
+        protectedGrant: 'Protected endpoints are reserved for the super administrator'
       },
       menu: {
         notFound: 'The menu was not found, or its state does not allow this action',

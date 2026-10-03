@@ -39,7 +39,8 @@ export default {
         cannotDisableSelfRole: '不可停用您自己帳號所屬的角色',
         superCannotDisable: '超級管理員角色不可停用',
         nameRequired: '角色名稱為必填，不可為空',
-        protectedRevoke: '存在受保護的授權，無法撤銷'
+        protectedRevoke: '存在受保護的授權，無法撤銷',
+        protectedGrant: '受保護的端點僅限超級管理員持有'
       },
       menu: {
         notFound: '找不到指定的選單，或其目前狀態不允許此操作',

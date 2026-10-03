@@ -343,6 +343,7 @@ declare namespace App {
             superCannotDisable: string;
             nameRequired: string;
             protectedRevoke: string;
+            protectedGrant: string;
           };
           menu: {
             notFound: string;
