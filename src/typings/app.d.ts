@@ -361,6 +361,9 @@ declare namespace App {
             hasChildren: string;
             restoreConflict: string;
           };
+          policy: {
+            notRestorable: string;
+          };
         };
       };
       // [rev6-inline BASE-WEB-I18N-WIRING(iii)+ 003-auth-session END]

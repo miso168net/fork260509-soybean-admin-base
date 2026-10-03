@@ -52,6 +52,9 @@ const local: App.I18n.Schema = {
         buttonsInvalid: '按钮列表格式不正确：每个按钮须有不为空且不重复的编码，最长 100 个字符',
         hasChildren: '该菜单下仍有子菜单（含已停用的），请先处理其子菜单',
         restoreConflict: '同名路由已有生效菜单，无法恢复'
+      },
+      policy: {
+        notRestorable: '该归档授权不可复原'
       }
     }
   },

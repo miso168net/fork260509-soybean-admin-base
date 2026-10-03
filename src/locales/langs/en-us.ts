@@ -60,6 +60,9 @@ const local: App.I18n.Schema = {
         buttonsInvalid: 'Invalid button list: every button needs a non-empty, unique code of up to 100 characters',
         hasChildren: 'This menu still has child menus (including disabled ones); handle its child menus first',
         restoreConflict: 'An active menu with the same route name already exists; cannot restore'
+      },
+      policy: {
+        notRestorable: 'This archived policy cannot be restored'
       }
     }
   },

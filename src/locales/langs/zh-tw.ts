@@ -57,6 +57,9 @@ export default {
         buttonsInvalid: '按鈕清單格式不合法：每個按鈕須有不為空且不重複的代碼，最長 100 個字元',
         hasChildren: '此選單下仍有子選單（含已停用者），請先處理其子選單',
         restoreConflict: '此選單的路由名稱已被現有選單使用，無法復原'
+      },
+      policy: {
+        notRestorable: '該歸檔授權不可復原'
       }
     }
   }
