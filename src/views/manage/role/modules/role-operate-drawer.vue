@@ -10,6 +10,9 @@ import { fetchAddRole, fetchUpdateRole } from '@/service/api/rev6-role-admin';
 import { $t } from '@/locales';
 import MenuAuthModal from './menu-auth-modal.vue';
 import ButtonAuthModal from './button-auth-modal.vue';
+// [rev6-inline BASE-WEB-MANAGE-PAGE-WIRING(iii)+ 006-authz-governance START] 第三顆授權彈窗（端點維；同目錄新增檔）的引入
+import EndpointAuthModal from './endpoint-auth-modal.vue';
+// [rev6-inline BASE-WEB-MANAGE-PAGE-WIRING(iii)+ 006-authz-governance END]
 
 defineOptions({
   name: 'RoleOperateDrawer'
@@ -39,6 +42,9 @@ const { formRef, validate, restoreValidation } = useNaiveForm();
 const { defaultRequiredRule } = useFormRules();
 const { bool: menuAuthVisible, setTrue: openMenuAuthModal } = useBoolean();
 const { bool: buttonAuthVisible, setTrue: openButtonAuthModal } = useBoolean();
+// [rev6-inline BASE-WEB-MANAGE-PAGE-WIRING(iii)+ 006-authz-governance START] 端點權限彈窗的開關狀態，與上兩行同取 `useBoolean`
+const { bool: endpointAuthVisible, setTrue: openEndpointAuthModal } = useBoolean();
+// [rev6-inline BASE-WEB-MANAGE-PAGE-WIRING(iii)+ 006-authz-governance END]
 
 const title = computed(() => {
   const titles: Record<NaiveUI.TableOperateType, string> = {
@@ -101,7 +107,10 @@ function closeDrawer() {
 async function handleSubmit() {
   await validate();
   // [rev6-inline BASE-WEB-MANAGE-PAGE-WIRING(ii)+ 005-role-menu-crud START] 送出接真：兩支請求皆逐欄列出、不展開表單物件；
-  // 更新請求不帶角色代碼（代碼建立後不可變，請求一出現該欄即被拒）。狀態已過必填規則、`?? undefined` 只為收窄型別。
+  // 更新請求不帶角色代碼（代碼建立後不可變，請求一出現該欄即被拒）。更新請求的狀態只在表單終值異於開啟時回填值（`rowData` 的
+  // `status`：清單頁點擊編輯當下的列快照、開啟期間不變）才帶，相同＝物件裡就沒有這個鍵、後端視同缺席而不動狀態（ADR-00070）——
+  // 只改名稱、描述或備註時，不會拿開啟時的舊狀態蓋掉其間他處的改動，也不會因回填的停用值誤觸停用護欄；先改再改回同屬相同。
+  // 新增請求照舊帶狀態。凡帶狀態時值已過必填規則、不會是 null，`?? undefined` 只為收窄型別、不是缺鍵的來源（缺鍵只出自上述比對）。
   // 拒因提示由共用攔截層轉譯、本頁只看成敗
   const { error } = isEdit.value
     ? await fetchUpdateRole({
@@ -109,7 +118,7 @@ async function handleSubmit() {
         roleName: model.value.roleName,
         roleDesc: model.value.roleDesc,
         roleMemo: model.value.roleMemo,
-        status: model.value.status ?? undefined
+        ...(model.value.status === props.rowData?.status ? {} : { status: model.value.status ?? undefined })
       })
     : await fetchAddRole({
         roleCode: model.value.roleCode,
@@ -169,6 +178,10 @@ watch(visible, () => {
         <MenuAuthModal v-model:visible="menuAuthVisible" :role-id="roleId" />
         <NButton @click="openButtonAuthModal">{{ $t('page.manage.role.buttonAuth') }}</NButton>
         <ButtonAuthModal v-model:visible="buttonAuthVisible" :role-id="roleId" />
+        <!-- [rev6-inline BASE-WEB-MANAGE-PAGE-WIRING(iii)+ 006-authz-governance START] 第三鈕「端點權限」與其彈窗的掛載，排在選單、按鈕兩組之後；三鈕都不掛按鈕碼判斷，能進角色頁即可用（門在頁級） -->
+        <NButton @click="openEndpointAuthModal">{{ $t('page.manage.role.endpointAuth') }}</NButton>
+        <EndpointAuthModal v-model:visible="endpointAuthVisible" :role-id="roleId" />
+        <!-- [rev6-inline BASE-WEB-MANAGE-PAGE-WIRING(iii)+ 006-authz-governance END] -->
       </NSpace>
       <template #footer>
         <NSpace :size="16">

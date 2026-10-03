@@ -820,6 +820,11 @@ declare namespace App {
             editRole: string;
             menuAuth: string;
             buttonAuth: string;
+            // [rev6-inline BASE-WEB-MANAGE-PAGE-WIRING(iii)+ 006-authz-governance START] `page.manage.role.endpointAuth` 的型（角色抽屜第三鈕與端點權限彈窗標題所用）；
+            // 兩語 locale 以 `App.I18n.Schema` 標型，一語漏插即缺必填鍵、多插即多餘屬性，typecheck 皆紅。接在本型節末項 `buttonAuth` 之後：
+            // 型成員以分號收尾、上一行不必改，塊內零移除行
+            endpointAuth: string;
+            // [rev6-inline BASE-WEB-MANAGE-PAGE-WIRING(iii)+ 006-authz-governance END]
           };
           user: {
             title: string;

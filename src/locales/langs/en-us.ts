@@ -650,6 +650,11 @@ const local: App.I18n.Schema = {
         // [rev6-inline BASE-WEB-MANAGE-PAGE-WIRING(ii)+ 005-role-menu-crud END]
         menuAuth: 'Menu Auth',
         buttonAuth: 'Button Auth',
+        // [rev6-inline BASE-WEB-MANAGE-PAGE-WIRING(iii)+ 006-authz-governance START] 角色抽屜第三鈕「端點權限」的鈕面文字、亦為端點權限彈窗標題的後半
+        // （FR-037；譯文承 rev5:src/locales/langs 同名鍵；另一語同插、型節住 typings/app.d.ts）。接在 `buttonAuth` 之後、`form` 子樹之前：
+        // 非物件末項，上一行不必補尾逗號、塊內零移除行，拔掉圈界即被 fork-delta-lint 報為未圈界新增
+        endpointAuth: 'Endpoint Auth',
+        // [rev6-inline BASE-WEB-MANAGE-PAGE-WIRING(iii)+ 006-authz-governance END]
         form: {
           roleName: 'Please enter role name',
           roleCode: 'Please enter role code',
