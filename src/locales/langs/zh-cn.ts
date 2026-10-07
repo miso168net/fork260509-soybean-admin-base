@@ -51,7 +51,8 @@ const local: App.I18n.Schema = {
         hrefInvalid: '外部链接须以 http:// 或 https:// 开头',
         buttonsInvalid: '按钮列表格式不正确：每个按钮须有不为空且不重复的编码，最长 100 个字符',
         hasChildren: '该菜单下仍有子菜单（含已停用的），请先处理其子菜单',
-        restoreConflict: '同名路由已有生效菜单，无法恢复'
+        restoreConflict: '同名路由已有生效菜单，无法恢复',
+        protectedButtonRemove: '按钮列表不可移除或修改仍有受保护授权的按钮编码'
       },
       policy: {
         notRestorable: '该归档授权不可复原'

@@ -360,6 +360,7 @@ declare namespace App {
             buttonsInvalid: string;
             hasChildren: string;
             restoreConflict: string;
+            protectedButtonRemove: string;
           };
           policy: {
             notRestorable: string;

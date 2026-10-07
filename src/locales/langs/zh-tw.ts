@@ -56,7 +56,8 @@ export default {
         hrefInvalid: '外部連結須以 http:// 或 https:// 開頭',
         buttonsInvalid: '按鈕清單格式不合法：每個按鈕須有不為空且不重複的代碼，最長 100 個字元',
         hasChildren: '此選單下仍有子選單（含已停用者），請先處理其子選單',
-        restoreConflict: '此選單的路由名稱已被現有選單使用，無法復原'
+        restoreConflict: '此選單的路由名稱已被現有選單使用，無法復原',
+        protectedButtonRemove: '按鈕清單不可移除或變更仍有受保護授權的按鈕代碼'
       },
       policy: {
         notRestorable: '該歸檔授權不可復原'

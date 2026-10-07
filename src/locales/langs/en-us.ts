@@ -59,7 +59,8 @@ const local: App.I18n.Schema = {
         hrefInvalid: 'The external link must start with http:// or https://',
         buttonsInvalid: 'Invalid button list: every button needs a non-empty, unique code of up to 100 characters',
         hasChildren: 'This menu still has child menus (including disabled ones); handle its child menus first',
-        restoreConflict: 'An active menu with the same route name already exists; cannot restore'
+        restoreConflict: 'An active menu with the same route name already exists; cannot restore',
+        protectedButtonRemove: 'Button codes that still have protected policies cannot be removed or changed'
       },
       policy: {
         notRestorable: 'This archived policy cannot be restored'
