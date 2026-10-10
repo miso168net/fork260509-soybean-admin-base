@@ -365,6 +365,19 @@ declare namespace App {
           policy: {
             notRestorable: string;
           };
+          user: {
+            notFound: string;
+            userNameInvalid: string;
+            userNameExists: string;
+            userNameImmutable: string;
+            userEmailInvalid: string;
+            userEmailExists: string;
+            roleNotFound: string;
+            seededProtected: string;
+            superCannotDisable: string;
+            cannotEditSelfRoleOrStatus: string;
+            passwordPolicy: string;
+          };
         };
       };
       // [rev6-inline BASE-WEB-I18N-WIRING(iii)+ 003-auth-session END]

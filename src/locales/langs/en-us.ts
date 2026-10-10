@@ -64,6 +64,19 @@ const local: App.I18n.Schema = {
       },
       policy: {
         notRestorable: 'This archived policy cannot be restored'
+      },
+      user: {
+        notFound: 'User not found',
+        userNameInvalid: 'Invalid username format',
+        userNameExists: 'Username already exists',
+        userNameImmutable: 'Username cannot be changed',
+        userEmailInvalid: 'Invalid email format',
+        userEmailExists: 'Email already in use',
+        roleNotFound: 'Role not found',
+        seededProtected: 'Built-in account is protected',
+        superCannotDisable: 'Super administrator cannot be disabled',
+        cannotEditSelfRoleOrStatus: 'Cannot change your own roles or status',
+        passwordPolicy: 'Password does not meet the policy: {violations}'
       }
     }
   },

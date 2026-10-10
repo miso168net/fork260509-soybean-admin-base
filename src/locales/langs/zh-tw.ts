@@ -61,6 +61,19 @@ export default {
       },
       policy: {
         notRestorable: '該歸檔授權不可復原'
+      },
+      user: {
+        notFound: '使用者不存在或已刪除',
+        userNameInvalid: '使用者名稱格式不合法',
+        userNameExists: '此使用者名稱已被現有使用者使用',
+        userNameImmutable: '使用者名稱建立後不可修改',
+        userEmailInvalid: '信箱格式不合法',
+        userEmailExists: '此信箱已被現有使用者使用',
+        roleNotFound: '指派的角色不存在或已刪除',
+        seededProtected: '系統內建帳號受保護：不可刪除，超級管理員帳號亦不可移除超級管理員角色',
+        superCannotDisable: '超級管理員帳號不可停用',
+        cannotEditSelfRoleOrStatus: '不可修改您自己帳號的角色或狀態',
+        passwordPolicy: '密碼不符合安全政策：{violations}'
       }
     }
   }

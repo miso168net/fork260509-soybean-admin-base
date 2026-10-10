@@ -56,6 +56,19 @@ const local: App.I18n.Schema = {
       },
       policy: {
         notRestorable: '该归档授权不可复原'
+      },
+      user: {
+        notFound: '用户不存在',
+        userNameInvalid: '用户名格式不正确',
+        userNameExists: '用户名已存在',
+        userNameImmutable: '用户名不可修改',
+        userEmailInvalid: '邮箱格式不正确',
+        userEmailExists: '邮箱已被使用',
+        roleNotFound: '角色不存在',
+        seededProtected: '内置账号受保护',
+        superCannotDisable: '超级管理员不可停用',
+        cannotEditSelfRoleOrStatus: '不能修改自己的角色或状态',
+        passwordPolicy: '密码不符合安全策略：{violations}'
       }
     }
   },
