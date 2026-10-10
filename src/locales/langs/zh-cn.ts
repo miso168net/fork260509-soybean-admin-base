@@ -68,7 +68,8 @@ const local: App.I18n.Schema = {
         seededProtected: '内置账号受保护',
         superCannotDisable: '超级管理员不可停用',
         cannotEditSelfRoleOrStatus: '不能修改自己的角色或状态',
-        passwordPolicy: '密码不符合安全策略：{violations}'
+        passwordPolicy: '密码不符合安全策略：{violations}',
+        cannotDeleteSelf: '不能删除自己'
       }
     }
   },

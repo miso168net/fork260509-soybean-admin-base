@@ -76,7 +76,8 @@ const local: App.I18n.Schema = {
         seededProtected: 'Built-in account is protected',
         superCannotDisable: 'Super administrator cannot be disabled',
         cannotEditSelfRoleOrStatus: 'Cannot change your own roles or status',
-        passwordPolicy: 'Password does not meet the policy: {violations}'
+        passwordPolicy: 'Password does not meet the policy: {violations}',
+        cannotDeleteSelf: 'Cannot delete yourself'
       }
     }
   },

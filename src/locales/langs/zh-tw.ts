@@ -73,7 +73,8 @@ export default {
         seededProtected: '系統內建帳號受保護：不可刪除，超級管理員帳號亦不可移除超級管理員角色',
         superCannotDisable: '超級管理員帳號不可停用',
         cannotEditSelfRoleOrStatus: '不可修改您自己帳號的角色或狀態',
-        passwordPolicy: '密碼不符合安全政策：{violations}'
+        passwordPolicy: '密碼不符合安全政策：{violations}',
+        cannotDeleteSelf: '不可刪除您自己的帳號'
       }
     }
   }

@@ -377,6 +377,7 @@ declare namespace App {
             superCannotDisable: string;
             cannotEditSelfRoleOrStatus: string;
             passwordPolicy: string;
+            cannotDeleteSelf: string;
           };
         };
       };
