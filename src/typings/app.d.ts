@@ -317,7 +317,7 @@ declare namespace App {
         system: { internal: string; notFound: string; forbidden: string };
         auth: {
           login: { failed: string };
-          session: { reLogin: string; kicked: string };
+          session: { reLogin: string; kicked: string; kickedByAdmin: string };
           token: { expired: string };
         };
         biz: {
@@ -378,6 +378,10 @@ declare namespace App {
             cannotEditSelfRoleOrStatus: string;
             passwordPolicy: string;
             cannotDeleteSelf: string;
+            cannotKickSelf: string;
+            cannotResetSelfPassword: string;
+            sessionPolicyInvalid: string;
+            pwdSetTooFrequent: string;
           };
         };
       };

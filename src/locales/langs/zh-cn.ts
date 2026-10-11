@@ -5,7 +5,11 @@ const local: App.I18n.Schema = {
     system: { internal: '系统发生内部错误，请稍后再试', notFound: '找不到请求的资源', forbidden: '没有权限执行此操作' },
     auth: {
       login: { failed: '用户名或密码错误' },
-      session: { reLogin: '请重新登录', kicked: '您的账号已在其他设备登录，当前会话已结束' },
+      session: {
+        reLogin: '请重新登录',
+        kicked: '您的账号已在其他设备登录，当前会话已结束',
+        kickedByAdmin: '此会话已被管理员结束，请重新登录'
+      },
       token: { expired: '登录已过期，正在重新获取授权' }
     },
     biz: {
@@ -69,7 +73,11 @@ const local: App.I18n.Schema = {
         superCannotDisable: '超级管理员不可停用',
         cannotEditSelfRoleOrStatus: '不能修改自己的角色或状态',
         passwordPolicy: '密码不符合安全策略：{violations}',
-        cannotDeleteSelf: '不能删除自己'
+        cannotDeleteSelf: '不能删除自己',
+        cannotKickSelf: '不能踢除自己',
+        cannotResetSelfPassword: '请到个人中心修改自己的密码',
+        sessionPolicyInvalid: '会话策略无效',
+        pwdSetTooFrequent: '密码设置过于频繁，请 {remainingSeconds} 秒后再试'
       }
     }
   },

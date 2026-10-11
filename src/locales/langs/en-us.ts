@@ -9,7 +9,11 @@ const local: App.I18n.Schema = {
     },
     auth: {
       login: { failed: 'Incorrect username or password' },
-      session: { reLogin: 'Please log in again', kicked: 'Your account signed in elsewhere; this session ended' },
+      session: {
+        reLogin: 'Please log in again',
+        kicked: 'Your account signed in elsewhere; this session ended',
+        kickedByAdmin: 'This session was ended by an administrator, please sign in again'
+      },
       token: { expired: 'Session expired, refreshing' }
     },
     biz: {
@@ -77,7 +81,11 @@ const local: App.I18n.Schema = {
         superCannotDisable: 'Super administrator cannot be disabled',
         cannotEditSelfRoleOrStatus: 'Cannot change your own roles or status',
         passwordPolicy: 'Password does not meet the policy: {violations}',
-        cannotDeleteSelf: 'Cannot delete yourself'
+        cannotDeleteSelf: 'Cannot delete yourself',
+        cannotKickSelf: 'Cannot kick yourself',
+        cannotResetSelfPassword: 'Change your own password in the user center',
+        sessionPolicyInvalid: 'Invalid session policy',
+        pwdSetTooFrequent: 'Password was set too recently, retry in {remainingSeconds}s'
       }
     }
   },

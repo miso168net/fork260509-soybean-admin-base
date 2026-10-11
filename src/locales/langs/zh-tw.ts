@@ -7,7 +7,11 @@ export default {
     system: { internal: '系統發生內部錯誤，請稍後再試', notFound: '找不到請求的資源', forbidden: '沒有權限執行此操作' },
     auth: {
       login: { failed: '帳號或密碼錯誤' },
-      session: { reLogin: '請重新登入', kicked: '您的帳號已在其他裝置登入，此工作階段已結束' },
+      session: {
+        reLogin: '請重新登入',
+        kicked: '您的帳號已在其他裝置登入，此工作階段已結束',
+        kickedByAdmin: '此工作階段已被管理員結束，請重新登入'
+      },
       token: { expired: '登入已逾時，正在重新取得授權' }
     },
     biz: {
@@ -74,7 +78,11 @@ export default {
         superCannotDisable: '超級管理員帳號不可停用',
         cannotEditSelfRoleOrStatus: '不可修改您自己帳號的角色或狀態',
         passwordPolicy: '密碼不符合安全政策：{violations}',
-        cannotDeleteSelf: '不可刪除您自己的帳號'
+        cannotDeleteSelf: '不可刪除您自己的帳號',
+        cannotKickSelf: '不可踢除您自己的帳號',
+        cannotResetSelfPassword: '請至個人中心修改您自己的密碼',
+        sessionPolicyInvalid: '工作階段政策不合法',
+        pwdSetTooFrequent: '密碼設定過於頻繁，請於 {remainingSeconds} 秒後再試'
       }
     }
   }
