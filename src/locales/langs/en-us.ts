@@ -85,7 +85,11 @@ const local: App.I18n.Schema = {
         cannotKickSelf: 'Cannot kick yourself',
         cannotResetSelfPassword: 'Change your own password in the user center',
         sessionPolicyInvalid: 'Invalid session policy',
-        pwdSetTooFrequent: 'Password was set too recently, retry in {remainingSeconds}s'
+        pwdSetTooFrequent: 'Password was set too recently, retry in {remainingSeconds}s',
+        passwordConfirmMismatch: 'Passwords do not match',
+        changePasswordThrottled: 'Too many attempts, please try again later',
+        oldPasswordMismatch: 'Old password is incorrect',
+        passwordSameAsOld: 'New password must differ from the old one'
       }
     }
   },

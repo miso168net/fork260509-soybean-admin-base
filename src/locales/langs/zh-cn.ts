@@ -77,7 +77,11 @@ const local: App.I18n.Schema = {
         cannotKickSelf: '不能踢除自己',
         cannotResetSelfPassword: '请到个人中心修改自己的密码',
         sessionPolicyInvalid: '会话策略无效',
-        pwdSetTooFrequent: '密码设置过于频繁，请 {remainingSeconds} 秒后再试'
+        pwdSetTooFrequent: '密码设置过于频繁，请 {remainingSeconds} 秒后再试',
+        passwordConfirmMismatch: '两次输入的密码不一致',
+        changePasswordThrottled: '尝试次数过多，请稍后再试',
+        oldPasswordMismatch: '旧密码不正确',
+        passwordSameAsOld: '新密码不能与旧密码相同'
       }
     }
   },

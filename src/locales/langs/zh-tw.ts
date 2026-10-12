@@ -82,7 +82,11 @@ export default {
         cannotKickSelf: '不可踢除您自己的帳號',
         cannotResetSelfPassword: '請至個人中心修改您自己的密碼',
         sessionPolicyInvalid: '工作階段政策不合法',
-        pwdSetTooFrequent: '密碼設定過於頻繁，請於 {remainingSeconds} 秒後再試'
+        pwdSetTooFrequent: '密碼設定過於頻繁，請於 {remainingSeconds} 秒後再試',
+        passwordConfirmMismatch: '兩次輸入的密碼不一致',
+        changePasswordThrottled: '嘗試次數過多，請稍後再試',
+        oldPasswordMismatch: '舊密碼不正確',
+        passwordSameAsOld: '新密碼不可與舊密碼相同'
       }
     }
   }

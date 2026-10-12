@@ -382,6 +382,10 @@ declare namespace App {
             cannotResetSelfPassword: string;
             sessionPolicyInvalid: string;
             pwdSetTooFrequent: string;
+            passwordConfirmMismatch: string;
+            changePasswordThrottled: string;
+            oldPasswordMismatch: string;
+            passwordSameAsOld: string;
           };
         };
       };
