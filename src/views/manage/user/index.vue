@@ -449,8 +449,8 @@ async function handleKick() {
 
 <template>
   <div class="min-h-500px flex-col-stretch gap-16px overflow-hidden lt-sm:overflow-auto">
-    <!-- [rev6-inline BASE-WEB-MANAGE-PAGE-WIRING(v) 007-user-password-admin] 已刪模式隱藏搜尋卡：已刪清單只收分頁兩欄、沒有篩選面；原行: <UserSearch v-model:model="searchParams" @search="getDataByPage" /> -->
-    <UserSearch v-if="!showDeleted" v-model:model="searchParams" @search="getDataByPage" />
+    <!-- [rev6-inline BASE-WEB-MANAGE-PAGE-WIRING(v) 007-user-password-admin] 已刪模式隱藏搜尋卡（已刪清單只收分頁兩欄、沒有篩選面）；以 v-show 只隱藏不重建——搜尋卡於建立當下擷取「重置」基準，若隨開關重建，往返一次後當下篩選值即成基準、「重置」清不掉（前代同形；007 刀改正、入 spec 刻意分岔登記）；原行: <UserSearch v-model:model="searchParams" @search="getDataByPage" /> -->
+    <UserSearch v-show="!showDeleted" v-model:model="searchParams" @search="getDataByPage" />
     <NCard :title="$t('page.manage.user.title')" :bordered="false" size="small" class="card-wrapper sm:flex-1-hidden">
       <template #header-extra>
         <!-- [rev6-inline BASE-WEB-MANAGE-PAGE-WIRING(v) 007-user-password-admin] 自閉合改成對標籤以承載 prefix 插槽的「顯示已刪除」開關（開關不掛按鈕碼）；並加兩布林 prop：新增與批刪依其按鈕碼顯隱、已刪模式皆不顯（預設插槽不覆寫——覆寫內容不受兩 prop 控制，覆寫成空時元件還會改渲染自帶的備援鈕）。兩個新屬性排在事件之後緊鄰閉合處——屬性之間放不了標記、須與本改行同塊才受本標記涵蓋；原行: /> -->
