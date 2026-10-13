@@ -9,7 +9,7 @@ const local: App.I18n.Schema = {
       login: { failed: '帳號或密碼錯誤' },
       session: {
         reLogin: '請重新登入',
-        kicked: '您的帳號已在其他裝置登入，此工作階段已結束',
+        kicked: '您的帳號已在其他裝置登入，此工作階段已被頂替',
         kickedByAdmin: '此工作階段已被管理員結束，請重新登入'
       },
       token: { expired: '登入已逾時，正在重新取得授權' }
@@ -54,7 +54,7 @@ const local: App.I18n.Schema = {
         parentNotFound: '父選單不存在或已刪除',
         cycleDetected: '不可將選單移到其自身或其子孫選單之下',
         protectedMenu: '受保護的選單不可刪除、不可停用，也不可變更其父選單',
-        constantParent: '常量選單只能掛在常量父選單之下；其下仍有常量子孫選單時，也不可取消本身的常量設定',
+        constantParent: '常數選單只能掛在常數父選單之下；其下仍有常數子孫選單時，也不可取消本身的常數設定',
         nameRequired: '選單名稱為必填，不可為空',
         routeNameInvalid: '路由名稱格式不合法：僅允許字母、數字、底線與連字號，最長 100 個字元',
         hrefInvalid: '外部連結須以 http:// 或 https:// 開頭',
@@ -735,7 +735,7 @@ const local: App.I18n.Schema = {
         localIcon: '本機圖示',
         iconTypeTitle: '圖示類型',
         order: '排序',
-        constant: '常量路由',
+        constant: '常數路由',
         keepAlive: '快取路由',
         href: '外部連結',
         hideInMenu: '隱藏選單',
