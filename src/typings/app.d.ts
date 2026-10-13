@@ -296,7 +296,8 @@ declare namespace App {
   namespace I18n {
     type RouteKey = import('@elegant-router/types').RouteKey;
 
-    type LangType = 'en-US' | 'zh-CN';
+    // [rev6-inline BASE-WEB-I18N-WIRING(iii) 007-user-password-admin] 語系型別擴繁中（三處註冊之中以本型為鍵全集標型者計四表＝`locale.ts` 之 `locales`、`naive.ts` 之 `naiveLocales` 與 `naiveDateLocales`、`dayjs.ts` 之 `localMap`，任一表缺 `zh-TW` 項即 typecheck 紅；射程外：`dayjs.ts` 之 `import 'dayjs/locale/zh-tw'` 屬副作用匯入、型別看不見，漏寫時 typecheck 照綠，承載＝審查兜底）；原行: type LangType = 'en-US' | 'zh-CN';
+    type LangType = 'en-US' | 'zh-CN' | 'zh-TW';
 
     type LangOption = {
       label: string;
@@ -311,7 +312,7 @@ declare namespace App {
     };
 
     type Schema = {
-      // [rev6-inline BASE-WEB-I18N-WIRING(iii)+ 003-auth-session START] backend 必填型節（逐鍵鏡像 locale backend 樹；譯文權威＝三檔 locale 各自的 backend 子樹＝ADR-00039、鍵集與鍵數以跨端閘對賬為準、首批鍵的史料出處＝`specs/003-auth-session/contracts/msg-keys.md`；必填＝兩語缺樹即 typecheck 紅；★LangType 擴充／locale 註冊／zh-tw.ts 標型不在授權內、不動）
+      // [rev6-inline BASE-WEB-I18N-WIRING(iii)+ 003-auth-session START] backend 必填型節（逐鍵鏡像 locale backend 樹；譯文權威＝三檔 locale 各自的 backend 子樹＝ADR-00084、鍵集與鍵數以跨端閘對賬為準、首批鍵的史料出處＝`specs/003-auth-session/contracts/msg-keys.md`；必填＝三語 locale（en-us／zh-cn／zh-tw）皆以 `App.I18n.Schema` 標型、任一語缺樹即 typecheck 紅；繁中之語系型別與三處註冊見上方 `LangType` 標記）
       backend: {
         common: { success: string };
         system: { internal: string; notFound: string; forbidden: string };
@@ -783,7 +784,7 @@ declare namespace App {
               disable: string;
             };
           };
-          // [rev6-inline BASE-WEB-MANAGE-PAGE-WIRING(i)+ 004-ip-trust-anchor START] `page.manage.ipRule` 型節（逐鍵鏡像兩語 locale 同名子樹）。
+          // [rev6-inline BASE-WEB-MANAGE-PAGE-WIRING(i)+ 004-ip-trust-anchor START] `page.manage.ipRule` 型節（逐鍵鏡像三語 locale 同名子樹）。
           // `page` 是逐鍵手寫的型樹（不像 `route` 由 RouteKey 自動推得）：不補本節，頁面內每一處 `$t('page.manage.ipRule.…')` 都過不了 typecheck。
           ipRule: {
             title: string;
@@ -826,8 +827,8 @@ declare namespace App {
             roleCode: string;
             roleStatus: string;
             roleDesc: string;
-            // [rev6-inline BASE-WEB-MANAGE-PAGE-WIRING(ii)+ 005-role-menu-crud START] `page.manage.role.roleMemo` 型節（逐鍵鏡像兩語 locale）；
-            // 兩語 locale 皆以本型標註，任一檔多出或缺少此鍵即 typecheck 紅
+            // [rev6-inline BASE-WEB-MANAGE-PAGE-WIRING(ii)+ 005-role-menu-crud START] `page.manage.role.roleMemo` 型節（逐鍵鏡像三語 locale）；
+            // 三語 locale 皆以本型標註，任一檔多出或缺少此鍵即 typecheck 紅
             roleMemo: string;
             // [rev6-inline BASE-WEB-MANAGE-PAGE-WIRING(ii)+ 005-role-menu-crud END]
             form: {
@@ -844,7 +845,7 @@ declare namespace App {
             menuAuth: string;
             buttonAuth: string;
             // [rev6-inline BASE-WEB-MANAGE-PAGE-WIRING(iii)+ 006-authz-governance START] `page.manage.role.endpointAuth` 的型（角色抽屜第三鈕與端點權限彈窗標題所用）；
-            // 兩語 locale 以 `App.I18n.Schema` 標型，一語漏插即缺必填鍵、多插即多餘屬性，typecheck 皆紅。接在本型節末項 `buttonAuth` 之後：
+            // 三語 locale 以 `App.I18n.Schema` 標型，一語漏插即缺必填鍵、多插即多餘屬性，typecheck 皆紅。接在本型節末項 `buttonAuth` 之後：
             // 型成員以分號收尾、上一行不必改，塊內零移除行
             endpointAuth: string;
             // [rev6-inline BASE-WEB-MANAGE-PAGE-WIRING(iii)+ 006-authz-governance END]
@@ -874,8 +875,8 @@ declare namespace App {
               female: string;
             };
           };
-          // [rev6-inline BASE-WEB-MANAGE-PAGE-WIRING(iv)+ 006-authz-governance START] `page.manage.policyArchive` 的型節（逐鍵鏡像兩語 locale 同名子樹）。
-          // 本節必需：`page` 是逐鍵手寫的型樹，缺此節則回收桶頁每一處 `$t('page.manage.policyArchive.…')` 都過不了 typecheck、兩語多插的子樹也成多餘屬性。
+          // [rev6-inline BASE-WEB-MANAGE-PAGE-WIRING(iv)+ 006-authz-governance START] `page.manage.policyArchive` 的型節（逐鍵鏡像三語 locale 同名子樹）。
+          // 本節必需：`page` 是逐鍵手寫的型樹，缺此節則回收桶頁每一處 `$t('page.manage.policyArchive.…')` 都過不了 typecheck、三語多插的子樹也成多餘屬性。
           // 落在 `user` 與 `menu` 之間：若接在 `role` 之後，與上方端點權限型那塊只隔一行 `};`（檔逾 200 行時這類高頻行不當對齊錨），會併成同一變更塊而拔標記不紅
           policyArchive: {
             title: string;
@@ -928,8 +929,8 @@ declare namespace App {
             buttonCode: string;
             buttonDesc: string;
             menuStatus: string;
-            // [rev6-inline BASE-WEB-MANAGE-PAGE-WIRING(ii)+ 005-role-menu-crud START] `page.manage.menu` 備註欄標籤與回收桶四鍵的型節（逐鍵鏡像兩語 locale）；
-            // 兩語 locale 皆以本型標註，任一檔多出或缺少這些鍵即 typecheck 紅
+            // [rev6-inline BASE-WEB-MANAGE-PAGE-WIRING(ii)+ 005-role-menu-crud START] `page.manage.menu` 備註欄標籤與回收桶四鍵的型節（逐鍵鏡像三語 locale）；
+            // 三語 locale 皆以本型標註，任一檔多出或缺少這些鍵即 typecheck 紅
             menuMemo: string;
             showDeleted: string;
             restore: string;

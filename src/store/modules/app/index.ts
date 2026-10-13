@@ -49,13 +49,17 @@ export const useAppStore = defineStore(SetupStoreId.App, () => {
     routeStore.resetRouteCache();
   }
 
-  const locale = ref<App.I18n.LangType>(localStg.get('lang') || 'zh-CN');
+  // [rev6-inline BASE-WEB-I18N-WIRING(iii) 007-user-password-admin] 未選過語言之預設改繁中（選過者照 lang 儲存值）；原行: const locale = ref<App.I18n.LangType>(localStg.get('lang') || 'zh-CN');
+  const locale = ref<App.I18n.LangType>(localStg.get('lang') || 'zh-TW');
 
   const localeOptions: App.I18n.LangOption[] = [
     {
-      label: '中文',
+      // [rev6-inline BASE-WEB-I18N-WIRING(iii) 007-user-password-admin] 標籤改為語言自稱、與繁中項區隔（三語畫面同字、不經 i18n）；原行: label: '中文',
+      label: '简体中文',
       key: 'zh-CN'
     },
+    // [rev6-inline BASE-WEB-I18N-WIRING(iii)+ 007-user-password-admin] 下一行為純新增：繁中選項（插在兩項之間、免改末項補逗號）
+    { label: '繁體中文', key: 'zh-TW' },
     {
       label: 'English',
       key: 'en-US'

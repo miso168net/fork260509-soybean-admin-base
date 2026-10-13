@@ -1,5 +1,5 @@
 const local: App.I18n.Schema = {
-  // [rev6-inline BASE-WEB-I18N-WIRING(ii)+ 003-auth-session START] backend 樹（本子樹即 en-US 譯文的權威＝ADR-00039；鍵集與鍵數以跨端閘 `python3 tools/msg-key-gate.py check` 對賬為準；首批鍵的史料出處＝`specs/003-auth-session/contracts/msg-keys.md`；★下一行 backend: { 須獨佔一行＝跨端閘右源錨）
+  // [rev6-inline BASE-WEB-I18N-WIRING(ii)+ 003-auth-session START] backend 樹（本子樹即 en-US 譯文的權威＝ADR-00084；鍵集與鍵數以跨端閘 `python3 tools/msg-key-gate.py check` 對賬為準；首批鍵的史料出處＝`specs/003-auth-session/contracts/msg-keys.md`；★下一行 backend: { 須獨佔一行＝跨端閘右源錨）
   backend: {
     common: { success: 'Operation successful' },
     system: {
@@ -634,7 +634,7 @@ const local: App.I18n.Schema = {
         }
       },
       // [rev6-inline BASE-WEB-MANAGE-PAGE-WIRING(i)+ 004-ip-trust-anchor START] IP 規則管理頁文案（鍵集＝rev5:src/locales/langs 同名子樹逐鍵、零增減；
-      // 兩語鍵集須相等、型節住 typings/app.d.ts）。`order` 的譯文刻意避開「優先」語意：規則判定是 any-match、該欄只管清單顯示排序（憲法 §I.7 島 F）。
+      // 三語鍵集須相等、型節住 typings/app.d.ts）。`order` 的譯文刻意避開「優先」語意：規則判定是 any-match、該欄只管清單顯示排序（憲法 §I.7 島 F）。
       ipRule: {
         title: 'IP Rule List',
         wbipCidr: 'CIDR',
@@ -677,7 +677,7 @@ const local: App.I18n.Schema = {
         roleStatus: 'Role Status',
         roleDesc: 'Role Description',
         // [rev6-inline BASE-WEB-MANAGE-PAGE-WIRING(ii)+ 005-role-menu-crud START] 角色備註欄的欄標籤（鍵名與譯文承 rev5:src/locales/langs 同名鍵；
-        // 兩語鍵集須相等、型節住 typings/app.d.ts）。刻意插在物件非末項之間：塊內零移除行、拔標記即被 fork-delta-lint 報為未圈界新增
+        // 三語鍵集須相等、型節住 typings/app.d.ts）。刻意插在物件非末項之間：塊內零移除行、拔標記即被 fork-delta-lint 報為未圈界新增
         roleMemo: 'Role Memo',
         // [rev6-inline BASE-WEB-MANAGE-PAGE-WIRING(ii)+ 005-role-menu-crud END]
         menuAuth: 'Menu Auth',
@@ -780,7 +780,7 @@ const local: App.I18n.Schema = {
         buttonDesc: 'Button Desc',
         menuStatus: 'Menu Status',
         // [rev6-inline BASE-WEB-MANAGE-PAGE-WIRING(ii)+ 005-role-menu-crud START] 選單頁的備註欄標籤與回收桶四鍵（顯示已刪除開關、確認復原、復原鈕、復原成功提示；鍵名與譯文承
-        // rev5:src/locales/langs 同名鍵；兩語鍵集須相等、型節住 typings/app.d.ts）。插在物件非末項之間：塊內零移除行、拔標記即被 fork-delta-lint 報為未圈界新增
+        // rev5:src/locales/langs 同名鍵；三語鍵集須相等、型節住 typings/app.d.ts）。插在物件非末項之間：塊內零移除行、拔標記即被 fork-delta-lint 報為未圈界新增
         menuMemo: 'Menu Memo',
         showDeleted: 'Show Deleted',
         restore: 'Restore',
