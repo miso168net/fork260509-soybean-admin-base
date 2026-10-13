@@ -1,7 +1,8 @@
 <!-- [rev6-inline MANAGE-IP-RULE-VIEW+ 004-ip-trust-anchor] IP 規則管理頁主檔（新增檔；上游基線無此路徑）——搜尋卡＋現役與回收桶混排的清單＋新增／編輯抽屜＋逐列軟刪／復原 -->
 <script setup lang="tsx">
 // 不變式（驗收＝specs/004-ip-trust-anchor/spec.md SC-010 結構清單；出處＝rev5:src/views/manage/ip-rule/index.vue）：
-// · 四顆操作鈕各接一個按鈕權限碼（`ipRule:add|edit|delete|restore`）。這層只管「看不看得到」，安全邊界在後端的政策判定。
+// · 五顆操作鈕各接一個按鈕權限碼（`ipRule:add|edit|delete|restore|unlock`；末者＝表頭前綴插槽之「解鎖來源 IP」）。這層只管「看不看得到」，
+//   安全邊界在後端的政策判定。
 // · 失敗提示不在本頁處理：業務拒絕與 HTTP 層拒絕都由 `service/request` 的 onError 鏈轉譯後出 toast，本頁只看 `error` 有無。
 // · 寫入成功後只刷新清單；判定面的重載與跨實例廣播由後端自己做。
 // · 備註是使用者自由輸入的文字：欄 render 只回字串、由 Vue 當純文字節點輸出。本目錄禁用任何原始 HTML 注入寫法
@@ -17,6 +18,7 @@ import { defaultTransform, useNaivePaginatedTable, useTableOperate } from '@/hoo
 import { $t } from '@/locales';
 import IpRuleOperateDrawer from './modules/ip-rule-operate-drawer.vue';
 import IpRuleSearch from './modules/ip-rule-search.vue';
+import IpUnlockModal from './modules/ip-unlock-modal.vue';
 
 const appStore = useAppStore();
 
@@ -213,6 +215,9 @@ async function handleDelete(id: number) {
   onDeleted();
 }
 
+/** 「解鎖來源 IP」彈窗之可見性：輸入、送出與成敗提示皆在彈窗內；解鎖不改規則、清單不刷新 */
+const unlockVisible = ref(false);
+
 async function handleRestore(id: number) {
   const { error } = await fetchRestoreIpRule(id);
   if (error) {
@@ -231,8 +236,9 @@ async function handleRestore(id: number) {
     <NCard :title="$t('page.manage.ipRule.title')" :bordered="false" size="small" class="card-wrapper sm:flex-1-hidden">
       <template #header-extra>
         <!--
-          寫入口只經共用表頭的兩布林 prop 控制：新增鈕綁新增權限碼、批次刪除恆關（本頁無批刪）。標籤保持自閉合、
-          不覆寫預設插槽——覆寫的內容不受這兩個 prop 控制。機器守＝tools/view-render-guard.py 表頭錨。
+          寫入口只經共用表頭的兩布林 prop 控制：新增鈕綁新增權限碼、批次刪除恆關（本頁無批刪）。標籤體內只放具名前綴插槽
+          （「解鎖來源 IP」鈕、依其按鈕碼顯隱；該插槽沒有備援內容），不覆寫預設插槽——覆寫的內容不受這兩個 prop 控制。
+          機器守＝tools/view-render-guard.py 表頭錨。
         -->
         <TableHeaderOperation
           v-model:columns="columnChecks"
@@ -241,7 +247,16 @@ async function handleRestore(id: number) {
           :show-delete="false"
           @add="handleAdd"
           @refresh="getData"
-        />
+        >
+          <template #prefix>
+            <NButton v-if="hasAuth('ipRule:unlock')" size="small" ghost @click="unlockVisible = true">
+              <template #icon>
+                <icon-ic-round-lock-open class="text-icon" />
+              </template>
+              {{ $t('page.manage.ipRule.unlock.title') }}
+            </NButton>
+          </template>
+        </TableHeaderOperation>
       </template>
       <!-- scroll-x 1414＝上方各欄 width／minWidth 之和；增刪欄或調欄寬須同批改，否則窄視窗下 minWidth 兌現不了 -->
       <NDataTable
@@ -262,6 +277,7 @@ async function handleRestore(id: number) {
         :row-data="editingData"
         @submitted="getDataByPage"
       />
+      <IpUnlockModal v-model:visible="unlockVisible" />
     </NCard>
   </div>
 </template>

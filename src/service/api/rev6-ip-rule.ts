@@ -2,7 +2,7 @@
 // 不入 `service/api/index.ts`：消費端（`views/manage/ip-rule/`）以直接路徑 import，同 `rev6-settings.ts`／`rev6-auth.ts`。
 // 五支皆不加工失敗原因：業務拒絕（`2222` 家族）與 HTTP 層拒絕的提示由 `service/request` 的 onError 鏈轉譯後統一出 toast，
 // 呼叫端只判回傳的 `error` 有無。寫端成功後後端自行重載判定面並廣播、前端不需追加任何「生效」請求。
-// 帳號解鎖端點不在本檔：憲法 §III.2 MANAGE-PAGE-WIRING 列明文把解鎖按鈕與其前端包裝排除在本次授權之外。
+// 登入解鎖端點不在本檔：其包裝住 `rev6-user-admin.ts`（`fetchUnlockLogin`），IP 規則頁表頭「解鎖來源 IP」與使用者列「解鎖登入」兩處入口共用該支。
 // 出處：rev5:src/service/api/rev5-ip-rule.ts（五支同名、動詞同形）。
 import { request } from '../request';
 

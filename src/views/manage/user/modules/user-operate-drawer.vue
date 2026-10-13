@@ -7,11 +7,12 @@ import { enableStatusOptions, userGenderOptions } from '@/constants/business';
 import { fetchGetAllRoles } from '@/service/api/rev6-role-admin';
 import { useFormRules, useNaiveForm } from '@/hooks/common/form';
 // [rev6-inline BASE-WEB-MANAGE-PAGE-WIRING(v)+ 007-user-password-admin START] 新增、更新與會話政策三支送出改打使用者管理包裝（直接路徑）；
-// 操作者是否超管、所編是否本人列，皆取自登入者資訊；角色欄自繪標籤用標籤元件與其型
+// 操作者是否超管、所編是否本人列，皆取自登入者資訊；角色欄自繪標籤用標籤元件與其型；新增態「隨機密碼」之產密浮層取密碼政策投影作構造界
 import { NTag } from 'naive-ui';
 import type { SelectRenderTag } from 'naive-ui';
 import { fetchAddUser, fetchUpdateUser, fetchUpdateUserSessionPolicy } from '@/service/api/rev6-user-admin';
 import { useAuthStore } from '@/store/modules/auth';
+import { usePwdPolicy } from '@/hooks/business/pwd-policy';
 // [rev6-inline BASE-WEB-MANAGE-PAGE-WIRING(v)+ 007-user-password-admin END]
 import { $t } from '@/locales';
 
@@ -378,7 +379,26 @@ watch(visible, () => {
   }
 });
 
-// [rev6-inline BASE-WEB-MANAGE-PAGE-WIRING(v)+ 007-user-password-admin START] 關閉即清明文密碼：抽屜不卸載、模型跨開關存活，
+// [rev6-inline BASE-WEB-MANAGE-PAGE-WIRING(v)+ 007-user-password-admin START] 新增態設密欄之兩件輔助：「隨機密碼」產密入口、關閉即清明文密碼。
+// 產密入口：設密欄右側之鈕開產密浮層、「帶入」即填欄（填進的是尚未送出之新增表單、送出前本有確定鈕，不另加確認）；只有新增態開得了它
+// （編輯態不渲染設密欄）。浮層掛在表單之外（見模板）；其帳號名比對對象＝本表單正在建立之帳號名、不是登入者自己。
+const pwdGenVisible = ref(false);
+
+/** 密碼政策投影（產密浮層之構造界；取得與快取皆在共用 hook，本檔只讀） */
+const { policy: pwdPolicy, ensureLoaded: ensurePwdPolicy } = usePwdPolicy();
+
+async function openPwdGen() {
+  // 已有快取即零請求；讀失敗維持 null＝產密浮層以其後備界產生、不擋產密
+  await ensurePwdPolicy();
+
+  pwdGenVisible.value = true;
+}
+
+function handlePwdGenApply(password: string) {
+  model.value.password = password;
+}
+
+// 關閉即清明文密碼：抽屜不卸載、模型跨開關存活，
 // 新增態打進去的密碼不清就一直留在記憶體裡直到下次開抽屜。掛在 visible 之 falsy 邊、不掛 closeDrawer()——
 // 標題列關閉鈕、遮罩點擊與 ESC 都直接改 visible、不經該函式；另立一支 watch 而不在上面那支補 else，免動基線既有行
 watch(visible, value => {
@@ -397,18 +417,21 @@ watch(visible, value => {
         <NFormItem v-if="!isEdit" :label="$t('page.manage.user.userName')" path="userName">
           <NInput v-model:value="model.userName" :placeholder="$t('page.manage.user.form.userName')" />
         </NFormItem>
-        <!-- [rev6-inline BASE-WEB-MANAGE-PAGE-WIRING(v)+ 007-user-password-admin START] 編輯態之帳號名欄（停用、承上項之 v-if）；設密欄僅新增態（更新請求無此欄），只驗必填、下附提示一行。帳號名欄以兩態兩項分寫而不在上項輸入框加停用屬性：改輸入框行會使本塊與上方改行之間只隔一個重複多見之閉合標籤行、差異工具將兩者併成同一變更塊，本塊拔圈界即驗不出 -->
+        <!-- [rev6-inline BASE-WEB-MANAGE-PAGE-WIRING(v)+ 007-user-password-admin START] 編輯態之帳號名欄（停用、承上項之 v-if）；設密欄僅新增態（更新請求無此欄），只驗必填、右接「隨機密碼」鈕、下附提示一行。帳號名欄以兩態兩項分寫而不在上項輸入框加停用屬性：改輸入框行會使本塊與上方改行之間只隔一個重複多見之閉合標籤行、差異工具將兩者併成同一變更塊，本塊拔圈界即驗不出 -->
         <NFormItem v-else :label="$t('page.manage.user.userName')" path="userName">
           <NInput v-model:value="model.userName" disabled :placeholder="$t('page.manage.user.form.userName')" />
         </NFormItem>
         <NFormItem v-if="!isEdit" :label="$t('page.manage.user.password')" path="password">
           <div class="w-full flex-col-stretch gap-4px">
-            <NInput
-              v-model:value="model.password"
-              type="password"
-              show-password-on="click"
-              :placeholder="$t('page.manage.user.form.password')"
-            />
+            <NInputGroup>
+              <NInput
+                v-model:value="model.password"
+                type="password"
+                show-password-on="click"
+                :placeholder="$t('page.manage.user.form.password')"
+              />
+              <NButton @click="openPwdGen">{{ $t('page.manage.user.randomPassword') }}</NButton>
+            </NInputGroup>
             <span class="text-12px text-#999">{{ $t('page.manage.user.passwordHint') }}</span>
           </div>
         </NFormItem>
@@ -469,6 +492,14 @@ watch(visible, value => {
         </NFormItem>
         <!-- [rev6-inline BASE-WEB-MANAGE-PAGE-WIRING(v)+ 007-user-password-admin END] -->
       </NForm>
+      <!-- [rev6-inline BASE-WEB-MANAGE-PAGE-WIRING(v)+ 007-user-password-admin START] 產密浮層（新增態設密欄之「隨機密碼」鈕開它）：掛在表單之外——掛在表單項內，浮層裡的輸入元件會注入該表單項（承其驗證狀態色與停用態、並把失焦與輸入事件回報給設密欄） -->
+      <PwdGenModal
+        v-model:visible="pwdGenVisible"
+        :policy="pwdPolicy"
+        :user-name="model.userName"
+        @apply="handlePwdGenApply"
+      />
+      <!-- [rev6-inline BASE-WEB-MANAGE-PAGE-WIRING(v)+ 007-user-password-admin END] -->
       <template #footer>
         <NSpace :size="16">
           <NButton @click="closeDrawer">{{ $t('common.cancel') }}</NButton>

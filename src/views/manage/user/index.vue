@@ -4,18 +4,24 @@ import { ref, watch } from 'vue';
 // [rev6-inline BASE-WEB-MANAGE-PAGE-WIRING(v) 007-user-password-admin] 加 NDropdown：列操作下拉（踢除下線等維運動作）的收納入口；原行: import { NButton, NPopconfirm, NTag } from 'naive-ui';
 import { NButton, NDropdown, NPopconfirm, NTag } from 'naive-ui';
 import { enableStatusRecord, userGenderRecord } from '@/constants/business';
-// [rev6-inline BASE-WEB-MANAGE-PAGE-WIRING(v) 007-user-password-admin] 清單、回收桶、單刪、批刪、復原、踢除一律改打使用者管理包裝（直接路徑、不經 barrel；barrel 之 upstream 同名清單函式一行不動）；原行: import { fetchGetUserList } from '@/service/api';
+// [rev6-inline BASE-WEB-MANAGE-PAGE-WIRING(v) 007-user-password-admin] 清單、回收桶、單刪、批刪、復原、踢除、解鎖登入一律改打使用者管理包裝（直接路徑、不經 barrel；barrel 之 upstream 同名清單函式一行不動；重設密碼之送出住重設浮層）；原行: import { fetchGetUserList } from '@/service/api';
 import {
   fetchBatchDeleteUser,
   fetchDeleteUser,
   fetchGetDeletedUsers,
   fetchGetUserList,
   fetchKickUser,
-  fetchRestoreUser
+  fetchRestoreUser,
+  fetchUnlockLogin
 } from '@/service/api/rev6-user-admin';
 import { useAppStore } from '@/store/modules/app';
-// [rev6-inline BASE-WEB-MANAGE-PAGE-WIRING(v)+ 007-user-password-admin] 按鈕碼顯隱的判準來源
+// [rev6-inline BASE-WEB-MANAGE-PAGE-WIRING(v)+ 007-user-password-admin START] 按鈕碼顯隱的判準來源、密碼政策投影（產密浮層之構造界）、
+// 登入者資訊（判本人列）與重設密碼浮層
 import { useAuth } from '@/hooks/business/auth';
+import { usePwdPolicy } from '@/hooks/business/pwd-policy';
+import { useAuthStore } from '@/store/modules/auth';
+import UserResetPwdModal from './modules/user-reset-pwd-modal.vue';
+// [rev6-inline BASE-WEB-MANAGE-PAGE-WIRING(v)+ 007-user-password-admin END]
 import { defaultTransform, useNaivePaginatedTable, useTableOperate } from '@/hooks/common/table';
 import { $t } from '@/locales';
 import UserOperateDrawer from './modules/user-operate-drawer.vue';
@@ -222,7 +228,7 @@ const { columns, columnChecks, data, getData, getDataByPage, loading, mobilePagi
           );
         }
 
-        const operateOptions = getOperateOptions();
+        const operateOptions = getOperateOptions(row);
 
         return (
           <div class="flex-center gap-8px">
@@ -320,20 +326,43 @@ function edit(id: number) {
   handleEdit(id);
 }
 
-// [rev6-inline BASE-WEB-MANAGE-PAGE-WIRING(v)+ 007-user-password-admin START] 列操作下拉：選項集、所選動作之分派與踢除下線。
+// [rev6-inline BASE-WEB-MANAGE-PAGE-WIRING(v)+ 007-user-password-admin START] 列操作下拉：選項集、所選動作之分派，與踢除下線、重設密碼、
+// 隨機密碼、解鎖登入四項動作之浮層狀態與送出（重設密碼之送出住重設浮層）。拒因提示一律由共用攔截層轉譯、本頁只看成敗。
 /**
  * 列操作下拉之動作鍵：選項側與分派側共用此字面聯合型——選項鍵寫錯即不可指派、分派側比對寫錯即成無交集比較，皆當場 typecheck 紅
  * （本 repo 前端無單元測試框架；兩邊各寫一遍字面而互無型別關聯時，寫錯只會變成點了沒有任何反應）。
  */
-type OperateKey = 'kick';
+type OperateKey = 'kick' | 'resetPwd' | 'randomPassword' | 'unlockLogin';
 
-/** 依按鈕碼組選項集；集合為空時整顆下拉不渲染（一顆點開是空的鈕不如不給） */
-function getOperateOptions() {
+const authStore = useAuthStore();
+
+/**
+ * 該列即操作者本人。登入者資訊之 userId 是字串、列之 id 是數值，故把列 id 轉字串來比（反向把字串轉數值，遇超出安全整數之 id
+ * 會靜默失真；抽屜之本人判定同形）。
+ */
+function isSelfRow(row: Api.UserAdmin.UserRecord) {
+  return String(row.id) === authStore.userInfo.userId;
+}
+
+/** 依按鈕碼（與本人列與否）組選項集；集合為空時整顆下拉不渲染（一顆點開是空的鈕不如不給） */
+function getOperateOptions(row: Api.UserAdmin.UserRecord) {
   const options: { label: string; key: OperateKey }[] = [];
 
   // 本人列照列：不得踢除自己之拒因由後端回、攔截層出提示，前端不另判
   if (hasAuth('user:kick')) {
     options.push({ label: $t('page.manage.user.kick'), key: 'kick' });
+  }
+
+  // 本人列不列兩項：後端對本人之拒因是改道指引（本人密碼請到個人中心改）——既有正確去處，就不讓人按了才知道走錯門。
+  // 兩項打同一支端點、共用同一枚碼（「隨機密碼」＝先產一組再進重設浮層確認）
+  if (hasAuth('user:reset-pwd') && !isSelfRow(row)) {
+    options.push({ label: $t('page.manage.user.resetPwd'), key: 'resetPwd' });
+    options.push({ label: $t('page.manage.user.randomPassword'), key: 'randomPassword' });
+  }
+
+  // 本人列照列；清單不顯示鎖定狀態、每列皆可按（對未鎖帳號後端照回成功）
+  if (hasAuth('user:unlock')) {
+    options.push({ label: $t('page.manage.user.unlockLogin'), key: 'unlockLogin' });
   }
 
   return options;
@@ -342,13 +371,59 @@ function getOperateOptions() {
 /** 所選動作之標的列：選項被選時鎖定、確認浮層不再回讀清單——浮層開著期間清單被刷新，送出的對象也不會換人 */
 const operateTarget = ref<Api.UserAdmin.UserRecord | null>(null);
 const kickVisible = ref(false);
+const resetPwdVisible = ref(false);
+/** 重設浮層之輸入值：產密帶入時由此預填；關閉即清由重設浮層負責 */
+const resetPwdValue = ref('');
+const pwdGenVisible = ref(false);
+const unlockVisible = ref(false);
+
+/** 密碼政策投影（產密浮層之構造界；取得與快取皆在共用 hook，本頁只讀） */
+const { policy: pwdPolicy, ensureLoaded: ensurePwdPolicy } = usePwdPolicy();
 
 function handleOperateSelect(key: OperateKey, row: Api.UserAdmin.UserRecord) {
   operateTarget.value = row;
 
   if (key === 'kick') {
     kickVisible.value = true;
+  } else if (key === 'resetPwd') {
+    resetPwdVisible.value = true;
+  } else if (key === 'randomPassword') {
+    openPwdGen();
+  } else if (key === 'unlockLogin') {
+    unlockVisible.value = true;
   }
+}
+
+async function openPwdGen() {
+  // 已有快取即零請求；讀失敗維持 null＝產密浮層以其後備界產生、不擋產密
+  await ensurePwdPolicy();
+
+  pwdGenVisible.value = true;
+}
+
+/** 產密「帶入」→ 預填重設浮層並開之：產出值不直接送出，仍須於重設浮層按確定（改掉他人密碼不可逆、多一次確認） */
+function handlePwdGenApply(password: string) {
+  resetPwdValue.value = password;
+  resetPwdVisible.value = true;
+}
+
+/** 解鎖登入（帳號維）：帳號名原樣送出、零修剪；維度顯式帶。只解除登入節流鎖、不改列資料，故不刷新清單 */
+async function handleUnlockLogin() {
+  const target = operateTarget.value;
+
+  if (!target) {
+    return;
+  }
+
+  const { error } = await fetchUnlockLogin({ dimension: 'user', userName: target.userName });
+
+  unlockVisible.value = false;
+
+  if (error) {
+    return;
+  }
+
+  window.$message?.success($t('page.manage.user.unlockLoginSuccess'));
 }
 
 async function handleKick() {
@@ -417,7 +492,7 @@ async function handleKick() {
         :row-data="editingData"
         @submitted="getDataByPage"
       />
-      <!-- [rev6-inline BASE-WEB-MANAGE-PAGE-WIRING(v)+ 007-user-password-admin START] 踢除下線之確認：觸發點在列操作下拉的選項裡、選後下拉即收合，沒有常駐節點可掛 NPopconfirm，故走 NModal 的 dialog preset -->
+      <!-- [rev6-inline BASE-WEB-MANAGE-PAGE-WIRING(v)+ 007-user-password-admin START] 列操作下拉四項動作之浮層。踢除與解鎖之確認：觸發點在下拉的選項裡、選後下拉即收合，沒有常駐節點可掛 NPopconfirm，故走 NModal 的 dialog preset；重設密碼浮層與產密浮層之標的帳號名皆取選取當下鎖定之列 -->
       <NModal
         v-model:show="kickVisible"
         preset="dialog"
@@ -427,6 +502,28 @@ async function handleKick() {
         :positive-text="$t('common.confirm')"
         :negative-text="$t('common.cancel')"
         @positive-click="handleKick"
+      />
+      <UserResetPwdModal
+        v-model:visible="resetPwdVisible"
+        v-model:password="resetPwdValue"
+        :row-data="operateTarget"
+        @submitted="getData"
+      />
+      <PwdGenModal
+        v-model:visible="pwdGenVisible"
+        :policy="pwdPolicy"
+        :user-name="operateTarget?.userName ?? ''"
+        @apply="handlePwdGenApply"
+      />
+      <NModal
+        v-model:show="unlockVisible"
+        preset="dialog"
+        type="info"
+        :title="$t('page.manage.user.unlockLogin')"
+        :content="$t('page.manage.user.unlockLoginConfirm')"
+        :positive-text="$t('common.confirm')"
+        :negative-text="$t('common.cancel')"
+        @positive-click="handleUnlockLogin"
       />
       <!-- [rev6-inline BASE-WEB-MANAGE-PAGE-WIRING(v)+ 007-user-password-admin END] -->
     </NCard>

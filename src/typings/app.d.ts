@@ -620,6 +620,22 @@ declare namespace App {
           prdDep: string;
           devDep: string;
         };
+        // [rev6-inline BASE-WEB-I18N-WIRING(i)+ 007-user-password-admin START] `page.passwordPolicy` 型節（違規碼八枚＋分隔符；逐鍵鏡像三語 locale 同名子樹）。
+        // 請求層明細轉譯與即時密碼規則 hook 共用之單一命名空間（ADR-00076）；插在 `about` 與 `home` 之間：前後皆為未改的基線行
+        passwordPolicy: {
+          violation: {
+            minLength: string;
+            maxLength: string;
+            maxBytes: string;
+            requireDigit: string;
+            requireLowercase: string;
+            requireUppercase: string;
+            requireSpecial: string;
+            forbidUsername: string;
+          };
+          listSeparator: string;
+        };
+        // [rev6-inline BASE-WEB-I18N-WIRING(i)+ 007-user-password-admin END]
         home: {
           branchDesc: string;
           greeting: string;
@@ -805,6 +821,14 @@ declare namespace App {
             restore: string;
             confirmRestore: string;
             restoreSuccess: string;
+            // [rev6-inline BASE-WEB-MANAGE-PAGE-WIRING(vii)+ 007-user-password-admin START] `page.manage.ipRule.unlock` 型節（逐鍵鏡像三語 locale；巢狀於上方 (i) 塊內）——
+            // 「解鎖來源 IP」鈕與彈窗之 $t 呼叫皆經本節過 typecheck，三語 locale 任一檔多出或缺少即紅
+            unlock: {
+              title: string;
+              ipAddress: string;
+              success: string;
+            };
+            // [rev6-inline BASE-WEB-MANAGE-PAGE-WIRING(vii)+ 007-user-password-admin END]
             ruleTypeMap: {
               allow: string;
               deny: string;
@@ -860,8 +884,8 @@ declare namespace App {
             userStatus: string;
             userRole: string;
             // [rev6-inline BASE-WEB-MANAGE-PAGE-WIRING(v)+ 007-user-password-admin START] `page.manage.user` 接真補鍵之型節（清單新欄、回收桶開關與復原確認、
-            // 角色欄分隔符、停用角色之灰色選項標籤、候選讀取失敗提示、會話政策三值與提示、設密提示、踢除三鍵；鍵名沿 rev5:src/locales/langs/zh-cn.ts 同名鍵，
-            // roleSeparator／roleDisabledTag 為 007 刀新鍵）。
+            // 角色欄分隔符、停用角色之灰色選項標籤、候選讀取失敗提示、會話政策三值與提示、設密提示、踢除三鍵、重設密碼浮層四鍵與隨機密碼、產密浮層七鍵、
+            // 解鎖登入三鍵；鍵名沿 rev5:src/locales/langs/zh-cn.ts 同名鍵，roleSeparator／roleDisabledTag／unlockLoginConfirm／unlockLoginSuccess 為 007 刀新鍵）。
             // 三語 locale 皆以 `App.I18n.Schema` 標型：任一語缺鍵或多鍵即 typecheck 紅。插在 `userRole` 與 `form` 之間：前後皆為未改的基線行、塊內零移除行
             password: string;
             roles: string;
@@ -889,6 +913,23 @@ declare namespace App {
             kick: string;
             confirmKick: string;
             kickSuccess: string;
+            resetPwd: string;
+            resetPwdTitle: string;
+            newPassword: string;
+            resetPwdSuccess: string;
+            randomPassword: string;
+            pwdGen: {
+              title: string;
+              length: string;
+              generate: string;
+              copy: string;
+              copied: string;
+              copyFailed: string;
+              apply: string;
+            };
+            unlockLogin: string;
+            unlockLoginConfirm: string;
+            unlockLoginSuccess: string;
             // [rev6-inline BASE-WEB-MANAGE-PAGE-WIRING(v)+ 007-user-password-admin END]
             form: {
               userName: string;

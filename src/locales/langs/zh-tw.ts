@@ -453,6 +453,19 @@ const local: App.I18n.Schema = {
       prdDep: '正式環境相依套件',
       devDep: '開發環境相依套件'
     },
+    passwordPolicy: {
+      violation: {
+        minLength: '長度未達政策下限',
+        maxLength: '長度超過政策上限',
+        maxBytes: '位元組數超過上限',
+        requireDigit: '須包含數字',
+        requireLowercase: '須包含小寫字母',
+        requireUppercase: '須包含大寫字母',
+        requireSpecial: '須包含特殊字元',
+        forbidUsername: '不可與使用者名稱相同'
+      },
+      listSeparator: '、'
+    },
     home: {
       branchDesc:
         '為了方便大家開發與更新合併，我們精簡了main分支的程式碼，只保留首頁選單，其餘內容已移至example分支維護。預覽網址顯示的內容即為example分支的內容。',
@@ -637,6 +650,11 @@ const local: App.I18n.Schema = {
         restore: '復原',
         confirmRestore: '確定復原此規則？',
         restoreSuccess: '復原成功',
+        unlock: {
+          title: '解鎖來源 IP',
+          ipAddress: 'IP 位址',
+          success: '已解除鎖定'
+        },
         ruleTypeMap: {
           allow: '放行',
           deny: '阻擋'
@@ -707,6 +725,23 @@ const local: App.I18n.Schema = {
         kick: '踢除下線',
         confirmKick: '確定踢除該使用者的全部工作階段？',
         kickSuccess: '已踢除該使用者的全部工作階段',
+        resetPwd: '重設密碼',
+        resetPwdTitle: '重設密碼：{userName}',
+        newPassword: '新密碼',
+        resetPwdSuccess: '密碼已重設，該使用者的全部工作階段已失效',
+        randomPassword: '隨機密碼',
+        pwdGen: {
+          title: '隨機產生密碼',
+          length: '長度',
+          generate: '重新產生',
+          copy: '複製',
+          copied: '已複製到剪貼簿',
+          copyFailed: '複製失敗，請手動選取上方密碼複製',
+          apply: '帶入'
+        },
+        unlockLogin: '解鎖登入',
+        unlockLoginConfirm: '確定解除該使用者的登入鎖定？',
+        unlockLoginSuccess: '已解除鎖定',
         form: {
           userName: '請輸入使用者名稱',
           userGender: '請選擇性別',

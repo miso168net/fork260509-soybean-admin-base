@@ -468,6 +468,22 @@ const local: App.I18n.Schema = {
       prdDep: 'Production Dependency',
       devDep: 'Development Dependency'
     },
+    // [rev6-inline BASE-WEB-I18N-WIRING(i)+ 007-user-password-admin START] 密碼政策違規碼八枚之譯文＋串接分隔符（鍵集與插位同 zh-cn.ts 同段、說明見該處；
+    // 譯文逐字承 rev5:src/locales/langs/en-us.ts 之 backend 樹白名單同名鍵）
+    passwordPolicy: {
+      violation: {
+        minLength: 'length below the policy minimum',
+        maxLength: 'length exceeds the policy maximum',
+        maxBytes: 'byte length exceeds the limit',
+        requireDigit: 'must contain a digit',
+        requireLowercase: 'must contain a lowercase letter',
+        requireUppercase: 'must contain an uppercase letter',
+        requireSpecial: 'must contain a special character',
+        forbidUsername: 'must not be identical to the user name'
+      },
+      listSeparator: ', '
+    },
+    // [rev6-inline BASE-WEB-I18N-WIRING(i)+ 007-user-password-admin END]
     home: {
       branchDesc:
         'For the convenience of everyone in developing and updating the merge, we have streamlined the code of the main branch, only retaining the homepage menu, and the rest of the content has been moved to the example branch for maintenance. The preview address displays the content of the example branch.',
@@ -654,6 +670,14 @@ const local: App.I18n.Schema = {
         restore: 'Restore',
         confirmRestore: 'Restore this rule?',
         restoreSuccess: 'Restored',
+        // [rev6-inline BASE-WEB-MANAGE-PAGE-WIRING(vii)+ 007-user-password-admin START] 表頭前綴插槽「解鎖來源 IP」鈕與其彈窗之文案（鈕標籤兼彈窗標題、位址欄標籤、成功提示）；
+        // 巢狀於上方 (i) 塊內。ipAddress／success 鍵名與譯文沿 rev5:src/locales/langs 之 page.manage.user.unlock 同名鍵、title 為 007 刀新鍵；三語鍵集須相等、型節住 typings/app.d.ts
+        unlock: {
+          title: 'Unlock Source IP',
+          ipAddress: 'IP Address',
+          success: 'Unlocked'
+        },
+        // [rev6-inline BASE-WEB-MANAGE-PAGE-WIRING(vii)+ 007-user-password-admin END]
         ruleTypeMap: {
           allow: 'Allow',
           deny: 'Deny'
@@ -739,6 +763,23 @@ const local: App.I18n.Schema = {
         kick: 'Kick Out',
         confirmKick: 'End all sessions of this user?',
         kickSuccess: 'All sessions of this user have been ended',
+        resetPwd: 'Reset Password',
+        resetPwdTitle: 'Reset password: {userName}',
+        newPassword: 'New Password',
+        resetPwdSuccess: 'Password reset; all sessions of this user have been ended',
+        randomPassword: 'Random Password',
+        pwdGen: {
+          title: 'Generate Random Password',
+          length: 'Length',
+          generate: 'Regenerate',
+          copy: 'Copy',
+          copied: 'Copied to clipboard',
+          copyFailed: 'Copy failed, please select the password above and copy it manually',
+          apply: 'Apply'
+        },
+        unlockLogin: 'Unlock Login',
+        unlockLoginConfirm: 'Clear the login lock of this user?',
+        unlockLoginSuccess: 'Unlocked',
         // [rev6-inline BASE-WEB-MANAGE-PAGE-WIRING(v)+ 007-user-password-admin END]
         form: {
           userName: 'Please enter user name',

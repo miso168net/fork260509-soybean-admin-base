@@ -456,6 +456,23 @@ const local: App.I18n.Schema = {
       prdDep: '生产依赖',
       devDep: '开发依赖'
     },
+    // [rev6-inline BASE-WEB-I18N-WIRING(i)+ 007-user-password-admin START] 密碼政策違規碼八枚之譯文＋串接分隔符（零佔位符）：請求層明細轉譯與即時密碼規則 hook
+    // 共用之單一命名空間（ADR-00076）；子鍵尾段＝後端違規碼字面。譯文逐字承 rev5:src/locales/langs/zh-cn.ts 之 backend 樹白名單同名鍵（rev6 不落 backend 樹）。
+    // 另兩語同插、型節住 typings/app.d.ts；插在 `about` 與 `home` 之間：前後皆為未改的基線行
+    passwordPolicy: {
+      violation: {
+        minLength: '长度未达策略下限',
+        maxLength: '长度超过策略上限',
+        maxBytes: '字节数超过上限',
+        requireDigit: '须包含数字',
+        requireLowercase: '须包含小写字母',
+        requireUppercase: '须包含大写字母',
+        requireSpecial: '须包含特殊符号',
+        forbidUsername: '不可与用户名相同'
+      },
+      listSeparator: '、'
+    },
+    // [rev6-inline BASE-WEB-I18N-WIRING(i)+ 007-user-password-admin END]
     home: {
       branchDesc:
         '为了方便大家开发和更新合并，我们对main分支的代码进行了精简，只保留了首页菜单，其余内容已移至example分支进行维护。预览地址显示的内容即为example分支的内容。',
@@ -642,6 +659,14 @@ const local: App.I18n.Schema = {
         restore: '恢复',
         confirmRestore: '确定恢复此规则？',
         restoreSuccess: '恢复成功',
+        // [rev6-inline BASE-WEB-MANAGE-PAGE-WIRING(vii)+ 007-user-password-admin START] 表頭前綴插槽「解鎖來源 IP」鈕與其彈窗之文案（鈕標籤兼彈窗標題、位址欄標籤、成功提示）；
+        // 巢狀於上方 (i) 塊內。ipAddress／success 鍵名與譯文沿 rev5:src/locales/langs 之 page.manage.user.unlock 同名鍵、title 為 007 刀新鍵；三語鍵集須相等、型節住 typings/app.d.ts
+        unlock: {
+          title: '解锁来源 IP',
+          ipAddress: 'IP 地址',
+          success: '已解除锁定'
+        },
+        // [rev6-inline BASE-WEB-MANAGE-PAGE-WIRING(vii)+ 007-user-password-admin END]
         ruleTypeMap: {
           allow: '放行',
           deny: '阻挡'
@@ -698,8 +723,9 @@ const local: App.I18n.Schema = {
         userStatus: '用户状态',
         userRole: '用户角色',
         // [rev6-inline BASE-WEB-MANAGE-PAGE-WIRING(v)+ 007-user-password-admin START] 使用者管理頁接真之補鍵：清單新欄、回收桶開關與復原確認兩行句、
-        // 角色欄分隔符（本頁自備、不借他頁或密碼政策之分隔鍵）、停用角色之灰色選項標籤、候選讀取失敗提示、會話政策三值與提示、設密提示、踢除三鍵；
-        // 鍵名與既有鍵譯文沿 rev5:src/locales/langs/zh-cn.ts 同名鍵（roleSeparator／roleDisabledTag 為 007 刀新鍵）。另兩語同插、型節住 typings/app.d.ts。
+        // 角色欄分隔符（本頁自備、不借他頁或密碼政策之分隔鍵）、停用角色之灰色選項標籤、候選讀取失敗提示、會話政策三值與提示、設密提示、踢除三鍵、
+        // 列操作之重設密碼浮層四鍵與隨機密碼、產密浮層七鍵（`pwdGen.*`：元件住 components/custom、唯一掛載面在本頁＝鍵隨消費場景）、解鎖登入三鍵；
+        // 鍵名與既有鍵譯文沿 rev5:src/locales/langs/zh-cn.ts 同名鍵（roleSeparator／roleDisabledTag／unlockLoginConfirm／unlockLoginSuccess 為 007 刀新鍵）。另兩語同插、型節住 typings/app.d.ts。
         // 插在 `userRole` 與 `form` 之間：前後皆為未改的基線行、塊內零移除行
         password: '密码',
         roles: '角色',
@@ -727,6 +753,23 @@ const local: App.I18n.Schema = {
         kick: '踢除下线',
         confirmKick: '确定踢除该用户的全部登录？',
         kickSuccess: '已踢除该用户的全部登录',
+        resetPwd: '重置密码',
+        resetPwdTitle: '重置密码：{userName}',
+        newPassword: '新密码',
+        resetPwdSuccess: '密码已重置，该用户的全部登录已失效',
+        randomPassword: '随机密码',
+        pwdGen: {
+          title: '随机生成密码',
+          length: '长度',
+          generate: '重新生成',
+          copy: '复制',
+          copied: '已复制到剪贴板',
+          copyFailed: '复制失败，请手动选取上方密码复制',
+          apply: '带入'
+        },
+        unlockLogin: '解锁登录',
+        unlockLoginConfirm: '确定解除该用户的登录锁定？',
+        unlockLoginSuccess: '已解除锁定',
         // [rev6-inline BASE-WEB-MANAGE-PAGE-WIRING(v)+ 007-user-password-admin END]
         form: {
           userName: '请输入用户名',
