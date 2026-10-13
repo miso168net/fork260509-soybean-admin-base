@@ -697,6 +697,37 @@ const local: App.I18n.Schema = {
         userEmail: '邮箱',
         userStatus: '用户状态',
         userRole: '用户角色',
+        // [rev6-inline BASE-WEB-MANAGE-PAGE-WIRING(v)+ 007-user-password-admin START] 使用者管理頁接真之補鍵：清單新欄、回收桶開關與復原確認兩行句、
+        // 角色欄分隔符（本頁自備、不借他頁或密碼政策之分隔鍵）、停用角色之灰色選項標籤、候選讀取失敗提示、會話政策三值與提示、設密提示、踢除三鍵；
+        // 鍵名與既有鍵譯文沿 rev5:src/locales/langs/zh-cn.ts 同名鍵（roleSeparator／roleDisabledTag 為 007 刀新鍵）。另兩語同插、型節住 typings/app.d.ts。
+        // 插在 `userRole` 與 `form` 之間：前後皆為未改的基線行、塊內零移除行
+        password: '密码',
+        roles: '角色',
+        roleSeparator: '、',
+        sessionPolicy: '会话策略',
+        userMemo: '备注',
+        createdAt: '创建时间',
+        createdBy: '创建者',
+        updatedAt: '更新时间',
+        updatedBy: '更新者',
+        showDeleted: '显示已删除',
+        restore: '复原',
+        confirmRestore: '确定复原此用户？',
+        restoreHint: '复原后该用户没有任何角色，需重新指派',
+        restoreSuccess: '复原成功',
+        roleDisabledTag: '（已停用）',
+        roleOptionsUnavailable: '角色候选读取失败，暂时无法调整角色指派；请关闭抽屉后重试。',
+        sessionPolicyOption: {
+          inherit: '跟随全局',
+          single: '单一设备',
+          multi: '多设备'
+        },
+        sessionPolicyHint: '仅超级管理员可修改会话策略',
+        passwordHint: '密码规则由服务端校验；可点右侧按钮按当前策略随机生成',
+        kick: '踢除下线',
+        confirmKick: '确定踢除该用户的全部登录？',
+        kickSuccess: '已踢除该用户的全部登录',
+        // [rev6-inline BASE-WEB-MANAGE-PAGE-WIRING(v)+ 007-user-password-admin END]
         form: {
           userName: '请输入用户名',
           userGender: '请选择性别',
@@ -704,6 +735,11 @@ const local: App.I18n.Schema = {
           userPhone: '请输入手机号',
           userEmail: '请输入邮箱',
           userStatus: '请选择用户状态',
+          // [rev6-inline BASE-WEB-MANAGE-PAGE-WIRING(v)+ 007-user-password-admin START] 抽屜新增欄（設密、記事）之輸入提示；
+          // 插在末項 `userRole` 之前（插在末項之後須改該行補逗號＝多一處修改型）
+          password: '请输入密码',
+          userMemo: '请输入备注（仅管理员可见）',
+          // [rev6-inline BASE-WEB-MANAGE-PAGE-WIRING(v)+ 007-user-password-admin END]
           userRole: '请选择用户角色'
         },
         addUser: '新增用户',

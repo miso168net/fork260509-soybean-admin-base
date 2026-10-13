@@ -2,7 +2,8 @@
 import { computed, toRaw } from 'vue';
 import { jsonClone } from '@sa/utils';
 import { enableStatusOptions, userGenderOptions } from '@/constants/business';
-import { useFormRules, useNaiveForm } from '@/hooks/common/form';
+// [rev6-inline BASE-WEB-MANAGE-PAGE-WIRING(v) 007-user-password-admin] 手機、信箱兩欄不再掛格式規則、規則來源隨之不取；原行: import { useFormRules, useNaiveForm } from '@/hooks/common/form';
+import { useNaiveForm } from '@/hooks/common/form';
 import { translateOptions } from '@/utils/common';
 import { $t } from '@/locales';
 
@@ -23,11 +24,13 @@ const model = defineModel<Api.SystemManage.UserSearchParams>('model', { required
 type RuleKey = Extract<keyof Api.SystemManage.UserSearchParams, 'userEmail' | 'userPhone'>;
 
 const rules = computed<Record<RuleKey, App.Global.FormRule>>(() => {
-  const { patternRules } = useFormRules(); // inside computed to make locale reactive
+  // [rev6-inline BASE-WEB-MANAGE-PAGE-WIRING(v) 007-user-password-admin] 手機、信箱兩欄拔除格式規則（後端以部分字串過濾兩欄；upstream 手機規則只收中國大陸 11 碼、輸入部分字串即被擋）——規則來源不再取用、兩欄改掛空規則（無約束；`validate()` 照舊、恆過）；原行: const { patternRules } = useFormRules(); // inside computed to make locale reactive
 
   return {
-    userEmail: patternRules.email,
-    userPhone: patternRules.phone
+    // [rev6-inline BASE-WEB-MANAGE-PAGE-WIRING(v) 007-user-password-admin] 同上：信箱欄改空規則；原行: userEmail: patternRules.email,
+    userEmail: {},
+    // [rev6-inline BASE-WEB-MANAGE-PAGE-WIRING(v) 007-user-password-admin] 同上：手機欄改空規則；原行: userPhone: patternRules.phone
+    userPhone: {}
   };
 });
 

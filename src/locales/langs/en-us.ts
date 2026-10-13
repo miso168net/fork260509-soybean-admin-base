@@ -709,6 +709,37 @@ const local: App.I18n.Schema = {
         userEmail: 'Email',
         userStatus: 'User Status',
         userRole: 'User Role',
+        // [rev6-inline BASE-WEB-MANAGE-PAGE-WIRING(v)+ 007-user-password-admin START] 使用者管理頁接真之補鍵（鍵集與插位同 zh-cn.ts 同段、說明見該處；
+        // 既有鍵譯文沿 rev5:src/locales/langs/en-us.ts 同名鍵）
+        password: 'Password',
+        roles: 'Roles',
+        roleSeparator: ', ',
+        sessionPolicy: 'Session Policy',
+        userMemo: 'Memo',
+        createdAt: 'Created At',
+        createdBy: 'Created By',
+        updatedAt: 'Updated At',
+        updatedBy: 'Updated By',
+        showDeleted: 'Show Deleted',
+        restore: 'Restore',
+        confirmRestore: 'Restore this user?',
+        restoreHint: 'The restored account holds no role and must be reassigned',
+        restoreSuccess: 'Restored',
+        roleDisabledTag: ' (Disabled)',
+        roleOptionsUnavailable:
+          'Failed to load role options; role assignment is unavailable. Close the drawer and try again.',
+        sessionPolicyOption: {
+          inherit: 'Inherit',
+          single: 'Single Device',
+          multi: 'Multiple Devices'
+        },
+        sessionPolicyHint: 'Only the super administrator can change the session policy',
+        passwordHint:
+          'Password rules are enforced by the server; use the button on the right to generate one that meets the current policy',
+        kick: 'Kick Out',
+        confirmKick: 'End all sessions of this user?',
+        kickSuccess: 'All sessions of this user have been ended',
+        // [rev6-inline BASE-WEB-MANAGE-PAGE-WIRING(v)+ 007-user-password-admin END]
         form: {
           userName: 'Please enter user name',
           userGender: 'Please select gender',
@@ -716,6 +747,10 @@ const local: App.I18n.Schema = {
           userPhone: 'Please enter phone number',
           userEmail: 'Please enter email',
           userStatus: 'Please select user status',
+          // [rev6-inline BASE-WEB-MANAGE-PAGE-WIRING(v)+ 007-user-password-admin START] 抽屜新增欄（設密、記事）之輸入提示（插位同 zh-cn.ts 同段）
+          password: 'Please enter password',
+          userMemo: 'Memo (visible to administrators only)',
+          // [rev6-inline BASE-WEB-MANAGE-PAGE-WIRING(v)+ 007-user-password-admin END]
           userRole: 'Please select user role'
         },
         addUser: 'Add User',

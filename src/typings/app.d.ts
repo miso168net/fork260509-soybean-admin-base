@@ -859,6 +859,37 @@ declare namespace App {
             userEmail: string;
             userStatus: string;
             userRole: string;
+            // [rev6-inline BASE-WEB-MANAGE-PAGE-WIRING(v)+ 007-user-password-admin START] `page.manage.user` 接真補鍵之型節（清單新欄、回收桶開關與復原確認、
+            // 角色欄分隔符、停用角色之灰色選項標籤、候選讀取失敗提示、會話政策三值與提示、設密提示、踢除三鍵；鍵名沿 rev5:src/locales/langs/zh-cn.ts 同名鍵，
+            // roleSeparator／roleDisabledTag 為 007 刀新鍵）。
+            // 三語 locale 皆以 `App.I18n.Schema` 標型：任一語缺鍵或多鍵即 typecheck 紅。插在 `userRole` 與 `form` 之間：前後皆為未改的基線行、塊內零移除行
+            password: string;
+            roles: string;
+            roleSeparator: string;
+            sessionPolicy: string;
+            userMemo: string;
+            createdAt: string;
+            createdBy: string;
+            updatedAt: string;
+            updatedBy: string;
+            showDeleted: string;
+            restore: string;
+            confirmRestore: string;
+            restoreHint: string;
+            restoreSuccess: string;
+            roleDisabledTag: string;
+            roleOptionsUnavailable: string;
+            sessionPolicyOption: {
+              inherit: string;
+              single: string;
+              multi: string;
+            };
+            sessionPolicyHint: string;
+            passwordHint: string;
+            kick: string;
+            confirmKick: string;
+            kickSuccess: string;
+            // [rev6-inline BASE-WEB-MANAGE-PAGE-WIRING(v)+ 007-user-password-admin END]
             form: {
               userName: string;
               userGender: string;
@@ -866,6 +897,11 @@ declare namespace App {
               userPhone: string;
               userEmail: string;
               userStatus: string;
+              // [rev6-inline BASE-WEB-MANAGE-PAGE-WIRING(v)+ 007-user-password-admin START] 抽屜新增欄（設密、記事）之輸入提示兩鍵的型；
+              // 插在 `userStatus` 與末項 `userRole` 之間（與兩語 locale 同位）
+              password: string;
+              userMemo: string;
+              // [rev6-inline BASE-WEB-MANAGE-PAGE-WIRING(v)+ 007-user-password-admin END]
               userRole: string;
             };
             addUser: string;
