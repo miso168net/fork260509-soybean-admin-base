@@ -178,7 +178,7 @@ watch(visible, () => {
         <MenuAuthModal v-model:visible="menuAuthVisible" :role-id="roleId" />
         <NButton @click="openButtonAuthModal">{{ $t('page.manage.role.buttonAuth') }}</NButton>
         <ButtonAuthModal v-model:visible="buttonAuthVisible" :role-id="roleId" />
-        <!-- [rev6-inline BASE-WEB-MANAGE-PAGE-WIRING(iii)+ 006-authz-governance START] 第三鈕「端點權限」與其彈窗的掛載，排在選單、按鈕兩組之後；三鈕都不掛按鈕碼判斷，能進角色頁即可用（門在頁級） -->
+        <!-- [rev6-inline BASE-WEB-MANAGE-PAGE-WIRING(iii)+ 006-authz-governance START] 第三鈕「端點權限」與其彈窗的掛載，排在選單、按鈕兩組之後；三鈕都不掛按鈕碼判斷——其讀寫端點屬封死集、非超管連現況都載不出 -->
         <NButton @click="openEndpointAuthModal">{{ $t('page.manage.role.endpointAuth') }}</NButton>
         <EndpointAuthModal v-model:visible="endpointAuthVisible" :role-id="roleId" />
         <!-- [rev6-inline BASE-WEB-MANAGE-PAGE-WIRING(iii)+ 006-authz-governance END] -->

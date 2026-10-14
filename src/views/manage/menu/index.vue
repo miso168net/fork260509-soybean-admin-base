@@ -9,6 +9,9 @@ import { enableStatusRecord, menuTypeRecord } from '@/constants/business';
 // [rev6-inline BASE-WEB-MANAGE-PAGE-WIRING(ii) 005-role-menu-crud] 清單改打選單管理 wrapper（見下方新增 import；barrel 的同名 demo 版一行不動）、頁面下拉續走 barrel；原行: import { fetchGetAllPages, fetchGetMenuList } from '@/service/api';
 import { fetchGetAllPages } from '@/service/api';
 import { useAppStore } from '@/store/modules/app';
+// [rev6-inline BASE-WEB-MANAGE-PAGE-WIRING(viii)+ 007-user-password-admin START] 按鈕碼顯隱的判準來源
+import { useAuth } from '@/hooks/business/auth';
+// [rev6-inline BASE-WEB-MANAGE-PAGE-WIRING(viii)+ 007-user-password-admin END]
 import { defaultTransform, useNaivePaginatedTable, useTableOperate } from '@/hooks/common/table';
 // [rev6-inline BASE-WEB-MANAGE-PAGE-WIRING(ii)+ 005-role-menu-crud START] 選單管理 wrapper（直接路徑、不經 barrel）：治理清單、單刪、批刪、已刪清單、復原
 import {
@@ -24,6 +27,11 @@ import SvgIcon from '@/components/custom/svg-icon.vue';
 import MenuOperateModal, { type OperateType } from './modules/menu-operate-modal.vue';
 
 const appStore = useAppStore();
+
+// [rev6-inline BASE-WEB-MANAGE-PAGE-WIRING(viii)+ 007-user-password-admin START] 表頭新增與批刪、現役模式之新增子選單、編輯與刪除逐鈕依按鈕碼顯隱；
+// 按鈕碼只決定看得見什麼，端點授權仍由後端判定（鈕可見而端點未授者，按下去得到的是授權拒絕）
+const { hasAuth } = useAuth();
+// [rev6-inline BASE-WEB-MANAGE-PAGE-WIRING(viii)+ 007-user-password-admin END]
 
 const { bool: visible, setTrue: openModal } = useBoolean();
 
@@ -182,7 +190,8 @@ const { columns, columnChecks, data, loading, pagination, getData, getDataByPage
       title: $t('common.operate'),
       align: 'center',
       width: 230,
-      // [rev6-inline BASE-WEB-MANAGE-PAGE-WIRING(ii) 005-role-menu-crud] 已刪模式整欄換成「復原」（先過二次確認；不掛按鈕碼——此頁的門是頁級超管授權、復原另由後端逐列重驗），現役模式照原三鈕；原行: render: row => (
+      // [rev6-inline BASE-WEB-MANAGE-PAGE-WIRING(ii) 005-role-menu-crud] 已刪模式整欄換成「復原」（先過二次確認；不掛按鈕碼——已刪清單與復原之端點皆屬封死集、非超管連已刪清單都載不出，復原另由後端逐列重驗），現役模式照原三鈕（逐鈕之按鈕碼顯隱見下一行標記）；原行: render: row => (
+      // [rev6-inline BASE-WEB-MANAGE-PAGE-WIRING(viii) 007-user-password-admin] 現役模式三鈕各依按鈕碼顯隱：新增子選單 menu:add（併入原有之目錄型條件）、編輯 menu:edit、刪除 menu:delete；已刪模式之「復原」不設碼（理由見上一行標記）。JSX 子節點內放不了標記，故置於 render 行上方——本用途真被替換之基線行為新增子選單之條件行（render 行本身之改寫屬上一行標記），編輯與刪除之顯隱條件與既有鈕同處本變更塊；原行: {row.menuType === '1' && (
       render: row =>
         showDeleted.value ? (
           <div class="flex-center justify-end gap-8px">
@@ -199,24 +208,28 @@ const { columns, columnChecks, data, loading, pagination, getData, getDataByPage
           </div>
         ) : (
           <div class="flex-center justify-end gap-8px">
-            {row.menuType === '1' && (
+            {row.menuType === '1' && hasAuth('menu:add') && (
               <NButton type="primary" ghost size="small" onClick={() => handleAddChildMenu(row)}>
                 {$t('page.manage.menu.addChildMenu')}
               </NButton>
             )}
-            <NButton type="primary" ghost size="small" onClick={() => handleEdit(row)}>
-              {$t('common.edit')}
-            </NButton>
-            <NPopconfirm onPositiveClick={() => handleDelete(row.id)}>
-              {{
-                default: () => $t('common.confirmDelete'),
-                trigger: () => (
-                  <NButton type="error" ghost size="small">
-                    {$t('common.delete')}
-                  </NButton>
-                )
-              }}
-            </NPopconfirm>
+            {hasAuth('menu:edit') && (
+              <NButton type="primary" ghost size="small" onClick={() => handleEdit(row)}>
+                {$t('common.edit')}
+              </NButton>
+            )}
+            {hasAuth('menu:delete') && (
+              <NPopconfirm onPositiveClick={() => handleDelete(row.id)}>
+                {{
+                  default: () => $t('common.confirmDelete'),
+                  trigger: () => (
+                    <NButton type="error" ghost size="small">
+                      {$t('common.delete')}
+                    </NButton>
+                  )
+                }}
+              </NPopconfirm>
+            )}
           </div>
         )
     }
@@ -349,7 +362,7 @@ init();
   <div ref="wrapperRef" class="flex-col-stretch gap-16px overflow-hidden lt-sm:overflow-auto">
     <NCard :title="$t('page.manage.menu.title')" :bordered="false" size="small" class="card-wrapper sm:flex-1-hidden">
       <template #header-extra>
-        <!-- [rev6-inline BASE-WEB-MANAGE-PAGE-WIRING(ii) 005-role-menu-crud] 自閉合改成對標籤以承載 prefix 插槽的「顯示已刪除」開關；並加兩布林 prop：已刪模式不顯新增與批刪（預設插槽不覆寫）。兩個新屬性排在事件之後緊鄰閉合處——屬性之間放不了標記、須與本改行同塊才受本標記涵蓋；原行: /> -->
+        <!-- [rev6-inline BASE-WEB-MANAGE-PAGE-WIRING(ii) 005-role-menu-crud] 自閉合改成對標籤以承載 prefix 插槽的「顯示已刪除」開關（開關不掛按鈕碼）；並加兩布林 prop：已刪模式不顯新增與批刪（預設插槽不覆寫），現役模式另依其按鈕碼（menu:add／menu:delete）顯隱——按鈕碼條件屬用途 (viii) 之改點，落在本標記所涵蓋之兩屬性值內、無可載之基線原行，故補述於此、不另立 (viii) 標記。開關於清單取數在途期間停用：兩模式共用同一份清單，取數在途時切換＝遲到之他源回應可覆蓋本模式清單（前代同形；007 刀改正、入 spec 刻意分岔登記）；停用繫結清單之載入中——upstream 之載入中為布林、不計請求數，同模式重疊取數（載入中再按重新整理或換頁）時首支落定即解停用、其後切換仍可能被遲到之同模式回應覆蓋（已知態）。兩個新屬性排在事件之後緊鄰閉合處——屬性之間放不了標記、須與本改行同塊才受本標記涵蓋；原行: /> -->
         <TableHeaderOperation
           v-model:columns="columnChecks"
           :disabled-delete="checkedRowKeys.length === 0"
@@ -357,13 +370,13 @@ init();
           @add="handleAdd"
           @delete="handleBatchDelete"
           @refresh="getData"
-          :show-add="!showDeleted"
-          :show-delete="!showDeleted"
+          :show-add="!showDeleted && hasAuth('menu:add')"
+          :show-delete="!showDeleted && hasAuth('menu:delete')"
         >
           <template #prefix>
             <div class="flex-center gap-8px">
               <span class="text-14px">{{ $t('page.manage.menu.showDeleted') }}</span>
-              <NSwitch v-model:value="showDeleted" />
+              <NSwitch v-model:value="showDeleted" :disabled="loading" />
             </div>
           </template>
         </TableHeaderOperation>

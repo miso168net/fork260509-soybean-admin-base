@@ -5,6 +5,9 @@ import { enableStatusRecord } from '@/constants/business';
 // [rev6-inline BASE-WEB-MANAGE-PAGE-WIRING(ii) 005-role-menu-crud] 清單、單刪、批刪改打角色管理 wrapper（直接路徑、不經 barrel；barrel 的同名 demo 版一行不動）；原行: import { fetchGetRoleList } from '@/service/api';
 import { fetchBatchDeleteRole, fetchDeleteRole, fetchGetRoleList } from '@/service/api/rev6-role-admin';
 import { useAppStore } from '@/store/modules/app';
+// [rev6-inline BASE-WEB-MANAGE-PAGE-WIRING(viii)+ 007-user-password-admin START] 按鈕碼顯隱的判準來源
+import { useAuth } from '@/hooks/business/auth';
+// [rev6-inline BASE-WEB-MANAGE-PAGE-WIRING(viii)+ 007-user-password-admin END]
 import { defaultTransform, useNaivePaginatedTable, useTableOperate } from '@/hooks/common/table';
 import { $t } from '@/locales';
 import RoleOperateDrawer from './modules/role-operate-drawer.vue';
@@ -20,6 +23,11 @@ const searchParams = ref<Api.RoleAdmin.RoleListQuery>({
   roleCode: null,
   status: null
 });
+
+// [rev6-inline BASE-WEB-MANAGE-PAGE-WIRING(viii)+ 007-user-password-admin START] 表頭新增與批刪、列上編輯與刪除逐鈕依按鈕碼顯隱；
+// 按鈕碼只決定看得見什麼，端點授權仍由後端判定（鈕可見而端點未授者，按下去得到的是授權拒絕）
+const { hasAuth } = useAuth();
+// [rev6-inline BASE-WEB-MANAGE-PAGE-WIRING(viii)+ 007-user-password-admin END]
 
 const { columns, columnChecks, data, loading, getData, getDataByPage, mobilePagination } = useNaivePaginatedTable({
   api: () => fetchGetRoleList(searchParams.value),
@@ -90,23 +98,30 @@ const { columns, columnChecks, data, loading, getData, getDataByPage, mobilePagi
       title: $t('common.operate'),
       align: 'center',
       width: 130,
-      render: row => (
-        <div class="flex-center gap-8px">
-          <NButton type="primary" ghost size="small" onClick={() => edit(row.id)}>
-            {$t('common.edit')}
-          </NButton>
-          <NPopconfirm onPositiveClick={() => handleDelete(row.id)}>
-            {{
-              default: () => $t('common.confirmDelete'),
-              trigger: () => (
-                <NButton type="error" ghost size="small">
-                  {$t('common.delete')}
-                </NButton>
-              )
-            }}
-          </NPopconfirm>
-        </div>
-      )
+      // [rev6-inline BASE-WEB-MANAGE-PAGE-WIRING(viii) 007-user-password-admin] 改區塊形：編輯、刪除兩鈕各依按鈕碼（role:edit／role:delete）顯隱——JSX 子節點內放不了標記，改區塊形令顯隱條件與兩鈕同處本標記涵蓋之變更塊；原行: render: row => (
+      render: row => {
+        return (
+          <div class="flex-center gap-8px">
+            {hasAuth('role:edit') && (
+              <NButton type="primary" ghost size="small" onClick={() => edit(row.id)}>
+                {$t('common.edit')}
+              </NButton>
+            )}
+            {hasAuth('role:delete') && (
+              <NPopconfirm onPositiveClick={() => handleDelete(row.id)}>
+                {{
+                  default: () => $t('common.confirmDelete'),
+                  trigger: () => (
+                    <NButton type="error" ghost size="small">
+                      {$t('common.delete')}
+                    </NButton>
+                  )
+                }}
+              </NPopconfirm>
+            )}
+          </div>
+        );
+      }
     }
   ]
 });
@@ -157,6 +172,7 @@ function edit(id: number) {
     <RoleSearch v-model:model="searchParams" @search="getDataByPage" />
     <NCard :title="$t('page.manage.role.title')" :bordered="false" size="small" class="card-wrapper sm:flex-1-hidden">
       <template #header-extra>
+        <!-- [rev6-inline BASE-WEB-MANAGE-PAGE-WIRING(viii) 007-user-password-admin] 加兩布林 prop：新增與批刪依其按鈕碼（role:add／role:delete）顯隱（預設插槽不覆寫——覆寫內容不受兩 prop 控制，覆寫成空時元件還會改渲染自帶的備援鈕）。兩個新屬性排在事件之後；基線獨行之自閉合符改為空對標籤之閉合（無子節點、渲染同自閉合）——格式化工具令自閉合符恆獨行、新屬性與之同行之形不為其所容，屬性之間又放不了標記，故以此行為真被替換行、新屬性與本改行同塊才受本標記涵蓋；原行: /> -->
         <TableHeaderOperation
           v-model:columns="columnChecks"
           :disabled-delete="checkedRowKeys.length === 0"
@@ -164,7 +180,9 @@ function edit(id: number) {
           @add="handleAdd"
           @delete="handleBatchDelete"
           @refresh="getData"
-        />
+          :show-add="hasAuth('role:add')"
+          :show-delete="hasAuth('role:delete')"
+        ></TableHeaderOperation>
       </template>
       <!-- [rev6-inline BASE-WEB-MANAGE-PAGE-WIRING(ii) 005-role-menu-crud] 下方 :scroll-x 隨新增備註欄（minWidth 120）改 822＝各欄 width／minWidth 之和；標記無法置於標籤屬性之間、故緊鄰本元件之上；原行: :scroll-x="702" -->
       <NDataTable
