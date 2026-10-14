@@ -6,12 +6,13 @@
 //   先過一次；政策讀不到即只驗必填。過了規則仍由後端依當下政策裁決——位元組上界、設密冷卻、本人改道等前端不判之拒因由後端回、
 //   共用攔截層轉譯出提示，本檔只判成敗。投影快取於 SPA 存活期不重讀（見 pwd-policy.ts）：其間政策改嚴＝後端拒收、改寬＝本欄仍照
 //   舊值擋下，重新整理頁面即取新值（已知態）。
-// · 送出鈕空值停用；送出失敗時浮層留著、輸入值不清（就地改一個再送）；成功即關浮層並通知掛載端刷新當前頁
+// · 送出鈕空值停用；送出期間載入中（按鈕於載入中不觸發點擊）、處理器另有重入守——連點只送出一次（第二發會撞設密冷卻、
+//   成功提示之後多跳一則錯誤）；送出失敗時浮層留著、輸入值不清（就地改一個再送）；成功即關浮層並通知掛載端刷新當前頁
 //   （重設會改該列之更新時間與更新者）。
 // · 關閉即清明文：清空掛在可見性之 falsy 邊——標題列之叉、遮罩點擊、ESC、取消鈕與成功關閉都只改可見性、皆經此。
 // · 接受產密浮層之帶入：掛載端於開浮層前寫入輸入值，帶入後仍須按確定才送出（改掉他人密碼不可逆、多一次確認）。
 // 出處：rev5:src/views/manage/user/index.vue 內嵌之重設密碼浮層（版式、送出與失敗處置、關閉即清）。rev6 差異：抽成本檔
-// （使用者頁 index 之修改面因而縮小）；輸入欄改掛即時規則（rev5 只擋空值）。
+// （使用者頁 index 之修改面因而縮小）；輸入欄改掛即時規則（rev5 只擋空值）；確定鈕送出中載入中（rev5 送出期間仍可再按）。
 import { computed, ref, watch } from 'vue';
 // 包裝以直接路徑匯入：WRAPPER 軌道新檔不入 `service/api/index.ts` 之 barrel
 import { fetchResetUserPassword } from '@/service/api/rev6-user-admin';
@@ -61,6 +62,9 @@ const rules = computed(() => ({
 
 const title = computed(() => $t('page.manage.user.resetPwdTitle', { userName: target.value?.userName ?? '' }));
 
+/** 送出中：處理器起手置真、一切出口（成功、失敗、驗證不過之拋出）由 finally 解除；確定鈕據之載入中、處理器據之重入守 */
+const submitting = ref(false);
+
 watch(visible, opened => {
   if (opened) {
     target.value = props.rowData ? { id: props.rowData.id, userName: props.rowData.userName } : null;
@@ -75,21 +79,27 @@ watch(visible, opened => {
 async function handleSubmit() {
   const locked = target.value;
 
-  if (!locked) {
+  if (!locked || submitting.value) {
     return;
   }
 
-  await validate();
+  submitting.value = true;
 
-  const { error } = await fetchResetUserPassword({ id: locked.id, password: password.value });
+  try {
+    await validate();
 
-  if (error) {
-    return;
+    const { error } = await fetchResetUserPassword({ id: locked.id, password: password.value });
+
+    if (error) {
+      return;
+    }
+
+    window.$message?.success($t('page.manage.user.resetPwdSuccess'));
+    visible.value = false;
+    emit('submitted');
+  } finally {
+    submitting.value = false;
   }
-
-  window.$message?.success($t('page.manage.user.resetPwdSuccess'));
-  visible.value = false;
-  emit('submitted');
 }
 </script>
 
@@ -108,7 +118,7 @@ async function handleSubmit() {
     <template #footer>
       <NSpace justify="end">
         <NButton @click="visible = false">{{ $t('common.cancel') }}</NButton>
-        <NButton type="primary" :disabled="password === ''" @click="handleSubmit">
+        <NButton type="primary" :disabled="password === ''" :loading="submitting" @click="handleSubmit">
           {{ $t('common.confirm') }}
         </NButton>
       </NSpace>

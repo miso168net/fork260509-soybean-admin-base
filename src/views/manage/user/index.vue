@@ -328,6 +328,7 @@ function edit(id: number) {
 
 // [rev6-inline BASE-WEB-MANAGE-PAGE-WIRING(v)+ 007-user-password-admin START] 列操作下拉：選項集、所選動作之分派，與踢除下線、重設密碼、
 // 隨機密碼、解鎖登入四項動作之浮層狀態與送出（重設密碼之送出住重設浮層）。拒因提示一律由共用攔截層轉譯、本頁只看成敗。
+// 踢除與解鎖兩顆確認對話框送出期間載入中（確定鈕停用並轉圈）、處理器另有重入守——連點只送出一次（前代送出期間仍可再按＝連點即重送）。
 /**
  * 列操作下拉之動作鍵：選項側與分派側共用此字面聯合型——選項鍵寫錯即不可指派、分派側比對寫錯即成無交集比較，皆當場 typecheck 紅
  * （本 repo 前端無單元測試框架；兩邊各寫一遍字面而互無型別關聯時，寫錯只會變成點了沒有任何反應）。
@@ -376,11 +377,21 @@ const resetPwdVisible = ref(false);
 const resetPwdValue = ref('');
 const pwdGenVisible = ref(false);
 const unlockVisible = ref(false);
+/** 兩顆確認對話框之送出中：處理器起手置真、一切出口由 finally 解除；對話框據之停用並轉圈確定鈕、處理器據之重入守 */
+const kickSubmitting = ref(false);
+const unlockSubmitting = ref(false);
+
+/**
+ * 選取序號：列操作每被選取一次即遞增。「隨機密碼」先等政策讀取、再開產密浮層——等候期間若已改選他項或他列，await 之後序號已變、
+ * 即不開（不然產密浮層會在新選取之浮層之後才彈出；前代同形）
+ */
+let operateSelectSeq = 0;
 
 /** 密碼政策投影（產密浮層之構造界；取得與快取皆在共用 hook，本頁只讀） */
 const { policy: pwdPolicy, ensureLoaded: ensurePwdPolicy } = usePwdPolicy();
 
 function handleOperateSelect(key: OperateKey, row: Api.UserAdmin.UserRecord) {
+  operateSelectSeq += 1;
   operateTarget.value = row;
 
   if (key === 'kick') {
@@ -395,8 +406,15 @@ function handleOperateSelect(key: OperateKey, row: Api.UserAdmin.UserRecord) {
 }
 
 async function openPwdGen() {
+  const seq = operateSelectSeq;
+
   // 已有快取即零請求；讀失敗維持 null＝產密浮層以其後備界產生、不擋產密
   await ensurePwdPolicy();
+
+  // 等候期間已改選（見 operateSelectSeq）即不開
+  if (seq !== operateSelectSeq) {
+    return;
+  }
 
   pwdGenVisible.value = true;
 }
@@ -411,38 +429,50 @@ function handlePwdGenApply(password: string) {
 async function handleUnlockLogin() {
   const target = operateTarget.value;
 
-  if (!target) {
+  if (!target || unlockSubmitting.value) {
     return;
   }
 
-  const { error } = await fetchUnlockLogin({ dimension: 'user', userName: target.userName });
+  unlockSubmitting.value = true;
 
-  unlockVisible.value = false;
+  try {
+    const { error } = await fetchUnlockLogin({ dimension: 'user', userName: target.userName });
 
-  if (error) {
-    return;
+    unlockVisible.value = false;
+
+    if (error) {
+      return;
+    }
+
+    window.$message?.success($t('page.manage.user.unlockLoginSuccess'));
+  } finally {
+    unlockSubmitting.value = false;
   }
-
-  window.$message?.success($t('page.manage.user.unlockLoginSuccess'));
 }
 
 async function handleKick() {
   const target = operateTarget.value;
 
-  if (!target) {
+  if (!target || kickSubmitting.value) {
     return;
   }
 
-  // 踢除只撤下該帳號的全部有效票、不改列資料，故不刷新清單；成功提示不依撤下之票數改寫
-  const { error } = await fetchKickUser(target.id);
+  kickSubmitting.value = true;
 
-  kickVisible.value = false;
+  try {
+    // 踢除只撤下該帳號的全部有效票、不改列資料，故不刷新清單；成功提示不依撤下之票數改寫
+    const { error } = await fetchKickUser(target.id);
 
-  if (error) {
-    return;
+    kickVisible.value = false;
+
+    if (error) {
+      return;
+    }
+
+    window.$message?.success($t('page.manage.user.kickSuccess'));
+  } finally {
+    kickSubmitting.value = false;
   }
-
-  window.$message?.success($t('page.manage.user.kickSuccess'));
 }
 // [rev6-inline BASE-WEB-MANAGE-PAGE-WIRING(v)+ 007-user-password-admin END]
 </script>
@@ -453,7 +483,7 @@ async function handleKick() {
     <UserSearch v-show="!showDeleted" v-model:model="searchParams" @search="getDataByPage" />
     <NCard :title="$t('page.manage.user.title')" :bordered="false" size="small" class="card-wrapper sm:flex-1-hidden">
       <template #header-extra>
-        <!-- [rev6-inline BASE-WEB-MANAGE-PAGE-WIRING(v) 007-user-password-admin] 自閉合改成對標籤以承載 prefix 插槽的「顯示已刪除」開關（開關不掛按鈕碼）；並加兩布林 prop：新增與批刪依其按鈕碼顯隱、已刪模式皆不顯（預設插槽不覆寫——覆寫內容不受兩 prop 控制，覆寫成空時元件還會改渲染自帶的備援鈕）。兩個新屬性排在事件之後緊鄰閉合處——屬性之間放不了標記、須與本改行同塊才受本標記涵蓋；原行: /> -->
+        <!-- [rev6-inline BASE-WEB-MANAGE-PAGE-WIRING(v) 007-user-password-admin] 自閉合改成對標籤以承載 prefix 插槽的「顯示已刪除」開關（開關不掛按鈕碼）；並加兩布林 prop：新增與批刪依其按鈕碼顯隱、已刪模式皆不顯（預設插槽不覆寫——覆寫內容不受兩 prop 控制，覆寫成空時元件還會改渲染自帶的備援鈕）。開關於清單取數在途期間停用：兩模式共用同一份清單，取數在途時切換＝遲到之他源回應可覆蓋本模式清單（前代同形；007 刀改正、入 spec 刻意分岔登記）；停用繫結清單之載入中——upstream 之載入中為布林、不計請求數，同模式重疊取數（載入中再按重新整理或換頁）時首支落定即解停用、其後切換仍可能被遲到之同模式回應覆蓋（已知態）。兩個新屬性排在事件之後緊鄰閉合處——屬性之間放不了標記、須與本改行同塊才受本標記涵蓋；原行: /> -->
         <TableHeaderOperation
           v-model:columns="columnChecks"
           :disabled-delete="checkedRowKeys.length === 0"
@@ -467,7 +497,7 @@ async function handleKick() {
           <template #prefix>
             <div class="flex-center gap-8px">
               <span class="text-14px">{{ $t('page.manage.user.showDeleted') }}</span>
-              <NSwitch v-model:value="showDeleted" />
+              <NSwitch v-model:value="showDeleted" :disabled="loading" />
             </div>
           </template>
         </TableHeaderOperation>
@@ -501,6 +531,7 @@ async function handleKick() {
         :content="$t('page.manage.user.confirmKick')"
         :positive-text="$t('common.confirm')"
         :negative-text="$t('common.cancel')"
+        :loading="kickSubmitting"
         @positive-click="handleKick"
       />
       <UserResetPwdModal
@@ -523,6 +554,7 @@ async function handleKick() {
         :content="$t('page.manage.user.unlockLoginConfirm')"
         :positive-text="$t('common.confirm')"
         :negative-text="$t('common.cancel')"
+        :loading="unlockSubmitting"
         @positive-click="handleUnlockLogin"
       />
       <!-- [rev6-inline BASE-WEB-MANAGE-PAGE-WIRING(v)+ 007-user-password-admin END] -->

@@ -367,7 +367,8 @@ async function handleSubmit() {
   }
   // [rev6-inline BASE-WEB-MANAGE-PAGE-WIRING(v)+ 007-user-password-admin END]
   window.$message?.success($t('common.updateSuccess'));
-  closeDrawer();
+  // [rev6-inline BASE-WEB-MANAGE-PAGE-WIRING(v) 007-user-password-admin] 改呼叫 closeSubmittedDrawer：只結束送出當輪之抽屜——請求在途期間抽屜被關閉後重開（開抽屜序號已變）即不關此刻開著之抽屜，不然關掉的是改開之他列抽屜（前代同形）；成功提示與通知清單刷新照常（送出已生效）；原行: closeDrawer();
+  closeSubmittedDrawer();
   emit('submitted');
 }
 
@@ -379,7 +380,8 @@ watch(visible, () => {
   }
 });
 
-// [rev6-inline BASE-WEB-MANAGE-PAGE-WIRING(v)+ 007-user-password-admin START] 新增態設密欄之兩件輔助：「隨機密碼」產密入口、關閉即清明文密碼。
+// [rev6-inline BASE-WEB-MANAGE-PAGE-WIRING(v)+ 007-user-password-admin START] 新增態設密欄之兩件輔助：「隨機密碼」產密入口、關閉即清明文密碼；
+// 及開抽屜序號與確定鈕之送出中（見本塊末段）。
 // 產密入口：設密欄右側之鈕開產密浮層、「帶入」即填欄（填進的是尚未送出之新增表單、送出前本有確定鈕，不另加確認）；只有新增態開得了它
 // （編輯態不渲染設密欄）。浮層掛在表單之外（見模板）；其帳號名比對對象＝本表單正在建立之帳號名、不是登入者自己。
 const pwdGenVisible = ref(false);
@@ -388,8 +390,15 @@ const pwdGenVisible = ref(false);
 const { policy: pwdPolicy, ensureLoaded: ensurePwdPolicy } = usePwdPolicy();
 
 async function openPwdGen() {
+  const round = openRound;
+
   // 已有快取即零請求；讀失敗維持 null＝產密浮層以其後備界產生、不擋產密
   await ensurePwdPolicy();
+
+  // 等候期間抽屜已關閉或已重開（見 openRound）即不開：不然產密浮層彈在已關之抽屜外、帶入值寫進下一輪之表單（前代同形）
+  if (round !== openRound || !visible.value) {
+    return;
+  }
 
   pwdGenVisible.value = true;
 }
@@ -406,6 +415,55 @@ watch(visible, value => {
     model.value.password = '';
   }
 });
+
+// 開抽屜序號與送出中。抽屜不卸載，請求在途期間可關可重開（改開他列或新增態）：await 回來時以序號判「是否仍為同一輪」，
+// 產密入口（見 openPwdGen）與送出成功路徑（見 closeSubmittedDrawer）皆據之。
+/** 開抽屜序號：可見性由假轉真即遞增（另立一支 watch、不動上方基線那支） */
+let openRound = 0;
+
+watch(visible, value => {
+  if (value) {
+    openRound += 1;
+  }
+});
+
+/** 送出當輪之開抽屜序號：由 handleConfirm 於呼叫 handleSubmit 前記下（重入守保證同時只有一支送出在途） */
+let submitRound = 0;
+
+/**
+ * 送出中：確定鈕據之載入中（按鈕於載入中不觸發點擊）、handleConfirm 據之重入守；一切出口（成功、失敗、早退、驗證不過之拋出）
+ * 由 finally 解除
+ */
+const submitting = ref(false);
+
+/**
+ * 確定鈕之處理器：持有送出中狀態與重入守、記下送出當輪，再呼叫 handleSubmit（送出本體只改尾行之關抽屜＝見 closeSubmittedDrawer，
+ * 免改基線函式體多行）
+ */
+async function handleConfirm() {
+  if (submitting.value) {
+    return;
+  }
+
+  submitting.value = true;
+  submitRound = openRound;
+
+  try {
+    await handleSubmit();
+  } finally {
+    submitting.value = false;
+  }
+}
+
+/**
+ * 送出成功路徑之關抽屜（handleSubmit 尾）：開抽屜序號仍為送出當輪才關（在途期間只關閉而未重開者，關抽屜即無作用）；
+ * 已重開即不動此刻開著之抽屜
+ */
+function closeSubmittedDrawer() {
+  if (submitRound === openRound) {
+    closeDrawer();
+  }
+}
 // [rev6-inline BASE-WEB-MANAGE-PAGE-WIRING(v)+ 007-user-password-admin END]
 </script>
 
@@ -503,7 +561,8 @@ watch(visible, value => {
       <template #footer>
         <NSpace :size="16">
           <NButton @click="closeDrawer">{{ $t('common.cancel') }}</NButton>
-          <NButton type="primary" @click="handleSubmit">{{ $t('common.confirm') }}</NButton>
+          <!-- [rev6-inline BASE-WEB-MANAGE-PAGE-WIRING(v) 007-user-password-admin] 加 :loading——送出期間轉圈且不觸發點擊（防連點重送）；點擊改走 handleConfirm（持有送出中狀態與重入守、記下送出當輪之開抽屜序號，再呼叫 handleSubmit）；原行: <NButton type="primary" @click="handleSubmit">{{ $t('common.confirm') }}</NButton> -->
+          <NButton type="primary" :loading="submitting" @click="handleConfirm">{{ $t('common.confirm') }}</NButton>
         </NSpace>
       </template>
     </NDrawerContent>
