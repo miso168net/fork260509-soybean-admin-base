@@ -8,11 +8,13 @@
 //   舊值擋下，重新整理頁面即取新值（已知態）。
 // · 送出鈕空值停用；送出期間載入中（按鈕於載入中不觸發點擊）、處理器另有重入守——連點只送出一次（第二發會撞設密冷卻、
 //   成功提示之後多跳一則錯誤）；送出失敗時浮層留著、輸入值不清（就地改一個再送）；成功即關浮層並通知掛載端刷新當前頁
-//   （重設會改該列之更新時間與更新者）。
+//   （重設會改該列之更新時間與更新者）——送出在途期間已關閉後重開（改開他列）者，回應落定時不關此刻開著之浮層（以開啟序號判；
+//   成功提示與通知照常）。
 // · 關閉即清明文：清空掛在可見性之 falsy 邊——標題列之叉、遮罩點擊、ESC、取消鈕與成功關閉都只改可見性、皆經此。
 // · 接受產密浮層之帶入：掛載端於開浮層前寫入輸入值，帶入後仍須按確定才送出（改掉他人密碼不可逆、多一次確認）。
 // 出處：rev5:src/views/manage/user/index.vue 內嵌之重設密碼浮層（版式、送出與失敗處置、關閉即清）。rev6 差異：抽成本檔
-// （使用者頁 index 之修改面因而縮小）；輸入欄改掛即時規則（rev5 只擋空值）；確定鈕送出中載入中（rev5 送出期間仍可再按）。
+// （使用者頁 index 之修改面因而縮小）；輸入欄改掛即時規則（rev5 只擋空值）；確定鈕送出中載入中（rev5 送出期間仍可再按）；
+// 送出在途關閉後重開之浮層不被舊回應關掉（rev5 會）。
 import { computed, ref, watch } from 'vue';
 // 包裝以直接路徑匯入：WRAPPER 軌道新檔不入 `service/api/index.ts` 之 barrel
 import { fetchResetUserPassword } from '@/service/api/rev6-user-admin';
@@ -65,8 +67,15 @@ const title = computed(() => $t('page.manage.user.resetPwdTitle', { userName: ta
 /** 送出中：處理器起手置真、一切出口（成功、失敗、驗證不過之拋出）由 finally 解除；確定鈕據之載入中、處理器據之重入守 */
 const submitting = ref(false);
 
+/**
+ * 開啟序號：可見性由假轉真即遞增。送出在途期間浮層可關閉後重開（改開他列）：回應落定時序號已變＝非送出當輪，成功路徑即不關此刻
+ * 開著之浮層（不然關掉的是改開之他列浮層、並清其輸入）
+ */
+let openRound = 0;
+
 watch(visible, opened => {
   if (opened) {
+    openRound += 1;
     target.value = props.rowData ? { id: props.rowData.id, userName: props.rowData.userName } : null;
     restoreValidation();
     // 政策已有快取即零請求；讀失敗維持 null＝規則只剩必填、不擋送出
@@ -78,6 +87,7 @@ watch(visible, opened => {
 
 async function handleSubmit() {
   const locked = target.value;
+  const round = openRound;
 
   if (!locked || submitting.value) {
     return;
@@ -95,7 +105,12 @@ async function handleSubmit() {
     }
 
     window.$message?.success($t('page.manage.user.resetPwdSuccess'));
-    visible.value = false;
+
+    // 送出當輪（開啟序號未變）才關；已關閉後重開者不動此刻開著之浮層
+    if (round === openRound) {
+      visible.value = false;
+    }
+
     emit('submitted');
   } finally {
     submitting.value = false;

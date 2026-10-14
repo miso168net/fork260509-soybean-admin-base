@@ -328,7 +328,8 @@ function edit(id: number) {
 
 // [rev6-inline BASE-WEB-MANAGE-PAGE-WIRING(v)+ 007-user-password-admin START] 列操作下拉：選項集、所選動作之分派，與踢除下線、重設密碼、
 // 隨機密碼、解鎖登入四項動作之浮層狀態與送出（重設密碼之送出住重設浮層）。拒因提示一律由共用攔截層轉譯、本頁只看成敗。
-// 踢除與解鎖兩顆確認對話框送出期間載入中（確定鈕停用並轉圈）、處理器另有重入守——連點只送出一次（前代送出期間仍可再按＝連點即重送）。
+// 踢除與解鎖兩顆確認對話框送出期間載入中（確定鈕停用並轉圈）、處理器另有重入守——連點只送出一次（前代送出期間仍可再按＝連點即重送）；
+// 送出在途期間已關閉後重開者，回應落定時不關此刻開著之對話框（以選取序號判；前代同形）。
 /**
  * 列操作下拉之動作鍵：選項側與分派側共用此字面聯合型——選項鍵寫錯即不可指派、分派側比對寫錯即成無交集比較，皆當場 typecheck 紅
  * （本 repo 前端無單元測試框架；兩邊各寫一遍字面而互無型別關聯時，寫錯只會變成點了沒有任何反應）。
@@ -383,7 +384,8 @@ const unlockSubmitting = ref(false);
 
 /**
  * 選取序號：列操作每被選取一次即遞增。「隨機密碼」先等政策讀取、再開產密浮層——等候期間若已改選他項或他列，await 之後序號已變、
- * 即不開（不然產密浮層會在新選取之浮層之後才彈出；前代同形）
+ * 即不開（不然產密浮層會在新選取之浮層之後才彈出；前代同形）。踢除與解鎖登入兩對話框之送出亦據之判回應落定時是否仍為送出當輪：
+ * 對話框經選取開啟、開著時遮罩擋住表格，序號已變＝送出在途期間已關閉後重開（同項他列或他項）
  */
 let operateSelectSeq = 0;
 
@@ -428,6 +430,7 @@ function handlePwdGenApply(password: string) {
 /** 解鎖登入（帳號維）：帳號名原樣送出、零修剪；維度顯式帶。只解除登入節流鎖、不改列資料，故不刷新清單 */
 async function handleUnlockLogin() {
   const target = operateTarget.value;
+  const seq = operateSelectSeq;
 
   if (!target || unlockSubmitting.value) {
     return;
@@ -437,14 +440,19 @@ async function handleUnlockLogin() {
 
   try {
     const { error } = await fetchUnlockLogin({ dimension: 'user', userName: target.userName });
+    // 對話框仍為送出當輪（選取序號未變）才關；已關閉後重開者不動此刻開著之對話框
+    const sameRound = seq === operateSelectSeq;
 
-    unlockVisible.value = false;
-
-    if (error) {
-      return;
+    if (sameRound) {
+      unlockVisible.value = false;
     }
 
-    window.$message?.success($t('page.manage.user.unlockLoginSuccess'));
+    if (!error) {
+      window.$message?.success($t('page.manage.user.unlockLoginSuccess'));
+    }
+
+    // 回 false 擋下對話框自身於回呼落定後之關閉（dialog preset 之確定回呼：落定且值非 false 即關）
+    return sameRound;
   } finally {
     unlockSubmitting.value = false;
   }
@@ -452,6 +460,7 @@ async function handleUnlockLogin() {
 
 async function handleKick() {
   const target = operateTarget.value;
+  const seq = operateSelectSeq;
 
   if (!target || kickSubmitting.value) {
     return;
@@ -462,14 +471,19 @@ async function handleKick() {
   try {
     // 踢除只撤下該帳號的全部有效票、不改列資料，故不刷新清單；成功提示不依撤下之票數改寫
     const { error } = await fetchKickUser(target.id);
+    // 對話框仍為送出當輪（選取序號未變）才關；已關閉後重開者不動此刻開著之對話框
+    const sameRound = seq === operateSelectSeq;
 
-    kickVisible.value = false;
-
-    if (error) {
-      return;
+    if (sameRound) {
+      kickVisible.value = false;
     }
 
-    window.$message?.success($t('page.manage.user.kickSuccess'));
+    if (!error) {
+      window.$message?.success($t('page.manage.user.kickSuccess'));
+    }
+
+    // 回 false 擋下對話框自身於回呼落定後之關閉（dialog preset 之確定回呼：落定且值非 false 即關）
+    return sameRound;
   } finally {
     kickSubmitting.value = false;
   }
