@@ -513,6 +513,21 @@ const local: App.I18n.Schema = {
       },
       creativity: 'Creativity'
     },
+    // [rev6-inline BASE-WEB-MANAGE-PAGE-WIRING(vi)+ 007-user-password-admin START] 個人中心「修改密碼」卡之文案（`page:` 樹新 top-level；卡標題、三欄標籤、送出鈕、
+    // 成功提示與副作用說明）。鍵名與譯文承 rev5:src/locales/langs/en-us.ts 之同名子樹；頁標題不另設鍵（沿用既有 `route['user-center']`）。
+    // 另兩語同插、型節住 typings/app.d.ts；插在 `home` 與 `function` 之間：前後皆為未改的基線行
+    userCenter: {
+      password: {
+        title: 'Change Password',
+        oldPassword: 'Old Password',
+        newPassword: 'New Password',
+        confirmPassword: 'Confirm New Password',
+        submit: 'Save',
+        success: 'Password changed; sessions on your other devices have been ended',
+        hint: 'Password rules come from the system settings and are enforced by the server. After a successful change this device stays signed in and your other devices must sign in again.'
+      }
+    },
+    // [rev6-inline BASE-WEB-MANAGE-PAGE-WIRING(vi)+ 007-user-password-admin END]
     function: {
       tab: {
         tabOperate: {

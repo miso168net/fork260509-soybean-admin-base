@@ -664,6 +664,20 @@ declare namespace App {
           };
           creativity: string;
         };
+        // [rev6-inline BASE-WEB-MANAGE-PAGE-WIRING(vi)+ 007-user-password-admin START] `page.userCenter` 型節（個人中心「修改密碼」卡之文案；逐鍵鏡像三語 locale 同名子樹）。
+        // 不設頁標題鍵：個人中心頁之標題沿用既有路由標題鍵 `route['user-center']`；插在 `home` 與 `function` 之間：前後皆為未改的基線行
+        userCenter: {
+          password: {
+            title: string;
+            oldPassword: string;
+            newPassword: string;
+            confirmPassword: string;
+            submit: string;
+            success: string;
+            hint: string;
+          };
+        };
+        // [rev6-inline BASE-WEB-MANAGE-PAGE-WIRING(vi)+ 007-user-password-admin END]
         function: {
           tab: {
             tabOperate: {

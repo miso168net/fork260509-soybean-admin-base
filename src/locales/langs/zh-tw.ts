@@ -495,6 +495,17 @@ const local: App.I18n.Schema = {
       },
       creativity: '創意'
     },
+    userCenter: {
+      password: {
+        title: '修改密碼',
+        oldPassword: '舊密碼',
+        newPassword: '新密碼',
+        confirmPassword: '確認新密碼',
+        submit: '儲存',
+        success: '密碼已修改，其他裝置的登入已失效',
+        hint: '密碼規則由系統設定決定、以伺服器端驗證為準；修改成功後本裝置保持登入，其他裝置需重新登入。'
+      }
+    },
     function: {
       tab: {
         tabOperate: {

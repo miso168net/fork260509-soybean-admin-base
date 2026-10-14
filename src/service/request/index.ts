@@ -10,12 +10,30 @@ import type { RequestInstanceState } from './type';
 const isHttpProxy = import.meta.env.DEV && import.meta.env.VITE_HTTP_PROXY === 'Y';
 const { baseURL, otherBaseURL } = getServiceBaseURL(import.meta.env, isHttpProxy);
 
-// [rev6-inline BASE-WEB-I18N-WIRING(i)+ 003-auth-session START] 後端 msg → 人話（鍵表權威＝後端 `MSG_KEYS`、各語譯文權威＝三檔 locale 各自的 backend 子樹＝ADR-00039；首批鍵的史料出處＝`specs/003-auth-session/contracts/msg-keys.md`）：
+// [rev6-inline BASE-WEB-I18N-WIRING(i)+ 003-auth-session START] 後端 msg → 人話（鍵表權威＝後端 `MSG_KEYS`、各語譯文權威＝三檔 locale 各自的 backend 子樹＝ADR-00084；首批鍵的史料出處＝`specs/003-auth-session/contracts/msg-keys.md`）：
 // 後端信封的 msg 載的是穩定 i18n key（語言無關、不在地化；憲法 §I.3），顯示前經 `$t(`backend.${msg}`, msg)` 譯成使用者語言。
 // 第二參＝原文 fallback：鍵查不到時 vue-i18n 回後端原文、不回空字串也不回裸 `backend.*` 鍵（graceful、不吞錯＝§III.2 (i) 收窄條件）。
-// rev6 錯誤信封 `data` 恆 null、沒有明細通道 ⇒ 只此一支 helper（rev5:request/index.ts 的明細插值鏈不帶回）。
-function translateBackendMsg(msg: string) {
-  return $t(`backend.${msg}` as App.I18n.I18nKey, msg);
+// 錯誤明細通道只開兩鍵（ADR-00076；其餘錯誤之信封 `data` 為 null、本 helper 也不讀）：`biz.user.passwordPolicy` 之 `data.violations`
+// 逐碼經 `page.passwordPolicy.violation.<碼>` 譯成人話（查無譯文＝顯示碼字面）、以 `page.passwordPolicy.listSeparator` 串成 `{violations}`；
+// `biz.user.pwdSetTooFrequent` 之 `data.remainingSeconds` 原值插入 `{remainingSeconds}`；兩鍵皆走 `$t(key, named, msg)` 三參、原文 fallback 照舊。
+// data 形不符（非物件、`violations` 非陣列、`remainingSeconds` 非數值）＝不拋錯、退純 key。仍只此一支 helper、只認這兩鍵——rev5:request/index.ts
+// 之泛用形（凡 data 為物件即逐欄插值、陣列值另查登記表）不帶回；兩鍵字面即 msg-key-gate 斷言 3 名冊所登記之消費點。
+// 只有 onError 業務碼分支之 toast 鏈傳 data；`7777` 對話框與 HTTP 層錯誤鏈只傳 msg（兩鍵只以業務碼 `2222` 下發）。
+function translateBackendMsg(msg: string, detail?: unknown) {
+  const key = `backend.${msg}` as App.I18n.I18nKey;
+  const fields =
+    typeof detail === 'object' && detail !== null && !Array.isArray(detail) ? (detail as Record<string, unknown>) : {};
+  if (msg === 'biz.user.passwordPolicy' && Array.isArray(fields.violations)) {
+    // 鍵路徑以 wire 型之違規碼聯集組出＝受 `$t` 鍵型檢查；執行期之碼若在聯集外＝查無譯文、由第二參回碼字面
+    const violations = (fields.violations as Api.UserCenter.PasswordViolationCode[])
+      .map(code => $t(`page.passwordPolicy.violation.${code}`, String(code)))
+      .join($t('page.passwordPolicy.listSeparator'));
+    return $t(key, { violations }, msg);
+  }
+  if (msg === 'biz.user.pwdSetTooFrequent' && typeof fields.remainingSeconds === 'number') {
+    return $t(key, { remainingSeconds: fields.remainingSeconds }, msg);
+  }
+  return $t(key, msg);
 }
 // [rev6-inline BASE-WEB-I18N-WIRING(i)+ 003-auth-session END]
 
@@ -116,9 +134,9 @@ export const request = createFlatRequest(
 
       // get backend error message and code
       if (error.code === BACKEND_ERROR_CODE) {
-        // [rev6-inline BASE-WEB-I18N-WIRING(i) 003-auth-session] toast 鏈：信封帶 msg 才進轉譯、否則沿用 axios 訊息（查不到鍵的 fallback 在 helper 內）；原行: message = error.response?.data?.msg || message;
+        // [rev6-inline BASE-WEB-I18N-WIRING(i) 003-auth-session] toast 鏈：信封帶 msg 才進轉譯（信封 `data` 一併交 helper、只明細白名單兩鍵讀）、否則沿用 axios 訊息（查不到鍵的 fallback 在 helper 內）；原行: message = error.response?.data?.msg || message;
         const backendMsg = error.response?.data?.msg;
-        message = backendMsg ? translateBackendMsg(backendMsg) : message;
+        message = backendMsg ? translateBackendMsg(backendMsg, error.response?.data?.data) : message;
         backendErrorCode = String(error.response?.data?.code || '');
       }
 

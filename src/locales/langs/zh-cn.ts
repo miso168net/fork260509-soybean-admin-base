@@ -502,6 +502,21 @@ const local: App.I18n.Schema = {
       },
       creativity: '创意'
     },
+    // [rev6-inline BASE-WEB-MANAGE-PAGE-WIRING(vi)+ 007-user-password-admin START] 個人中心「修改密碼」卡之文案（`page:` 樹新 top-level；卡標題、三欄標籤、送出鈕、
+    // 成功提示與副作用說明）。鍵名與譯文承 rev5:src/locales/langs/zh-cn.ts 之同名子樹；頁標題不另設鍵（沿用既有 `route['user-center']`）。
+    // 另兩語同插、型節住 typings/app.d.ts；插在 `home` 與 `function` 之間：前後皆為未改的基線行
+    userCenter: {
+      password: {
+        title: '修改密码',
+        oldPassword: '旧密码',
+        newPassword: '新密码',
+        confirmPassword: '确认新密码',
+        submit: '保存',
+        success: '密码已修改，其他设备的登录已失效',
+        hint: '密码规则由系统设置决定、以服务端校验为准；修改成功后本设备保持登录，其他设备需重新登录。'
+      }
+    },
+    // [rev6-inline BASE-WEB-MANAGE-PAGE-WIRING(vi)+ 007-user-password-admin END]
     function: {
       tab: {
         tabOperate: {

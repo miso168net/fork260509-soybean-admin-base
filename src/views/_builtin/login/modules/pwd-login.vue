@@ -31,15 +31,22 @@ const model: FormModel = reactive({
 
 const rules = computed<Record<keyof FormModel, App.Global.FormRule[]>>(() => {
   // inside computed to make locale reactive, if not apply i18n, you can define it without computed
-  const { formRules } = useFormRules();
+  // 帳號與密碼兩欄只驗必填、格式一律交後端判（spec FR-050）。上游兩欄另掛 `src/constants/reg.ts` 之正則：`REG_USER_NAME`＝4～16 字、
+  // 限 U+4E00～U+9FA5 之漢字與英數、底線、連字號；`REG_PWD`＝6～18 字英數底線。後端帳號名形制（`^[A-Za-z0-9_-]{1,64}$`）與密碼
+  // （依密碼政策、且不逾 512 位元組）皆與之不同 ⇒ 兩欄前端正則皆會擋下合法輸入（例：3 字帳號名、含特殊字元或逾 18 字之合規密碼），
+  // 管理端照政策設得進的密碼在登入頁卻送不出去。全域正則不改（另供註冊、重設密碼等表單共用）；captcha 軟區與三顆快速登入鈕不受影響。
+  // [rev6-inline BASE-WEB-LOGIN-CAPTCHA-WIRING(ii) 007-user-password-admin] 改取必填規則之建構函式；原行: const { formRules } = useFormRules();
+  const { createRequiredRule } = useFormRules();
 
   return {
-    userName: formRules.userName,
-    password: formRules.pwd
+    // [rev6-inline BASE-WEB-LOGIN-CAPTCHA-WIRING(ii) 007-user-password-admin] 帳號名只驗必填；原行: userName: formRules.userName,
+    userName: [createRequiredRule($t('form.userName.required'))],
+    // [rev6-inline BASE-WEB-LOGIN-CAPTCHA-WIRING(ii) 007-user-password-admin] 密碼只驗必填；原行: password: formRules.pwd
+    password: [createRequiredRule($t('form.pwd.required'))]
   };
 });
 
-// [rev6-inline BASE-WEB-LOGIN-CAPTCHA-WIRING+ 003-auth-session START] 軟區狀態＋取題（★(ii) formRules 放寬不在授權內、不動；rev5:pwd-login.vue 同形接線、msg key 同名）
+// [rev6-inline BASE-WEB-LOGIN-CAPTCHA-WIRING+ 003-auth-session START] 軟區狀態＋取題（帳號與密碼兩欄只驗必填之規則屬同軌道用途 (ii)、見上方 `rules`；rev5:pwd-login.vue 同形接線、msg key 同名）
 const captchaVisible = ref(false);
 const captchaId = ref('');
 const captchaCode = ref('');
