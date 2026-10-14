@@ -953,7 +953,7 @@ declare namespace App {
               userEmail: string;
               userStatus: string;
               // [rev6-inline BASE-WEB-MANAGE-PAGE-WIRING(v)+ 007-user-password-admin START] 抽屜新增欄（設密、記事）之輸入提示兩鍵的型；
-              // 插在 `userStatus` 與末項 `userRole` 之間（與兩語 locale 同位）
+              // 插在 `userStatus` 與末項 `userRole` 之間（與三語 locale 同位）
               password: string;
               userMemo: string;
               // [rev6-inline BASE-WEB-MANAGE-PAGE-WIRING(v)+ 007-user-password-admin END]

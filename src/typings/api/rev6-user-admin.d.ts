@@ -82,7 +82,7 @@ declare namespace Api {
      * - `userGender`：trim 後恰 `'1'`／`'2'` 落值、其餘＝NULL；`status`：trim 後恰 `'1'`／`'2'` 落值、其餘（含缺席）＝預設啟用。
      * - `roleIds`：期望指派之角色 id 集；缺席＝零角色；含不存在或已軟刪之 id＝整筆 `2222 biz.user.roleNotFound`。
      *
-     * 密碼只進不出：回應 `data` 恆 null，稽核與日誌皆不帶。
+     * 密碼只進不出（回應 `data` 恆 null）、稽核與日誌皆不帶；政策違規之拒因攜明細（`Api.UserCenter.PasswordPolicyDetail`）。
      */
     interface AddReq {
       userName: string;
