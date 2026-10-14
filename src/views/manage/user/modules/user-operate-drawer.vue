@@ -278,7 +278,7 @@ function closeDrawer() {
   visible.value = false;
 }
 
-// [rev6-inline BASE-WEB-MANAGE-PAGE-WIRING(v)+ 007-user-password-admin START] 更新請求體之型與可空文字欄之空值歸一。
+// [rev6-inline BASE-WEB-MANAGE-PAGE-WIRING(v)+ 007-user-password-admin START] 更新請求體之型、可空文字欄之空值歸一，與部分成功後之比對基準。
 /**
  * 更新請求體：wire 型容 `userName`（建立後不可變，出現即被拒——型別照實涵蓋 wire 可達形）；本抽屜組 body 時以 `never` 封住該欄，
  * 逐欄寫出 `userName`、或展開含該欄之物件（例：整個表單物件）即 typecheck 紅。射程外：展開不含 `userName` 之物件（例：先解構
@@ -290,6 +290,14 @@ type UpdateBody = Api.UserAdmin.UpdateReq & { userName?: never };
 function blankToNull(value: string) {
   return value === '' ? null : value;
 }
+
+/**
+ * 狀態與角色之比對基準（ADR-00091 決定 7）：平時＝開啟時回填值（列之狀態與持有角色快照）；updateUser 成功而會話政策被拒、抽屜留原地
+ * 供重試時，改為該次 updateUser 已送出之值（＝已生效值；該次未送之欄沿用當下基準）——重試時把狀態或角色改回原值即異於已生效值、照送
+ * （仍比開啟時之值，就會判為未改而不送：帳號維持已生效之改動，卻出「更新成功」）。記下時一併標上送出當輪之開抽屜序號（見 openRound），
+ * 只在同一輪取用：關閉重開即回到回填值。會話政策不在此列——被拒＝未生效，仍以開啟時之值比。
+ */
+let appliedBase: { round: number; status: string; roleIds: number[] } | null = null;
 // [rev6-inline BASE-WEB-MANAGE-PAGE-WIRING(v)+ 007-user-password-admin END]
 
 async function handleSubmit() {
@@ -303,16 +311,18 @@ async function handleSubmit() {
       return;
     }
 
-    // 狀態與角色只在改動時才帶（缺席＝不動）：開抽屜期間他處若已停用該帳號或改了其指派，未動這兩欄之送出不會拿開啟時之舊值蓋回去。
+    // 狀態與角色只在異於比對基準時才帶（缺席＝不動）：開抽屜期間他處若已停用該帳號或改了其指派，未動這兩欄之送出不會拿開啟時之舊值
+    // 蓋回去。基準見 appliedBase——本輪曾部分成功者取已生效值，否則取開啟時回填值。
     // 本人列一律不帶（見 selfFieldsLocked）；角色另須候選讀取就緒——未就緒時下拉停用、選取值只是持有角色之原樣
-    const statusChanged = !selfFieldsLocked.value && model.value.status !== row.status;
+    const base =
+      appliedBase?.round === submitRound
+        ? appliedBase
+        : { round: submitRound, status: row.status, roleIds: heldRoles.value.map(role => role.id) };
+    const statusChanged = !selfFieldsLocked.value && model.value.status !== base.status;
     const rolesChanged =
       !selfFieldsLocked.value &&
       roleOptionsState.value === 'ready' &&
-      !sameRoleIdSet(
-        heldRoles.value.map(role => role.id),
-        model.value.roleIds
-      );
+      !sameRoleIdSet(base.roleIds, model.value.roleIds);
 
     // 會話政策不在更新請求內、另打其端點；門＝超管且值有變（寫在送出面、不倚賴欄位停用）——非超管送出必被拒、沒改則不發。
     // 值與門皆在更新請求送出前、與 row 同一時點取快照：抽屜不卸載、請求在途期間可關可重開，重開即重置模型，等更新回來才讀模型＝
@@ -343,7 +353,9 @@ async function handleSubmit() {
       const { error: sessionPolicyError } = await fetchUpdateUserSessionPolicy({ id: row.id, sessionPolicy });
 
       if (sessionPolicyError) {
-        // 更新那支已生效：先讓清單刷新顯示已生效之改動，抽屜留在原地供重試會話政策；不出成功提示
+        // 更新那支已生效：先讓清單刷新顯示已生效之改動，抽屜留在原地供重試會話政策；不出成功提示。
+        // 比對基準改為本次已送出之狀態與角色（見 appliedBase）；標送出當輪——在途期間抽屜已重開者，記下的是舊輪、新一輪不取用
+        appliedBase = { round: submitRound, status: body.status ?? base.status, roleIds: body.roleIds ?? base.roleIds };
         emit('submitted');
         return;
       }
