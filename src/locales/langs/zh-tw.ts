@@ -491,7 +491,7 @@ const local: App.I18n.Schema = {
         desc2: 'Yanbowe 向 soybean-admin 回報了一個bug，多分頁列不會自動調整。',
         desc3: 'Soybean 正為 soybean-admin 的發布做充分的準備工作!',
         desc4: 'Soybean 正忙著為soybean-admin撰寫專案說明文件！',
-        desc5: 'Soybean 剛才把工作臺頁面隨手寫了一些，勉強能看了！'
+        desc5: 'Soybean 剛才把儀表板頁面隨手寫了一些，勉強能看了！'
       },
       creativity: '創意'
     },

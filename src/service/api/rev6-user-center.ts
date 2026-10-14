@@ -7,7 +7,7 @@
 import { request } from '../request';
 
 /**
- * 讀密碼政策（`GET /userCenter/getPasswordPolicy`；契約端點 1）。唯讀、零副作用；取不到時呼叫端靜默退為必填、不擋送出——後端
+ * 讀密碼政策（`GET /userCenter/getPasswordPolicy`；契約端點 1）。唯讀、零副作用；取不到時呼叫端退為只驗必填、不擋送出（不另出提示；共用請求層之統一錯誤提示照常）——後端
  * 才是唯一裁判。
  */
 export function fetchGetPasswordPolicy() {

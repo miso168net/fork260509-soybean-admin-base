@@ -15,7 +15,7 @@
 // 出處：rev5:src/views/manage/user/index.vue 內嵌之重設密碼浮層（版式、送出與失敗處置、關閉即清）。rev6 差異：抽成本檔
 // （使用者頁 index 之修改面因而縮小）；輸入欄改掛即時規則（rev5 只擋空值）；確定鈕送出中載入中（rev5 送出期間仍可再按）；
 // 送出在途關閉後重開之浮層不被舊回應關掉（rev5 會）。
-import { computed, ref, watch } from 'vue';
+import { computed, reactive, ref, watch } from 'vue';
 // 包裝以直接路徑匯入：WRAPPER 軌道新檔不入 `service/api/index.ts` 之 barrel
 import { fetchResetUserPassword } from '@/service/api/rev6-user-admin';
 import { usePwdPolicy, usePwdPolicyRules } from '@/hooks/business/pwd-policy';
@@ -55,7 +55,22 @@ const { buildPolicyRules } = usePwdPolicyRules();
 /** 開浮層當下之標的快照（見檔頭第一條） */
 const target = ref<Pick<Api.UserAdmin.UserRecord, 'id' | 'userName'> | null>(null);
 
-const model = computed(() => ({ password: password.value }));
+/**
+ * 表單繫於本檔之本地值、與 v-model 雙向同步：若表單直接讀 v-model，輸入當下（同一輸入事件內）之即時驗證讀到的是尚未經掛載端回流之
+ * 舊值、提示慢一個輸入事件；掛載端之預填（產密帶入）與關閉清空經下一個 watch 回寫本地值
+ */
+const model = reactive({ password: password.value });
+
+watch(password, value => {
+  model.password = value;
+});
+
+watch(
+  () => model.password,
+  value => {
+    password.value = value;
+  }
+);
 
 /** 帳號名以 getter 傳入：規則於驗證當下才取值，比的恆是本次鎖定之標的 */
 const rules = computed(() => ({
@@ -98,7 +113,7 @@ async function handleSubmit() {
   try {
     await validate();
 
-    const { error } = await fetchResetUserPassword({ id: locked.id, password: password.value });
+    const { error } = await fetchResetUserPassword({ id: locked.id, password: model.password });
 
     if (error) {
       return;
@@ -123,7 +138,7 @@ async function handleSubmit() {
     <NForm ref="formRef" :model="model" :rules="rules">
       <NFormItem :label="$t('page.manage.user.newPassword')" path="password">
         <NInput
-          v-model:value="password"
+          v-model:value="model.password"
           type="password"
           show-password-on="click"
           :placeholder="$t('page.manage.user.form.password')"
@@ -133,7 +148,7 @@ async function handleSubmit() {
     <template #footer>
       <NSpace justify="end">
         <NButton @click="visible = false">{{ $t('common.cancel') }}</NButton>
-        <NButton type="primary" :disabled="password === ''" :loading="submitting" @click="handleSubmit">
+        <NButton type="primary" :disabled="model.password === ''" :loading="submitting" @click="handleSubmit">
           {{ $t('common.confirm') }}
         </NButton>
       </NSpace>

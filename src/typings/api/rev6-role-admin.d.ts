@@ -13,7 +13,7 @@ declare namespace Api {
    */
   namespace RoleAdmin {
     /**
-     * 清單列（`getRoleList` 之 `records` 元素）。十一欄恆在場：可空欄 DB NULL 以顯式 `null` 上 wire、不省略欄（ADR-00080
+     * 清單列（`getRoleList` 之 `records` 元素）。十一欄恆在場：可空欄 DB NULL 以顯式 `null` 上 wire、不省略欄（ADR-00091
      * 決定 1）；軟刪欄不上 wire（角色無回收桶）。
      */
     interface RoleRecord {
@@ -63,7 +63,7 @@ declare namespace Api {
     }
 
     /**
-     * `updateRole` 請求體（部分更新；ADR-00080 決定 2～4）。除 `id` 外皆可缺席＝不動：
+     * `updateRole` 請求體（部分更新；ADR-00091 決定 2～4）。除 `id` 外皆可缺席＝不動：
      *
      * - `roleName`：出現即要非空（null 或空字串＝`2222 biz.role.nameRequired`）。
      * - 三個可空文字欄：null 或空字串＝清空落 NULL、有值＝設值。

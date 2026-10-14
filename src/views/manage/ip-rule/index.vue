@@ -44,7 +44,7 @@ const ruleTypeLabelMap: Record<Api.IpRule.RuleType, App.I18n.I18nKey> = {
 };
 
 /**
- * 清單可能帶回兩值以外的類型：寫端只產兩值，未知值只能源自直改庫，而清單端點照原樣回傳（ADR-00069 款 7）。
+ * 清單可能帶回兩值以外的類型：寫端只產兩值，未知值只能源自直改庫，而清單端點照原樣回傳（ADR-00082 款 7）。
  * 判定只看映射表的自有鍵，`toString` 這類原型鏈上的名字不算已知。
  */
 function isKnownRuleType(value: string): value is Api.IpRule.RuleType {
