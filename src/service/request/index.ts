@@ -21,17 +21,23 @@ const { baseURL, otherBaseURL } = getServiceBaseURL(import.meta.env, isHttpProxy
 // 只有 onError 業務碼分支之 toast 鏈傳 data；`7777` 對話框與 HTTP 層錯誤鏈只傳 msg（兩鍵只以業務碼 `2222` 下發）。
 function translateBackendMsg(msg: string, detail?: unknown) {
   const key = `backend.${msg}` as App.I18n.I18nKey;
-  const fields =
-    typeof detail === 'object' && detail !== null && !Array.isArray(detail) ? (detail as Record<string, unknown>) : {};
+  // 明細以兩支 wire 型收窄取值、具名參數以其鍵構造：型欄改名（經 wire 裁判連動 rust）即 typecheck 紅，不致明細靜默消失
+  const fields: Partial<Api.UserCenter.PasswordPolicyDetail & Api.UserCenter.PwdSetTooFrequentDetail> =
+    typeof detail === 'object' && detail !== null && !Array.isArray(detail) ? detail : {};
   if (msg === 'biz.user.passwordPolicy' && Array.isArray(fields.violations)) {
     // 鍵路徑以 wire 型之違規碼聯集組出＝受 `$t` 鍵型檢查；執行期之碼若在聯集外＝查無譯文、由第二參回碼字面
-    const violations = (fields.violations as Api.UserCenter.PasswordViolationCode[])
-      .map(code => $t(`page.passwordPolicy.violation.${code}`, String(code)))
-      .join($t('page.passwordPolicy.listSeparator'));
-    return $t(key, { violations }, msg);
+    const named: Record<keyof Api.UserCenter.PasswordPolicyDetail, string> = {
+      violations: fields.violations
+        .map(code => $t(`page.passwordPolicy.violation.${code}`, String(code)))
+        .join($t('page.passwordPolicy.listSeparator'))
+    };
+    return $t(key, named, msg);
   }
   if (msg === 'biz.user.pwdSetTooFrequent' && typeof fields.remainingSeconds === 'number') {
-    return $t(key, { remainingSeconds: fields.remainingSeconds }, msg);
+    const named: Record<keyof Api.UserCenter.PwdSetTooFrequentDetail, number> = {
+      remainingSeconds: fields.remainingSeconds
+    };
+    return $t(key, named, msg);
   }
   return $t(key, msg);
 }

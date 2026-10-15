@@ -39,12 +39,20 @@ const { hasAuth } = useAuth();
 const showDeleted = ref(false);
 const deletedSearchParams = ref<Api.UserAdmin.DeletedUserListQuery>({ current: 1, size: 10 });
 
-// 會話政策三值對譯文鍵：以 wire 值域為鍵全集標型——缺任一值域項、或多出值域外之鍵，皆 typecheck 紅（不設兜底）
+// 會話政策三值對譯文鍵：以 wire 值域為鍵全集標型——缺任一值域項、或多出值域外之鍵，皆 typecheck 紅（映射表不設兜底鍵）
 const sessionPolicyLabelMap: Record<Api.UserAdmin.SessionPolicy, App.I18n.I18nKey> = {
   inherit: 'page.manage.user.sessionPolicyOption.inherit',
   single: 'page.manage.user.sessionPolicyOption.single',
   multi: 'page.manage.user.sessionPolicyOption.multi'
 };
+
+/**
+ * 清單可能帶回三值以外的會話政策：寫端只收三值，值域外之值只能源自直改庫（庫上無 CHECK、清單照原字面回傳）。
+ * 判定只看映射表的自有鍵，`toString` 這類原型鏈上的名字不算已知（同 IP 規則頁之類型欄）。
+ */
+function isKnownSessionPolicy(value: string): value is Api.UserAdmin.SessionPolicy {
+  return Object.hasOwn(sessionPolicyLabelMap, value);
+}
 // [rev6-inline BASE-WEB-MANAGE-PAGE-WIRING(v)+ 007-user-password-admin END]
 
 const searchParams = ref<Api.SystemManage.UserSearchParams>({
@@ -163,7 +171,9 @@ const { columns, columnChecks, data, getData, getDataByPage, loading, mobilePagi
       title: $t('page.manage.user.sessionPolicy'),
       align: 'center',
       width: 110,
-      render: row => $t(sessionPolicyLabelMap[row.sessionPolicy])
+      // 值域外之值在查映射、呼叫翻譯之前就改顯原字串：不崩、也不把該列藏起來
+      render: row =>
+        isKnownSessionPolicy(row.sessionPolicy) ? $t(sessionPolicyLabelMap[row.sessionPolicy]) : row.sessionPolicy
     },
     {
       key: 'userMemo',

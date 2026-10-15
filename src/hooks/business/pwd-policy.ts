@@ -15,7 +15,8 @@ import { fetchGetPasswordPolicy } from '@/service/api/rev6-user-center';
  * 政策投影的模組層單例：宣告在函式之外，全部消費點讀同一份——政策屬全域設定、不因列或元件而異，已載入即不再發請求；若改宣告在函式內，
  * 每個 `usePwdPolicy()` 呼叫各持一份，先後開兩個浮層就對 `GET /userCenter/getPasswordPolicy` 各打一次。
  *
- * ★只增不清（已知態）：SPA 存活期間政策若被超管改動，即時提示與產密構造界沿用舊值；送出仍由後端以當下政策裁決，重新整理頁面即取得新值。
+ * ★只增不清（已知態）：SPA 存活期間政策若被超管改動，即時提示與產密構造界沿用舊值。政策已載入時送出前先以舊值擋、擋下即不發請求——
+ * 改嚴的方向由後端以當下政策補拒；改寬的方向（含矛盾政策之改正）則合規密碼仍被舊值擋下，直到重新整理頁面取得新值（RUNBOOK §11.3）。
  * ★對外交出的是可寫 ref，但寫入者唯 `ensureLoaded` 一處、消費端只讀。
  */
 const cachedPolicy = ref<Api.UserCenter.PasswordPolicyView | null>(null);

@@ -58,8 +58,8 @@ declare namespace Api {
     }
 
     /**
-     * `2222 biz.user.pwdSetTooFrequent` 錯誤信封之 `data`（唯二例外之二；ADR-00076）：整數、1 ≤ n ≤ 冷卻設定秒數——照提示秒數
-     * 重試必過。
+     * `2222 biz.user.pwdSetTooFrequent` 錯誤信封之 `data`（唯二例外之二；ADR-00076）：整數、1 ≤ n ≤ 冷卻設定秒數——牆鐘未回撥
+     * 時照提示秒數重試必過；回撥時以冷卻設定秒數為上限，照提示重試可能須再等一次（所差＝回撥量）。
      */
     interface PwdSetTooFrequentDetail {
       remainingSeconds: number;
