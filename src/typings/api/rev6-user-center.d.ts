@@ -50,7 +50,7 @@ declare namespace Api {
       | 'forbidUsername';
 
     /**
-     * `2222 biz.user.passwordPolicy` 錯誤信封之 `data`（錯誤 `data` 恆 null 之唯二例外之一；ADR-00076）：一次收集全部違規、非空、
+     * `2222 biz.user.passwordPolicy` 錯誤信封之 `data`（錯誤 `data` 恆 null 之三例外之一；ADR-00102）：一次收集全部違規、非空、
      * 不重複、元素序＝違規碼宣告序；不含明文、雜湊與政策門檻值。
      */
     interface PasswordPolicyDetail {
@@ -58,8 +58,8 @@ declare namespace Api {
     }
 
     /**
-     * `2222 biz.user.pwdSetTooFrequent` 錯誤信封之 `data`（唯二例外之二；ADR-00076）：整數、1 ≤ n ≤ 冷卻設定秒數——牆鐘未回撥
-     * 時照提示秒數重試必過；回撥時以冷卻設定秒數為上限，照提示重試可能須再等一次（所差＝回撥量）。
+     * `2222 biz.user.pwdSetTooFrequent` 錯誤信封之 `data`（三例外之二；ADR-00102）：整數、1 ≤ n ≤ 冷卻設定秒數——提示秒數為等待之
+     * 估計：牆鐘單調且冷卻設定未改時照提示秒數重試即過；牆鐘回撥或設定調大時可再被擋、回新的剩餘秒數。
      */
     interface PwdSetTooFrequentDetail {
       remainingSeconds: number;

@@ -90,6 +90,10 @@ const local: App.I18n.Schema = {
         changePasswordThrottled: 'Too many attempts, please try again later',
         oldPasswordMismatch: 'Old password is incorrect',
         passwordSameAsOld: 'New password must differ from the old one'
+      },
+      audit: {
+        invalidTable: 'The purge target is not in the allowed list',
+        purgeBelowFloor: 'Retention days cannot be below {minDays} days'
       }
     }
   },

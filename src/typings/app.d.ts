@@ -388,6 +388,7 @@ declare namespace App {
             oldPasswordMismatch: string;
             passwordSameAsOld: string;
           };
+          audit: { invalidTable: string; purgeBelowFloor: string };
         };
       };
       // [rev6-inline BASE-WEB-I18N-WIRING(iii)+ 003-auth-session END]

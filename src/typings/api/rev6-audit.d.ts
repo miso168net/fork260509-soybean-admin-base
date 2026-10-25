@@ -1,7 +1,7 @@
-// [rev6-inline BASE-WEB-ADAPT+ 008-audit-settings-pages] 稽核四源讀端之 wire 型別新檔——以 declaration merging 開 `Api.Audit` 節、既有 typings 檔零改（specs/008-audit-settings-pages/contracts/wire-audit.md）
+// [rev6-inline BASE-WEB-ADAPT+ 008-audit-settings-pages] 稽核四源讀端與手動清理之 wire 型別新檔——以 declaration merging 開 `Api.Audit` 節、既有 typings 檔零改（specs/008-audit-settings-pages/contracts/wire-audit.md）
 declare namespace Api {
   /**
-   * 稽核域四源讀端（`getOperationLog`／`getAccessLog`／`getLoginAttempt`／`getSessionEvent`）之 wire 型別。本節即憲法 §I.3
+   * 稽核域四源讀端（`getOperationLog`／`getAccessLog`／`getLoginAttempt`／`getSessionEvent`）與水平線清理（`purgeAuditLog`）之 wire 型別。本節即憲法 §I.3
    * 的 wire 權威：`tools/wire-schema.py extract` 由此抽快照、rust 側 `tests/wire_schema.rs` 據快照裁後端型別。
    *
    * 自成一節而不掛進 `Api.SystemManage`：`Audit` 前綴由命名空間承擔，四源之列型與查詢參數型不必逐支戴前綴。
@@ -13,7 +13,8 @@ declare namespace Api {
    * `timeFrom`／`timeTo` 為 RFC3339、半開區間 [起, 迄)：畸形＝該端未設、起不早於迄＝空頁。`current`／`size` 依共用分頁規則收斂
    * （界外夾回上下界、缺席取預設）。不收排序參數：列序恆為建立時刻降冪、同刻以 `id` 降冪決勝。
    *
-   * 欄形出處＝rev5:src/typings/api/rev5-audit.d.ts，列型與查詢參數型之欄名、欄序、型與可空性照承。
+   * 欄形出處＝rev5:src/typings/api/rev5-audit.d.ts，列型與查詢參數型之欄名、欄序、型與可空性照承；清理之請求、回應與標的四值亦照承，
+   * 下限拒因之明細另立具名型 `PurgeBelowFloorDetail`（rev5 為匿名物件、wire 形相同）。
    */
   namespace Audit {
     /**
@@ -197,5 +198,34 @@ declare namespace Api {
         timeTo: string;
       } & Common.CommonSearchParams
     >;
+
+    /**
+     * 清理標的四值（`purgeAuditLog` 之 `table`）：操作日誌、存取日誌、登入嘗試、會話事件。值域之真源在後端白名單；大小寫敏感，
+     * 值域外即 `2222 biz.audit.invalidTable`。
+     */
+    type PurgeAuditTable = 'operationLog' | 'accessLog' | 'loginAttempt' | 'sessionEvent';
+
+    /**
+     * `purgeAuditLog` 之請求體：刪除 `table` 中建立時刻早於（現在 − `beforeDays` 天）之列（整段刪除、不挑列）。`beforeDays` 下界之
+     * 權威在後端常數（低於下界即 `2222 biz.audit.purgeBelowFloor`、攜 `PurgeBelowFloorDetail`）；前端之下界只是操作護欄。只此兩欄，
+     * 多送之鍵後端一律忽略。
+     */
+    interface PurgeAuditLogReq {
+      table: PurgeAuditTable;
+      beforeDays: number;
+    }
+
+    /** `purgeAuditLog` 之回應 `data`：本次刪除列數（0 亦為成功；成功即同交易落一列清理自記）。 */
+    interface PurgeAuditLogRes {
+      deletedCount: number;
+    }
+
+    /**
+     * `2222 biz.audit.purgeBelowFloor` 錯誤信封之 `data`（錯誤 `data` 恆 null 之三例外之三；ADR-00102）：保留天數下限（系統常數，
+     * 不含他人資訊）；提示文案以 `{minDays}` 具名插值。
+     */
+    interface PurgeBelowFloorDetail {
+      minDays: number;
+    }
   }
 }

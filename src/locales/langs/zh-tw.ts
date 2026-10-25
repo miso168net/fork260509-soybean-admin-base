@@ -87,6 +87,10 @@ const local: App.I18n.Schema = {
         changePasswordThrottled: '嘗試次數過多，請稍後再試',
         oldPasswordMismatch: '舊密碼不正確',
         passwordSameAsOld: '新密碼不可與舊密碼相同'
+      },
+      audit: {
+        invalidTable: '清理目標不在允許清單內',
+        purgeBelowFloor: '清理保留天數不可低於 {minDays} 天'
       }
     }
   },
