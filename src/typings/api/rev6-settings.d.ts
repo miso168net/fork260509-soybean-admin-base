@@ -2,12 +2,13 @@
 declare namespace Api {
   namespace SystemManage {
     /**
-     * 系統設定列型（讀端；對齊後端 `SettingItem` 序列化輸出——specs/002-system-settings/data-model.md §1）
+     * 系統設定列型（讀端；對齊後端 `SettingItem` 序列化輸出——specs/002-system-settings/data-model.md §1；
+     * 登記表衍生三欄＝specs/008-audit-settings-pages/contracts/wire-settings.md §1）
      *
      * `GET /systemManage/getSystemSettings` 成功回 `{data: SystemSetting[], code:"0000", msg}`；
-     * camelCase wire、`settingKey` 升冪穩定序、僅未刪列；審計欄不上 wire（後端 Model→DTO 映射僅取此四欄）。
+     * camelCase wire、`settingKey` 升冪穩定序、僅未刪列；審計欄不上 wire（後端 Model→DTO 映射＝業務四欄＋登記表衍生三欄）。
      * 本 interface 即憲法 §I.3 的 wire 權威：`tools/wire-schema.py extract` 自此抽出快照、rust 側裁判以快照斷言。
-     * rev5:rev5-settings.d.ts 同名 interface、四欄形不變（rev6 只換檔名前綴與 token）。
+     * rev5:rev5-settings.d.ts 同名 interface 為四欄；三欄擴充為 008 刀刻意分岔（spec 刻意分岔登記表）。
      */
     interface SystemSetting {
       /** 設定鍵（PK、不可經寫端變更——data-model §1） */
@@ -18,6 +19,15 @@ declare namespace Api {
       settingType: string;
       /** 用途說明（可選；庫中 NULL 時後端整欄缺席、讀端不會出現 null——clarify Q2、data-model §1） */
       description?: string;
+      /**
+       * 鍵是否在後端登記表宣告集內（恆在場）：true＝宣告鍵；false＝宣告集外列（庫中多出之列）＝設定頁唯讀，
+       * 寫回一律回 2222 biz.systemSettings.notFound（ADR-00057）
+       */
+      declared: boolean;
+      /** 數值下界（含界；只在宣告之 number 鍵在場、缺席即無界；界值單一權威＝後端登記表〔ADR-00054〕，前端不抄鍵集） */
+      rangeMin?: number;
+      /** 數值上界（含界；在場條件與界值權威同 `rangeMin`） */
+      rangeMax?: number;
     }
 
     /**
