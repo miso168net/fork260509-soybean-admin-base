@@ -369,6 +369,9 @@ const local: App.I18n.Schema = {
     // [rev6-inline BASE-WEB-MANAGE-PAGE-WIRING(ix)+ 008-audit-settings-pages END]
     manage_user: 'User Manage',
     'manage_user-detail': 'User Detail',
+    // [rev6-inline BASE-WEB-MANAGE-PAGE-WIRING(x)+ 008-audit-settings-pages START] 稽核頁的路由標題鍵（鍵集與 zh-cn 相等；說明見 zh-cn.ts 同段）
+    manage_audit: 'Audit Center',
+    // [rev6-inline BASE-WEB-MANAGE-PAGE-WIRING(x)+ 008-audit-settings-pages END]
     manage_role: 'Role Manage',
     // [rev6-inline BASE-WEB-MANAGE-PAGE-WIRING(iv)+ 006-authz-governance START] 授權回收桶頁的路由標題鍵，鍵名逐字取自 seed 選單列 10 之路由名。
     // 回收桶頁 view 目錄進場後外掛把此名重算進 RouteKey，本樹缺這一鍵即 typecheck 紅（另一語同插）。刻意放在 `manage_role` 與 `manage_menu`
@@ -807,6 +810,90 @@ const local: App.I18n.Schema = {
         addRole: 'Add Role',
         editRole: 'Edit Role'
       },
+      // [rev6-inline BASE-WEB-MANAGE-PAGE-WIRING(x)+ 008-audit-settings-pages START] 稽核頁文案（鍵集與 zh-cn 相等；說明見 zh-cn.ts 同段）。
+      // 葉值逐字取 rev5:src/locales/langs/en-us.ts 之 page.manage.audit，相異三處同 zh-cn：動作提示範例改小寫、purge.title 併入 {table}、notice.access 新增
+      audit: {
+        title: 'Audit Center',
+        tab: {
+          operation: 'Operation Log',
+          access: 'Access Log',
+          login: 'Login Attempts',
+          session: 'Session Events'
+        },
+        search: {
+          operatorId: 'Operator ID',
+          operatorName: 'Operator Name',
+          userId: 'User ID',
+          timeRange: 'Time Range',
+          placeholder: {
+            entityTable: 'Enter entity table',
+            operation: 'Enter action (e.g. update, kick)',
+            operatorId: 'Enter operator ID',
+            operatorName: 'Enter operator name',
+            httpMethod: 'Enter method (e.g. GET)',
+            httpStatus: 'Enter status code',
+            httpPath: 'Enter path (fuzzy match)',
+            attemptedUserName: 'Enter account name (fuzzy match)',
+            success: 'Select result',
+            realIp: 'Enter source IP (exact match)',
+            userId: 'Enter user ID',
+            userName: 'Enter user name',
+            eventType: 'Enter event type (e.g. kicked, idle)',
+            reason: 'Enter reason',
+            timeRange: 'Select time range'
+          }
+        },
+        column: {
+          createTime: 'Time',
+          operator: 'Operator',
+          operation: 'Action',
+          entityTable: 'Entity Table',
+          entityId: 'Entity ID',
+          snapshot: 'Snapshot',
+          realIp: 'Source IP',
+          xForwardedFor: 'X-Forwarded-For',
+          region: 'Region',
+          traceId: 'Trace ID',
+          httpMethod: 'Method',
+          httpPath: 'Path',
+          httpStatus: 'Status',
+          attemptedUserName: 'Attempted Account',
+          success: 'Result',
+          successOption: {
+            true: 'Success',
+            false: 'Failure'
+          },
+          user: 'User',
+          sid: 'Session ID',
+          eventType: 'Event Type',
+          reason: 'Reason',
+          sourceIp: 'Source IP'
+        },
+        snapshot: {
+          entry: 'View',
+          title: 'Snapshot',
+          before: 'Before',
+          after: 'After',
+          empty: '(no snapshot)'
+        },
+        purge: {
+          entry: 'Purge',
+          title: 'Purge Logs：{table}',
+          days: 'Retention Days',
+          daysHint: 'Records older than the given number of days will be deleted; minimum 30 days.',
+          warning:
+            'This permanently deletes records older than the retention days and cannot be undone; the purge action itself is recorded in the operation log.',
+          confirm: 'Confirm purge? This action cannot be undone.',
+          success: 'Purge complete, {count} records deleted'
+        },
+        notice: {
+          access:
+            'The Status column shows the HTTP status code: 403 for insufficient permissions; all other requests (including business rejections and system errors) show 200.',
+          login:
+            'Login attempts rejected by throttle short-circuit are not recorded in this table; only attempts with an actual success/failure verdict are shown here.'
+        }
+      },
+      // [rev6-inline BASE-WEB-MANAGE-PAGE-WIRING(x)+ 008-audit-settings-pages END]
       user: {
         title: 'User List',
         userName: 'User Name',

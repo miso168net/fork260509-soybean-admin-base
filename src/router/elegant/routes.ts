@@ -251,6 +251,15 @@ export const generatedRoutes: GeneratedRoute[] = [
     },
     children: [
       {
+        name: 'manage_audit',
+        path: '/manage/audit',
+        component: 'view.manage_audit',
+        meta: {
+          title: 'manage_audit',
+          i18nKey: 'route.manage_audit'
+        }
+      },
+      {
         name: 'manage_ip-rule',
         path: '/manage/ip-rule',
         component: 'view.manage_ip-rule',

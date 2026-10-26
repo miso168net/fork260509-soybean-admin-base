@@ -359,6 +359,7 @@ const local: App.I18n.Schema = {
     'manage_system-settings': '系統設定',
     manage_user: '使用者管理',
     'manage_user-detail': '使用者詳情',
+    manage_audit: '稽核中心',
     manage_role: '角色管理',
     'manage_policy-archive': '授權回收桶',
     manage_menu: '選單管理',
@@ -758,6 +759,84 @@ const local: App.I18n.Schema = {
         },
         addRole: '新增角色',
         editRole: '編輯角色'
+      },
+      audit: {
+        title: '稽核中心',
+        tab: {
+          operation: '操作日誌',
+          access: '存取日誌',
+          login: '登入嘗試',
+          session: '工作階段事件'
+        },
+        search: {
+          operatorId: '操作者 ID',
+          operatorName: '操作者名稱',
+          userId: '使用者 ID',
+          timeRange: '時間區間',
+          placeholder: {
+            entityTable: '請輸入目標資料表',
+            operation: '請輸入動作（如 update、kick）',
+            operatorId: '請輸入操作者 ID',
+            operatorName: '請輸入操作者名稱',
+            httpMethod: '請輸入請求方法（如 GET）',
+            httpStatus: '請輸入狀態碼',
+            httpPath: '請輸入請求路徑（模糊比對）',
+            attemptedUserName: '請輸入帳號名稱（模糊比對）',
+            success: '請選擇結果',
+            realIp: '請輸入來源 IP（精確比對）',
+            userId: '請輸入使用者 ID',
+            userName: '請輸入使用者名稱',
+            eventType: '請輸入事件類型（如 kicked、idle）',
+            reason: '請輸入原因',
+            timeRange: '請選擇時間區間'
+          }
+        },
+        column: {
+          createTime: '時間',
+          operator: '操作者',
+          operation: '動作',
+          entityTable: '目標資料表',
+          entityId: '目標 ID',
+          snapshot: '變更快照',
+          realIp: '來源 IP',
+          xForwardedFor: 'XFF 轉發鏈',
+          region: '地區',
+          traceId: '追蹤 ID',
+          httpMethod: '請求方法',
+          httpPath: '請求路徑',
+          httpStatus: '狀態碼',
+          attemptedUserName: '嘗試帳號',
+          success: '結果',
+          successOption: {
+            true: '成功',
+            false: '失敗'
+          },
+          user: '使用者',
+          sid: '工作階段 ID',
+          eventType: '事件類型',
+          reason: '原因',
+          sourceIp: '來源 IP'
+        },
+        snapshot: {
+          entry: '檢視',
+          title: '變更快照',
+          before: '變更前',
+          after: '變更後',
+          empty: '（無快照）'
+        },
+        purge: {
+          entry: '清理',
+          title: '清理日誌：{table}',
+          days: '保留天數',
+          daysHint: '將刪除早於指定天數的紀錄；下限為 30 天。',
+          warning: '此操作會永久刪除早於保留天數的紀錄且無法復原；清理動作本身會記入操作日誌。',
+          confirm: '確定執行清理？此操作無法復原。',
+          success: '清理完成，共刪除 {count} 筆紀錄'
+        },
+        notice: {
+          access: '狀態欄為 HTTP 狀態碼：權限不足顯示 403，其餘請求（含業務拒絕與系統錯誤）皆顯示 200。',
+          login: '被登入節流直接擋下的嘗試不會記錄於此；此處只列出實際判定成功或失敗的登入嘗試。'
+        }
       },
       user: {
         title: '使用者清單',

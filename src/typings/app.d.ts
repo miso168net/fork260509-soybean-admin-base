@@ -1098,6 +1098,71 @@ declare namespace App {
               local: string;
             };
           };
+          // [rev6-inline BASE-WEB-MANAGE-PAGE-WIRING(x)+ 008-audit-settings-pages START] `page.manage.audit` 型節（逐鍵鏡像三語 locale 同名子樹）——稽核頁之分頁、搜尋卡、
+          // 欄標題、快照浮層、清理浮層與兩則告示皆經本節過 `$t` 鍵型檢查。接在本型樹末項 `menu` 之後：型成員以分號收尾、上一行不必改。不接在 `role` 之後：
+          // 該處與上方端點權限型那塊只隔一行 `};`（本塊末行 `};` 與之同形，difflib 最長匹配會把基線那行對到塊末），會併成同一變更塊而拔標記不紅
+          audit: {
+            title: string;
+            tab: { operation: string; access: string; login: string; session: string };
+            search: {
+              operatorId: string;
+              operatorName: string;
+              userId: string;
+              timeRange: string;
+              placeholder: {
+                entityTable: string;
+                operation: string;
+                operatorId: string;
+                operatorName: string;
+                httpMethod: string;
+                httpStatus: string;
+                httpPath: string;
+                attemptedUserName: string;
+                success: string;
+                realIp: string;
+                userId: string;
+                userName: string;
+                eventType: string;
+                reason: string;
+                timeRange: string;
+              };
+            };
+            column: {
+              createTime: string;
+              operator: string;
+              operation: string;
+              entityTable: string;
+              entityId: string;
+              snapshot: string;
+              realIp: string;
+              xForwardedFor: string;
+              region: string;
+              traceId: string;
+              httpMethod: string;
+              httpPath: string;
+              httpStatus: string;
+              attemptedUserName: string;
+              success: string;
+              successOption: { true: string; false: string };
+              user: string;
+              sid: string;
+              eventType: string;
+              reason: string;
+              sourceIp: string;
+            };
+            snapshot: { entry: string; title: string; before: string; after: string; empty: string };
+            purge: {
+              entry: string;
+              title: string;
+              days: string;
+              daysHint: string;
+              warning: string;
+              confirm: string;
+              success: string;
+            };
+            notice: { access: string; login: string };
+          };
+          // [rev6-inline BASE-WEB-MANAGE-PAGE-WIRING(x)+ 008-audit-settings-pages END]
         };
       };
       form: {

@@ -358,6 +358,11 @@ const local: App.I18n.Schema = {
     // [rev6-inline BASE-WEB-MANAGE-PAGE-WIRING(ix)+ 008-audit-settings-pages END]
     manage_user: '用户管理',
     'manage_user-detail': '用户详情',
+    // [rev6-inline BASE-WEB-MANAGE-PAGE-WIRING(x)+ 008-audit-settings-pages START] 稽核頁的路由標題鍵，鍵名逐字取自 seed 選單列 77 之路由名；側欄項與頁標題
+    // （分頁標籤、麵包屑）皆讀此鍵。本樹型別由路由產物的 RouteKey 推得：稽核頁 view 目錄在場、外掛重算出此鍵後，三語缺這一鍵即 typecheck 紅。
+    // 落在 `manage_user-detail` 與 `manage_role` 之間：上下皆為未改的基線行、不與他塊相鄰
+    manage_audit: '审计中心',
+    // [rev6-inline BASE-WEB-MANAGE-PAGE-WIRING(x)+ 008-audit-settings-pages END]
     manage_role: '角色管理',
     // [rev6-inline BASE-WEB-MANAGE-PAGE-WIRING(iv)+ 006-authz-governance START] 授權回收桶頁的路由標題鍵，鍵名逐字取自 seed 選單列 10 之路由名。
     // 回收桶頁 view 目錄進場後外掛把此名重算進 RouteKey，本樹缺這一鍵即 typecheck 紅（另一語同插）。刻意放在 `manage_role` 與 `manage_menu`
@@ -790,6 +795,88 @@ const local: App.I18n.Schema = {
         addRole: '新增角色',
         editRole: '编辑角色'
       },
+      // [rev6-inline BASE-WEB-MANAGE-PAGE-WIRING(x)+ 008-audit-settings-pages START] 稽核頁文案（分頁、搜尋卡、欄標題、快照浮層、清理浮層與兩則告示；
+      // 三語鍵集須相等、型節住 typings/app.d.ts）。葉值逐字取 rev5:src/locales/langs/zh-cn.ts 之 page.manage.audit（rev5 58 葉皆有承載、可多對一），
+      // 相異三處：動作提示之範例改庫內實際寫入之小寫字面、purge.title 併入 {table}（rev5 於模板串接「：」與表名、可見字串相同）、notice.access 為新增葉
+      audit: {
+        title: '审计中心',
+        tab: {
+          operation: '操作日志',
+          access: '访问日志',
+          login: '登录尝试',
+          session: '会话事件'
+        },
+        search: {
+          operatorId: '操作者 ID',
+          operatorName: '操作者名称',
+          userId: '用户 ID',
+          timeRange: '时间区间',
+          placeholder: {
+            entityTable: '请输入目标数据表',
+            operation: '请输入动作（如 update、kick）',
+            operatorId: '请输入操作者 ID',
+            operatorName: '请输入操作者名称',
+            httpMethod: '请输入请求方法（如 GET）',
+            httpStatus: '请输入状态码',
+            httpPath: '请输入请求路径（模糊匹配）',
+            attemptedUserName: '请输入账号名称（模糊匹配）',
+            success: '请选择结果',
+            realIp: '请输入来源 IP（精确匹配）',
+            userId: '请输入用户 ID',
+            userName: '请输入用户名称',
+            eventType: '请输入事件类型（如 kicked、idle）',
+            reason: '请输入原因',
+            timeRange: '请选择时间区间'
+          }
+        },
+        column: {
+          createTime: '时间',
+          operator: '操作者',
+          operation: '动作',
+          entityTable: '目标数据表',
+          entityId: '目标 ID',
+          snapshot: '变更快照',
+          realIp: '来源 IP',
+          xForwardedFor: 'XFF 转发链',
+          region: '地域',
+          traceId: '追踪 ID',
+          httpMethod: '请求方法',
+          httpPath: '请求路径',
+          httpStatus: '状态码',
+          attemptedUserName: '尝试账号',
+          success: '结果',
+          successOption: {
+            true: '成功',
+            false: '失败'
+          },
+          user: '用户',
+          sid: '会话 ID',
+          eventType: '事件类型',
+          reason: '原因',
+          sourceIp: '来源 IP'
+        },
+        snapshot: {
+          entry: '查看',
+          title: '变更快照',
+          before: '变更前',
+          after: '变更后',
+          empty: '（无快照）'
+        },
+        purge: {
+          entry: '清理',
+          title: '清理日志：{table}',
+          days: '保留天数',
+          daysHint: '将删除早于指定天数的记录；下限为 30 天。',
+          warning: '此操作会永久删除早于保留天数的记录且无法恢复；清理动作本身将记入操作日志。',
+          confirm: '确定执行清理？此操作无法恢复。',
+          success: '清理完成，共删除 {count} 条记录'
+        },
+        notice: {
+          access: '状态码列为 HTTP 状态码：权限不足显示 403，其余请求（含业务拒绝与系统错误）均显示 200。',
+          login: '因登录节流短路而被拒的尝试不会记录于此表；此处仅呈现实际判定成败的登录尝试。'
+        }
+      },
+      // [rev6-inline BASE-WEB-MANAGE-PAGE-WIRING(x)+ 008-audit-settings-pages END]
       user: {
         title: '用户列表',
         userName: '用户名',

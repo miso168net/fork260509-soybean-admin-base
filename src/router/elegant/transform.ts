@@ -199,6 +199,7 @@ const routeMap: RouteMap = {
   "iframe-page": "/iframe-page/:url",
   "login": "/login/:module(pwd-login|code-login|register|reset-pwd|bind-wechat)?",
   "manage": "/manage",
+  "manage_audit": "/manage/audit",
   "manage_ip-rule": "/manage/ip-rule",
   "manage_menu": "/manage/menu",
   "manage_policy-archive": "/manage/policy-archive",
