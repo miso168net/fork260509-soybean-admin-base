@@ -57,6 +57,7 @@ declare module "@elegant-router/types" {
     "manage_menu": "/manage/menu";
     "manage_policy-archive": "/manage/policy-archive";
     "manage_role": "/manage/role";
+    "manage_system-settings": "/manage/system-settings";
     "manage_user": "/manage/user";
     "manage_user-detail": "/manage/user-detail/:id";
     "multi-menu": "/multi-menu";
@@ -197,6 +198,7 @@ declare module "@elegant-router/types" {
     | "manage_menu"
     | "manage_policy-archive"
     | "manage_role"
+    | "manage_system-settings"
     | "manage_user-detail"
     | "manage_user"
     | "multi-menu_first_child"

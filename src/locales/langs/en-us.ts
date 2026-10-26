@@ -364,6 +364,9 @@ const local: App.I18n.Schema = {
     'function_toggle-auth': 'Toggle Auth',
     'function_super-page': 'Super Admin Visible',
     manage: 'System Manage',
+    // [rev6-inline BASE-WEB-MANAGE-PAGE-WIRING(ix)+ 008-audit-settings-pages START] 系統設定頁的路由標題鍵（鍵集與 zh-cn 相等；說明見 zh-cn.ts 同段）
+    'manage_system-settings': 'System Settings',
+    // [rev6-inline BASE-WEB-MANAGE-PAGE-WIRING(ix)+ 008-audit-settings-pages END]
     manage_user: 'User Manage',
     'manage_user-detail': 'User Detail',
     manage_role: 'Role Manage',
@@ -662,6 +665,67 @@ const local: App.I18n.Schema = {
       }
     },
     manage: {
+      // [rev6-inline BASE-WEB-MANAGE-PAGE-WIRING(ix)+ 008-audit-settings-pages START] 系統設定頁文案（鍵集與 zh-cn 逐鍵相等；說明與例外四則見 zh-cn.ts 同段）。
+      // 組標題與 label／help 逐字取 rev5:src/locales/langs/en-us.ts 之 page.manage.systemSettings；例外四則 help 句末補 not strict 之註（BL-00145）
+      systemSettings: {
+        group: {
+          password: 'Password Policy',
+          session: 'Session Settings',
+          ip: 'IP-source login settings',
+          account: 'Account login settings'
+        },
+        item: {
+          password_min_length: { label: 'Minimum password length', help: 'Minimum password length' },
+          password_max_length: { label: 'Maximum password length', help: 'Maximum password length' },
+          password_require_lowercase: { label: 'Require lowercase letter', help: 'Must contain a lowercase letter' },
+          password_require_uppercase: { label: 'Require uppercase letter', help: 'Must contain an uppercase letter' },
+          password_require_digit: { label: 'Require digit', help: 'Must contain a digit' },
+          password_require_special: { label: 'Require special character', help: 'Must contain a special character' },
+          password_forbid_username: {
+            label: 'Forbid password same as username',
+            help: 'Forbid password identical to username'
+          },
+          password_change_min_interval: {
+            label: 'Password set cooldown (seconds)',
+            help: 'Minimum interval in seconds between password sets by the same operator on the same account; 0 disables'
+          },
+          single_session_default: { label: 'Single session (global)', help: 'Site-wide single-session default' },
+          session_idle_timeout: { label: 'Session idle timeout (min)', help: 'Session idle timeout (minutes)' },
+          ip_window_minutes: {
+            label: 'IP-source login failure - counting window (min)',
+            help: 'Source throttle: source-dimension sliding window length (minutes)'
+          },
+          ip_max_fails: {
+            label: 'IP-source login failure - max count (times)',
+            help: 'Source throttle: hard lock once failures in the source-bucket sliding window reach this count (not strict under concurrent first bursts)'
+          },
+          ip_captcha_after: {
+            label: 'IP-source login failure - trigger captcha (times)',
+            help: 'Source throttle: enter the captcha soft zone once failures in the source-bucket sliding window reach this count (not strict under concurrent first bursts)'
+          },
+          login_throttle_window_minutes: {
+            label: 'Account login failure - counting window (min)',
+            help: 'Login throttle: sliding window length (minutes) = maximum lockout duration'
+          },
+          login_throttle_max_fails: {
+            label: 'Account login failure - max count (times)',
+            help: 'Login throttle: lockout once failures in the sliding window reach this count (not strict under concurrent first bursts)'
+          },
+          login_throttle_captcha_after: {
+            label: 'Account login failure - trigger captcha (times)',
+            help: 'Login throttle: enter the captcha soft zone once failures in the sliding window reach this count (not strict under concurrent first bursts)'
+          }
+        },
+        conflict: {
+          password:
+            'Minimum password length exceeds the maximum: adding users, resetting passwords and changing passwords will all be rejected. Adjust one of the two.',
+          account:
+            'Account login captcha threshold exceeds the lockout threshold: the three settings of this group fall back to their factory defaults as a whole.',
+          ip: 'IP-source login captcha threshold exceeds the lockout threshold: the three settings of this group fall back to their factory defaults as a whole.'
+        },
+        readonlyTag: 'Read-only'
+      },
+      // [rev6-inline BASE-WEB-MANAGE-PAGE-WIRING(ix)+ 008-audit-settings-pages END]
       common: {
         status: {
           enable: 'Enable',

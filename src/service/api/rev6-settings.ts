@@ -1,5 +1,5 @@
 // [rev6-inline BASE-WEB-WRAPPER+ 002-system-settings] 系統設定 service 接線層新檔（§III.1 WRAPPER 軌道；contracts/wire-settings.md §5）——不改既有 service 檔、不入 barrel
-// ★本檔不列入 barrel src/service/api/index.ts：消費端（後續設定頁 view 刀）以直接路徑 import 本模組
+// ★本檔不列入 barrel src/service/api/index.ts：消費端（src/views/manage/system-settings/index.vue）以直接路徑匯入本模組
 //   （rev5:rev5-settings.ts 承 rev4 自陳理由＝避 vite stale-export）。
 // 下一行 `from '../request'` 為 base-web 既有 service 檔通例（auth.ts／system-manage.ts 同形）——
 //   「不經 barrel」講的是本模組的出口、不是 request 的入口。
@@ -11,7 +11,7 @@ import { request } from '../request';
  * 成功回 `{data: SystemSetting[], code:"0000", msg:"common.success"}`——常態為 registry 16 鍵（宣告集外、型別合法之列照樣上 wire、寫回得 2222＝ADR-00057）、
  * settingKey 升冪穩定序、僅未刪列、非分頁（spec FR-003）；description 為 NULL 者該欄缺席、不回 null（clarify Q2）。
  * 授權＝Policy（R_SUPER）：越權 5003 system.forbidden、未認證 8888 auth.session.reLogin（契約 §1 錯誤矩陣）。
- * 回傳型取自 rev6-settings.d.ts（declaration merging 併入 Api.SystemManage）——後續 view 刀接上即用、不需回頭補型別。
+ * 回傳型取自 rev6-settings.d.ts（declaration merging 併入 Api.SystemManage）、由系統設定頁（src/views/manage/system-settings/index.vue）消費。
  * rev5:rev5-settings.ts fetchGetSystemSettings 同名同形（rev6 只換檔名前綴與 token）。
  */
 export function fetchGetSystemSettings() {

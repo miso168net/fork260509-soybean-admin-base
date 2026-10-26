@@ -356,6 +356,7 @@ const local: App.I18n.Schema = {
     'function_toggle-auth': '切換權限',
     'function_super-page': '超級管理員可見',
     manage: '系統管理',
+    'manage_system-settings': '系統設定',
     manage_user: '使用者管理',
     'manage_user-detail': '使用者詳情',
     manage_role: '角色管理',
@@ -640,6 +641,59 @@ const local: App.I18n.Schema = {
       }
     },
     manage: {
+      systemSettings: {
+        group: {
+          password: '密碼政策',
+          session: '工作階段',
+          ip: '來源 IP 登入設定',
+          account: '帳號登入設定'
+        },
+        item: {
+          password_min_length: { label: '密碼最小長度', help: '密碼最小長度' },
+          password_max_length: { label: '密碼最大長度', help: '密碼最大長度' },
+          password_require_lowercase: { label: '需含小寫字母', help: '需含小寫字母' },
+          password_require_uppercase: { label: '需含大寫字母', help: '需含大寫字母' },
+          password_require_digit: { label: '需含數字', help: '需含數字' },
+          password_require_special: { label: '需含特殊符號', help: '需含特殊符號' },
+          password_forbid_username: { label: '禁止密碼與帳號相同', help: '禁止密碼與帳號相同' },
+          password_change_min_interval: {
+            label: '密碼設定冷卻間隔（秒）',
+            help: '同一操作者對同一帳號連續設定密碼的最小間隔（秒）；0＝停用'
+          },
+          single_session_default: { label: '單一工作階段（全站）', help: '全站單一工作階段之預設值' },
+          session_idle_timeout: { label: '工作階段閒置逾時（分鐘）', help: '工作階段閒置逾時（分鐘）' },
+          ip_window_minutes: {
+            label: '來源 IP 登入失敗-計數時間窗（分鐘）',
+            help: '來源節流：來源維度之滑動時間窗長度（分鐘）'
+          },
+          ip_max_fails: {
+            label: '來源 IP 登入失敗-計數上限（次）',
+            help: '來源節流：來源桶之滑動時間窗內失敗達此數即硬性鎖定（並發首波不嚴格）'
+          },
+          ip_captcha_after: {
+            label: '來源 IP 登入失敗-觸發驗證碼（次）',
+            help: '來源節流：來源桶之滑動時間窗內失敗達此數即進入驗證碼軟區（並發首波不嚴格）'
+          },
+          login_throttle_window_minutes: {
+            label: '帳號登入失敗-計數時間窗（分鐘）',
+            help: '登入節流：滑動時間窗長度（分鐘）＝鎖定的最長持續時間'
+          },
+          login_throttle_max_fails: {
+            label: '帳號登入失敗-計數上限（次）',
+            help: '登入節流：滑動時間窗內失敗達此數即鎖定（並發首波不嚴格）'
+          },
+          login_throttle_captcha_after: {
+            label: '帳號登入失敗-觸發驗證碼（次）',
+            help: '登入節流：滑動時間窗內失敗達此數即進入驗證碼軟區（並發首波不嚴格）'
+          }
+        },
+        conflict: {
+          password: '密碼最小長度大於最大長度：新增使用者、重設密碼與修改密碼將一律拒絕，請調整其中一項。',
+          account: '帳號登入的觸發驗證碼門檻大於鎖定門檻：此組三項將整組退回出廠預設值。',
+          ip: '來源 IP 登入的觸發驗證碼門檻大於鎖定門檻：此組三項將整組退回出廠預設值。'
+        },
+        readonlyTag: '唯讀'
+      },
       common: {
         status: {
           enable: '啟用',

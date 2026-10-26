@@ -1,4 +1,4 @@
-// [rev6-inline USER-CENTER-VIEW+ 007-user-password-admin] 密碼政策共用 hook 新檔（基線無此路徑、新增型不入名冊＝憲法 §III.2 表外宣告 3）：政策七鍵投影之取得與快取＋投影轉表單規則
+// [rev6-inline USER-CENTER-VIEW+ 007-user-password-admin] 密碼政策共用 hook 新檔（基線無此路徑、新增型不入名冊＝憲法 §III.2 表外宣告 3）：政策七鍵投影之取得、快取與清除＋投影轉表單規則
 // 服務對象橫跨兩棵 view 樹（使用者頁之重設密碼浮層與產密浮層、個人中心之改密卡），故落 `src/hooks/business/`（與 `auth.ts`、`captcha.ts` 同層），
 // 免得 manage 樹反向自 user-center 樹取檔。對外兩支刻意分立：`usePwdPolicy` 持狀態且會發請求；`usePwdPolicyRules` 是純轉換、呼叫時零網路——只要規則的
 // 消費點不會因此多發請求。規則訊息一律取 `page.passwordPolicy.violation.<碼>`：該子樹是違規碼譯文之單一共用命名空間（spec FR-033、ADR-00076），
@@ -15,11 +15,18 @@ import { fetchGetPasswordPolicy } from '@/service/api/rev6-user-center';
  * 政策投影的模組層單例：宣告在函式之外，全部消費點讀同一份——政策屬全域設定、不因列或元件而異，已載入即不再發請求；若改宣告在函式內，
  * 每個 `usePwdPolicy()` 呼叫各持一份，先後開兩個浮層就對 `GET /userCenter/getPasswordPolicy` 各打一次。
  *
- * ★只增不清（已知態）：SPA 存活期間政策若被超管改動，即時提示與產密構造界沿用舊值。政策已載入時送出前先以舊值擋、擋下即不發請求——
- * 改嚴的方向由後端以當下政策補拒；改寬的方向（含矛盾政策之改正）則合規密碼仍被舊值擋下，直到重新整理頁面取得新值（RUNBOOK §11.3）。
- * ★對外交出的是可寫 ref，但寫入者唯 `ensureLoaded` 一處、消費端只讀。
+ * ★對外交出的是可寫 ref、消費端只讀：寫入者唯 `ensureLoaded`、清除者唯 `clearPwdPolicyCache`（呼叫端＝系統設定頁寫入政策七鍵任一成功之後）。
+ * 同分頁之消費端（使用者頁之重設與產密浮層、個人中心改密卡）於開啟或掛載時經 `ensureLoaded` 取政策（產密浮層由開啟它的使用者頁與新增抽屜代呼）
+ * ＝清除後下一次開啟或掛載即重讀；清除至重讀之間本 ref 為 `null`＝規則退為只驗必填。其他已開分頁與政策經 API 直改時之全部分頁仍沿用舊值至重新整理：
+ * 政策已載入時送出前先以舊值擋、擋下即不發請求——改嚴的方向由後端以當下政策補拒；改寬的方向（含矛盾政策之改正）則合規密碼仍被舊值擋下（RUNBOOK §11.3）。
  */
 const cachedPolicy = ref<Api.UserCenter.PasswordPolicyView | null>(null);
+
+/**
+ * 快取世代號：每次清除即遞增。`ensureLoaded` 發請求前記下當時之世代、回應落定時世代已變即不回填——
+ * 清除之前發出之讀取帶回的可能是舊政策，照填即把剛清掉的舊值寫回快取。
+ */
+let cacheGeneration = 0;
 
 /** 密碼政策投影的取得與快取（改密卡、重設密碼浮層、產密浮層共用） */
 export function usePwdPolicy() {
@@ -34,14 +41,25 @@ export function usePwdPolicy() {
       return;
     }
 
+    const generation = cacheGeneration;
     const { data, error } = await fetchGetPasswordPolicy();
 
-    if (!error) {
+    // 等候期間快取被清除過（世代已變）即不回填：本回應可能是清除之前的舊政策，下一次呼叫會重讀
+    if (!error && generation === cacheGeneration) {
       cachedPolicy.value = data;
     }
   }
 
   return { policy: cachedPolicy, ensureLoaded };
+}
+
+/**
+ * 清除政策投影快取並遞增世代號（系統設定頁寫入政策七鍵任一成功之後呼叫；寫入失敗與七鍵以外之鍵不清）。
+ * 只清本分頁之模組層單例：其他已開分頁各持一份、沿用舊值至重新整理。
+ */
+export function clearPwdPolicyCache() {
+  cachedPolicy.value = null;
+  cacheGeneration += 1;
 }
 
 /** 政策規則的觸發時機：輸入當下即驗、失焦時再驗 */

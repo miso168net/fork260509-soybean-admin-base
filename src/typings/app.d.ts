@@ -809,6 +809,32 @@ declare namespace App {
           };
         };
         manage: {
+          // [rev6-inline BASE-WEB-MANAGE-PAGE-WIRING(ix)+ 008-audit-settings-pages START] `page.manage.systemSettings` 型節（逐鍵鏡像三語 locale 同名子樹）——系統設定頁之組標題、
+          // 16 鍵 label／help、三對矛盾提示與唯讀標示皆經本節過 `$t` 鍵型檢查；`item` 之鍵＝rust-api `server/src/validation.rs` 之 `REGISTRY` 逐鍵（snake_case 原樣）
+          systemSettings: {
+            group: { password: string; session: string; ip: string; account: string };
+            item: {
+              password_min_length: { label: string; help: string };
+              password_max_length: { label: string; help: string };
+              password_require_lowercase: { label: string; help: string };
+              password_require_uppercase: { label: string; help: string };
+              password_require_digit: { label: string; help: string };
+              password_require_special: { label: string; help: string };
+              password_forbid_username: { label: string; help: string };
+              password_change_min_interval: { label: string; help: string };
+              single_session_default: { label: string; help: string };
+              session_idle_timeout: { label: string; help: string };
+              ip_window_minutes: { label: string; help: string };
+              ip_max_fails: { label: string; help: string };
+              ip_captcha_after: { label: string; help: string };
+              login_throttle_window_minutes: { label: string; help: string };
+              login_throttle_max_fails: { label: string; help: string };
+              login_throttle_captcha_after: { label: string; help: string };
+            };
+            conflict: { password: string; account: string; ip: string };
+            readonlyTag: string;
+          };
+          // [rev6-inline BASE-WEB-MANAGE-PAGE-WIRING(ix)+ 008-audit-settings-pages END]
           common: {
             status: {
               enable: string;

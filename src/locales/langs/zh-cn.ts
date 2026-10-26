@@ -352,6 +352,10 @@ const local: App.I18n.Schema = {
     'function_toggle-auth': '切换权限',
     'function_super-page': '超级管理员可见',
     manage: '系统管理',
+    // [rev6-inline BASE-WEB-MANAGE-PAGE-WIRING(ix)+ 008-audit-settings-pages START] 系統設定頁的路由標題鍵，鍵名逐字取自 seed 選單列 9 之路由名；側欄項與頁標題
+    // （分頁標籤、麵包屑）皆讀此鍵、頁內不另設總標題。本樹型別由路由產物的 RouteKey 推得：設定頁 view 目錄在場、外掛重算出此鍵後，三語缺這一鍵即 typecheck 紅
+    'manage_system-settings': '系统设置',
+    // [rev6-inline BASE-WEB-MANAGE-PAGE-WIRING(ix)+ 008-audit-settings-pages END]
     manage_user: '用户管理',
     'manage_user-detail': '用户详情',
     manage_role: '角色管理',
@@ -651,6 +655,60 @@ const local: App.I18n.Schema = {
       }
     },
     manage: {
+      // [rev6-inline BASE-WEB-MANAGE-PAGE-WIRING(ix)+ 008-audit-settings-pages START] 系統設定頁文案（四組標題、16 鍵 label／help、三對矛盾提示、唯讀標示；三語鍵集須相等、型節住 typings/app.d.ts）。
+      // 組標題與 label／help 逐字取 rev5:src/locales/langs/zh-cn.ts 之 page.manage.systemSettings；例外＝帳號與來源兩維之失敗門檻與驗證碼門檻四則 help 句末補「并发首波不严格」之註：
+      // 登入節流之窗計數於同一帳號名或同一來源並發之首波不是嚴格上限（BL-00145），說明不承諾嚴格上限
+      systemSettings: {
+        group: {
+          password: '密码策略',
+          session: '会话设置',
+          ip: 'IP源登录设置',
+          account: '账号登录设置'
+        },
+        item: {
+          password_min_length: { label: '密码最小长度', help: '密码最小长度' },
+          password_max_length: { label: '密码最大长度', help: '密码最大长度' },
+          password_require_lowercase: { label: '需含小写字母', help: '需含小写字母' },
+          password_require_uppercase: { label: '需含大写字母', help: '需含大写字母' },
+          password_require_digit: { label: '需含数字', help: '需含数字' },
+          password_require_special: { label: '需含特殊符号', help: '需含特殊符号' },
+          password_forbid_username: { label: '禁止密码与账号相同', help: '禁止密码与账号相同' },
+          password_change_min_interval: {
+            label: '密码设置冷却间隔（秒）',
+            help: '同一操作者对同一账号连续设置密码的最小间隔（秒）；0＝停用'
+          },
+          single_session_default: { label: 'Session 单一在线（全站）', help: '全站单一-session 默认' },
+          session_idle_timeout: { label: 'Session 空闲超时（分钟）', help: '会话闲置超时（分钟）' },
+          ip_window_minutes: { label: 'IP源登录失败-计数窗口（分钟）', help: '来源节流：来源维滑动窗长（分钟）' },
+          ip_max_fails: {
+            label: 'IP源登录失败-计数最大值（次）',
+            help: '来源节流：来源桶滑动窗内失败达此数即硬锁（并发首波不严格）'
+          },
+          ip_captcha_after: {
+            label: 'IP源登录失败-触发验证码（次）',
+            help: '来源节流：来源桶滑动窗内失败达此数即进验证码软区（并发首波不严格）'
+          },
+          login_throttle_window_minutes: {
+            label: '账号登录失败-计数窗口（分钟）',
+            help: '登录节流：滑动窗长（分钟）＝锁定的最长存续'
+          },
+          login_throttle_max_fails: {
+            label: '账号登录失败-计数最大值（次）',
+            help: '登录节流：滑动窗内失败达此数即锁定（并发首波不严格）'
+          },
+          login_throttle_captcha_after: {
+            label: '账号登录失败-触发验证码（次）',
+            help: '登录节流：滑动窗内失败达此数即进验证码软区（并发首波不严格）'
+          }
+        },
+        conflict: {
+          password: '密码最小长度大于最大长度：新增用户、重置密码与修改密码将一律拒绝，请调整其中一项。',
+          account: '账号登录的触发验证码门槛大于锁定门槛：此组三项将整组退回出厂默认值。',
+          ip: 'IP源登录的触发验证码门槛大于锁定门槛：此组三项将整组退回出厂默认值。'
+        },
+        readonlyTag: '只读'
+      },
+      // [rev6-inline BASE-WEB-MANAGE-PAGE-WIRING(ix)+ 008-audit-settings-pages END]
       common: {
         status: {
           enable: '启用',
