@@ -206,9 +206,9 @@ declare namespace Api {
     type PurgeAuditTable = 'operationLog' | 'accessLog' | 'loginAttempt' | 'sessionEvent';
 
     /**
-     * `purgeAuditLog` 之請求體：刪除 `table` 中建立時刻早於（現在 − `beforeDays` 天）之列（整段刪除、不挑列）。`beforeDays` 下界之
-     * 權威在後端常數（低於下界即 `2222 biz.audit.purgeBelowFloor`、攜 `PurgeBelowFloorDetail`）；前端之下界只是操作護欄。只此兩欄，
-     * 多送之鍵後端一律忽略。
+     * `purgeAuditLog` 之請求體：刪除 `table` 中建立時刻早於（現在 − `beforeDays` 天）之列（整段刪除、不挑列；標的為操作日誌時，
+     * 清理自記列〔`operation` 為 `purge`〕永久豁免）。`beforeDays` 下界之權威在後端常數（低於下界即
+     * `2222 biz.audit.purgeBelowFloor`、攜 `PurgeBelowFloorDetail`）；前端之下界只是操作護欄。只此兩欄，多送之鍵後端一律忽略。
      */
     interface PurgeAuditLogReq {
       table: PurgeAuditTable;

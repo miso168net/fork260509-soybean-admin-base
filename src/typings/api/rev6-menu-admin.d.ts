@@ -15,7 +15,7 @@ declare namespace Api {
   namespace MenuAdmin {
     /**
      * 選單列（治理清單與已刪清單之 `records` 元素）。二十八欄恆在場：可空欄 DB NULL 以顯式 `null` 上 wire、不省略欄
-     * （ADR-00091 決定 1）；軟刪兩欄以導出旗標 `deleted` 表達。`children` 子集非空才上 wire（葉節點整欄缺席；已刪清單恆缺席）。
+     * （ADR-00107 決定 1）；軟刪兩欄以導出旗標 `deleted` 表達。`children` 子集非空才上 wire（葉節點整欄缺席；已刪清單恆缺席）。
      */
     interface MenuRecord {
       /** 後端 i64 過 2^53 守衛後以 JSON number 出 wire */
@@ -111,7 +111,7 @@ declare namespace Api {
     }
 
     /**
-     * `updateMenu` 請求體（部分更新；ADR-00091 決定 2～4）。除 `id` 外皆可缺席＝不動；沒有 `protected` 欄：
+     * `updateMenu` 請求體（部分更新；ADR-00107 決定 2～4）。除 `id` 外皆可缺席＝不動；沒有 `protected` 欄：
      *
      * - `menuName`：出現即要非空（null 或空字串＝`2222 biz.menu.nameRequired`）。
      * - 可空文字欄：null 或空字串＝清空落 NULL；可空非文字欄：null＝清空落 NULL（`constant` 之 null 與 `false` 同＝清除常量性）。

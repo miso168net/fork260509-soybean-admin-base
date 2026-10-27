@@ -97,7 +97,7 @@ declare namespace Api {
     }
 
     /**
-     * `updateUser` 請求體（部分更新；ADR-00091 決定 2～4、6）。除 `id` 外皆可缺席＝不動：
+     * `updateUser` 請求體（部分更新；ADR-00107 決定 2～4、6）。除 `id` 外皆可缺席＝不動：
      *
      * - 可空文字四欄：null 或空字串＝清空落 NULL、有值＝設值。
      * - `userGender`：null＝清空；trim 後恰 `'1'`／`'2'`＝設值；其餘值（含空字串）＝缺席（打錯值不演成清空）。

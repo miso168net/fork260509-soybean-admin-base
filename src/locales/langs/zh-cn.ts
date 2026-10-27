@@ -470,7 +470,7 @@ const local: App.I18n.Schema = {
       devDep: '开发依赖'
     },
     // [rev6-inline BASE-WEB-I18N-WIRING(i)+ 007-user-password-admin START] 密碼政策違規碼八枚之譯文＋串接分隔符（零佔位符）：請求層明細轉譯與即時密碼規則 hook
-    // 共用之單一命名空間（ADR-00076）；子鍵尾段＝後端違規碼字面。譯文逐字承 rev5:src/locales/langs/zh-cn.ts 之 backend 樹白名單同名鍵（rev6 不落 backend 樹）。
+    // 共用之單一命名空間（ADR-00102 決定 6）；子鍵尾段＝後端違規碼字面。譯文逐字承 rev5:src/locales/langs/zh-cn.ts 之 backend 樹白名單同名鍵（rev6 不落 backend 樹）。
     // 另兩語同插、型節住 typings/app.d.ts；插在 `about` 與 `home` 之間：前後皆為未改的基線行
     passwordPolicy: {
       violation: {

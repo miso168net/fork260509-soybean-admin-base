@@ -1,7 +1,7 @@
 // [rev6-inline USER-CENTER-VIEW+ 007-user-password-admin] 密碼政策共用 hook 新檔（基線無此路徑、新增型不入名冊＝憲法 §III.2 表外宣告 3）：政策七鍵投影之取得、快取與清除＋投影轉表單規則
 // 服務對象橫跨兩棵 view 樹（使用者頁之重設密碼浮層與產密浮層、個人中心之改密卡），故落 `src/hooks/business/`（與 `auth.ts`、`captcha.ts` 同層），
 // 免得 manage 樹反向自 user-center 樹取檔。對外兩支刻意分立：`usePwdPolicy` 持狀態且會發請求；`usePwdPolicyRules` 是純轉換、呼叫時零網路——只要規則的
-// 消費點不會因此多發請求。規則訊息一律取 `page.passwordPolicy.violation.<碼>`：該子樹是違規碼譯文之單一共用命名空間（spec FR-033、ADR-00076），
+// 消費點不會因此多發請求。規則訊息一律取 `page.passwordPolicy.violation.<碼>`：該子樹是違規碼譯文之單一共用命名空間（spec FR-033、ADR-00102 決定 6），
 // 請求層之拒因明細轉譯與本 hook 之即時提示共用同一組字面、不各寫一套。
 // 出處：rev5:src/hooks/business/pwd-policy.ts（兩支同名、入參同形）；rev6 差異＝譯文自 `rev5:` 之 backend 樹白名單移至 page 樹、投影改取自 `rev6-user-center.ts`。
 import { ref, toValue } from 'vue';

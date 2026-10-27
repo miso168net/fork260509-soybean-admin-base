@@ -622,7 +622,7 @@ declare namespace App {
           devDep: string;
         };
         // [rev6-inline BASE-WEB-I18N-WIRING(i)+ 007-user-password-admin START] `page.passwordPolicy` 型節（違規碼八枚＋分隔符；逐鍵鏡像三語 locale 同名子樹）。
-        // 請求層明細轉譯與即時密碼規則 hook 共用之單一命名空間（ADR-00076）；插在 `about` 與 `home` 之間：前後皆為未改的基線行
+        // 請求層明細轉譯與即時密碼規則 hook 共用之單一命名空間（ADR-00102 決定 6）；插在 `about` 與 `home` 之間：前後皆為未改的基線行
         passwordPolicy: {
           violation: {
             minLength: string;
