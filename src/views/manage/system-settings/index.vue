@@ -220,6 +220,20 @@ function numberKeyOf(item: Api.SystemManage.SystemSetting) {
   return `${item.settingKey}#${numberRemounts.value[item.settingKey] ?? 0}`;
 }
 
+/**
+ * 數字框發值處理器（渲染當下取得）：閉包記下渲染當下該鍵之重掛序號，序號已過期之發值不處理。
+ * 重掛換掉之舊實例若仍有焦點，瀏覽器移除它時發失焦、naive-ui 失焦收尾即以框內殘留之被拒值或空值再發一次——
+ * 不擋則被拒值於回讀後自動重送、清空案多一發回讀。
+ */
+function numberUpdateHandlerOf(item: Api.SystemManage.SystemSetting) {
+  const remount = numberRemounts.value[item.settingKey] ?? 0;
+  return (value: number | null) => {
+    if (remount === (numberRemounts.value[item.settingKey] ?? 0)) {
+      handleNumberUpdate(item, value);
+    }
+  };
+}
+
 async function getSettings() {
   readSeq += 1;
   const seq = readSeq;
@@ -311,7 +325,7 @@ onMounted(getSettings);
                   :precision="0"
                   :update-value-on-input="false"
                   class="w-140px"
-                  @update:value="(value: number | null) => handleNumberUpdate(item, value)"
+                  :on-update-value="numberUpdateHandlerOf(item)"
                 />
                 <span v-else>{{ item.settingValue }}</span>
               </div>

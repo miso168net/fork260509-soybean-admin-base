@@ -669,11 +669,11 @@ const local: App.I18n.Schema = {
           },
           ip_max_fails: {
             label: '來源 IP 登入失敗-計數上限（次）',
-            help: '來源節流：來源桶之滑動時間窗內失敗達此數即硬性鎖定（並發首波不嚴格）'
+            help: '來源節流：來源桶之滑動時間窗內失敗達此數即硬性鎖定（並行首波不嚴格）'
           },
           ip_captcha_after: {
             label: '來源 IP 登入失敗-觸發驗證碼（次）',
-            help: '來源節流：來源桶之滑動時間窗內失敗達此數即進入驗證碼軟區（並發首波不嚴格）'
+            help: '來源節流：來源桶之滑動時間窗內失敗達此數即進入驗證碼軟區（並行首波不嚴格）'
           },
           login_throttle_window_minutes: {
             label: '帳號登入失敗-計數時間窗（分鐘）',
@@ -681,11 +681,11 @@ const local: App.I18n.Schema = {
           },
           login_throttle_max_fails: {
             label: '帳號登入失敗-計數上限（次）',
-            help: '登入節流：滑動時間窗內失敗達此數即鎖定（並發首波不嚴格）'
+            help: '登入節流：滑動時間窗內失敗達此數即鎖定（並行首波不嚴格）'
           },
           login_throttle_captcha_after: {
             label: '帳號登入失敗-觸發驗證碼（次）',
-            help: '登入節流：滑動時間窗內失敗達此數即進入驗證碼軟區（並發首波不嚴格）'
+            help: '登入節流：滑動時間窗內失敗達此數即進入驗證碼軟區（並行首波不嚴格）'
           }
         },
         conflict: {

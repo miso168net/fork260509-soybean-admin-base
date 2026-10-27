@@ -9,8 +9,8 @@ import PasswordCard from './modules/password-card.vue';
 </script>
 
 <template>
-  <!-- [rev6-inline BASE-WEB-MANAGE-PAGE-WIRING(vi) 007-user-password-admin] 「敬請期待」佔位元件改為單欄縱排容器、內掛改密卡；原行: <LookForward /> -->
   <div class="flex-col-stretch gap-16px">
+    <!-- [rev6-inline BASE-WEB-MANAGE-PAGE-WIRING(vi) 007-user-password-admin] 「敬請期待」佔位元件改為單欄縱排容器、內掛改密卡（本標記置於根元素內：置於模板根層即成開發模式之多根片段，版面換頁過場卡住致下一頁空白）；原行: <LookForward /> -->
     <PasswordCard />
   </div>
 </template>

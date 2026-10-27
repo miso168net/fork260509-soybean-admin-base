@@ -43,9 +43,9 @@ function closeModal() {
 }
 
 async function handleConfirm() {
-  // 送出中再按確認不重發
+  // 送出中再按確認不重發；回 false 使確認泡泡保持開啟（naive-ui 泡泡於處理器回傳值非 false 時關閉），待請求回來照常收尾
   if (loading.value) {
-    return;
+    return false;
   }
 
   loading.value = true;
